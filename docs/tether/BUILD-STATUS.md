@@ -1,6 +1,6 @@
 # Tether build status (live, updated at each milestone push)
 
-Last update: Fri Oct 23, 2026, 14:20 PT (M0 done). Freeze 15:30, submit 16:30.
+Last update: Fri Oct 23, 2026, 15:30 PT (freeze: live E2E verified). Submit 16:30.
 Faiz's `README.md`, `docs/RUNBOOK.md` and `sql/care_rules_snowflake.sql` stay the source of truth; Tether never edits them.
 
 ## Faiz's base, adopted as is (commit 60fe5f1)
@@ -59,16 +59,30 @@ Keep SYN-001…015 as they are: they are Faiz's test table. New material goes in
 
 ## Open blockers
 
-- App credentials (Alex): one programmatic access token restricted to `CLINICIAN_ROLE` (roles now exist), pasted
-  into `app/web/.env.local` as `SNOWFLAKE_PAT=`. The lab's login policy only accepts a token minted with the
-  network-policy bypass window (`MINS_TO_BYPASS_NETWORK_POLICY_REQUIREMENT = 1440`). With one token, the Care agent
-  switch is enforced by the app (labelled in the UI); Snowflake's own role grants are checked by `RUN_CHECKS()`.
-  The app runs on sample data until the token is in.
+- None for the demo. The app runs live (`DATA_MODE=live`) with one token restricted to `CLINICIAN_ROLE`; the Care agent
+  switch is enforced by the app (labelled in the UI).
+- Known issue: the patient list and patient page take 30-60 s on first load (nested views compile slowly). Open them
+  once before recording so they are warm.
+- Cut at freeze: Claude reading the AI Plan into a care plan with to-dos (`sql/30`), `RUN_CHECKS()`, demo snapshot.
 - Faiz's open questions: CONTEXT-POOL.md §6 (several are now answered by his AI Plan design).
+
+## Demo path (verified live through the app at 15:13-15:17 PT)
+
+1. Queue (`/`): 14 drafts at simulated 2026-10-23. Red flags first (SYN-005 BP 186/122, SYN-009 glucose 51), then
+   2 plan reviews (notes N-015 and N-029 not applied), then 10 Claude drafts. SYN-008 is held by note N-024.
+2. Approve SYN-014 ENG-1 (missed-reading reminder): SENT, simulated SMS in OUTBOX, audited.
+3. Advance the clock 10 days: TICK drafts ENG-3, one AI check-in call for SYN-014 (and ENG-1 reminders for SYN-002, SYN-015).
+4. Approve the call, then on SYN-014's page simulate ANSWERED: Claude transcript, reading 132/83 logged as a patient report.
+5. Guardrails: switch to Care agent and approve (refused); edit a draft to name a drug and dose (blocked by the safety
+   check); reject without a reason (asked for one).
+6. Rules: preview COPD-3 SpO2 88 -> 93 at 2026-10-23 (SYN-007 would move to COPD-3), nothing saved.
+7. Reset for another take (stop the app first, so nobody clicks Advance clock mid-reset):
+   `bash scripts/run_sql.sh sql/care_rules_snowflake.sql` then
+   `snow sql -c hackathon -q "USE SCHEMA CARE_RULES.CORE; CALL TICK();"`, then restart the app and open each page once.
 
 ## How to run (as pieces land)
 
-- SQL: `bash scripts/run_sql.sh` (Snowflake CLI connection `hackathon`), then `CALL CARE_RULES.CORE.RUN_CHECKS();`.
+- SQL: `bash scripts/run_sql.sh` (Snowflake CLI connection `hackathon`), then `CALL CARE_RULES.CORE.TICK();` for drafts.
 - App: `cd app/web && npm install && npm run dev` → http://localhost:3000.
 
 Planning docs in `docs/tether/` were drafted earlier today as notes; all code and data are created during the event.
