@@ -185,6 +185,19 @@ async function callProc<T extends ProcResult>(
     return { ok: true, data: { ...fixtureResult(who), ok: true, fixtures: true } as T, fixtures: true };
   }
   const { statement, binds } = buildCall(name, args);
+  if (who === 'agent' && mode.credentials.enforcement === 'app' && CLINICIAN_ONLY.has(name)) {
+    return {
+      ok: false,
+      error: {
+        code: 'ROLE_REFUSED',
+        message:
+          `Refused by the app's role check: Care agent cannot run ${name}. This demo uses one token ` +
+          `restricted to ${getEnv().roleClinician}; in Snowflake, ${getEnv().roleAgent} has no USAGE on ${name}.`,
+        sql_state: null,
+      },
+      fixtures: false,
+    };
+  }
   const result = await execute<Row>(mode.credentials, statement, binds, { waitSeconds: CALL_WAIT_SECONDS });
   if (!result.ok) return fromFailure(result);
   const proc = toProcResult(result.rows);

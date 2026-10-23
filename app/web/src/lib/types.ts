@@ -522,6 +522,7 @@ export type ErrorCode =
   | 'NOT_FOUND' // no such patient / row (HTTP 404)
   | 'DECLINED' // a proc ran and returned ok:false (HTTP 409); detail = proc result
   | 'SNOWFLAKE_REFUSED' // Snowflake refused for lack of privilege (HTTP 403)
+  | 'ROLE_REFUSED' // the app refused a clinician-only call in Care agent mode on the shared token (HTTP 403)
   | 'SNOWFLAKE_ERROR' // any other Snowflake or network failure (HTTP 502)
   | 'TIMEOUT'; // still running after the wait limit (HTTP 504)
 

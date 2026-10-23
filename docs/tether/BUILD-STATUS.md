@@ -53,9 +53,11 @@ Keep SYN-001…015 as they are: they are Faiz's test table. New material goes in
 
 ## Open blockers
 
-- App credentials (Alex): two role-restricted programmatic access tokens, minted after the roles exist. The lab's
-  login policy only accepts a token from a user under a network policy, or within the bypass window set when the
-  token is minted. The app runs on fixture data until then.
+- App credentials (Alex): one programmatic access token restricted to `CLINICIAN_ROLE` (roles now exist), pasted
+  into `app/web/.env.local` as `SNOWFLAKE_PAT=`. The lab's login policy only accepts a token minted with the
+  network-policy bypass window (`MINS_TO_BYPASS_NETWORK_POLICY_REQUIREMENT = 1440`). With one token, the Care agent
+  switch is enforced by the app (labelled in the UI); Snowflake's own role grants are checked by `RUN_CHECKS()`.
+  The app runs on sample data until the token is in.
 - Faiz's open questions: CONTEXT-POOL.md §6 (several are now answered by his AI Plan design).
 
 ## How to run (as pieces land)
