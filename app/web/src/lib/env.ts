@@ -7,6 +7,10 @@ import type { ActingAs } from './types';
 
 export type DataMode = 'fixtures' | 'live';
 
+/** App views that live mode can serve from a saved export (EXPORT_VIEWS) instead of a query per request. */
+export const EXPORTABLE_VIEWS = ['V_APP_STATE', 'V_PATIENT_LIST', 'V_PATIENT_DETAIL', 'V_TIMELINE'] as const;
+export type ExportView = (typeof EXPORTABLE_VIEWS)[number];
+
 export interface ServerEnv {
   accountHost: string | null;
   patAgent: string | null;
@@ -21,6 +25,8 @@ export interface ServerEnv {
   agentName: string;
   approverLabel: string;
   dataMode: DataMode;
+  /** Live mode only: views read from app/web/.local/exports/ (saved from Snowflake) instead of queried. */
+  exportViews: ExportView[];
 }
 
 export interface Credentials {
@@ -49,6 +55,13 @@ function normalizeHost(raw: string | null): string | null {
   return /^[a-z0-9.-]+$/.test(host) ? host : null;
 }
 
+/** 'V_APP_STATE, v_timeline' -> ['V_APP_STATE', 'V_TIMELINE']; unknown names are ignored. */
+function parseExportViews(raw: string | null): ExportView[] {
+  if (!raw) return [];
+  const names = raw.split(',').map((s) => s.trim().toUpperCase());
+  return EXPORTABLE_VIEWS.filter((view) => names.includes(view));
+}
+
 export function getEnv(): ServerEnv {
   return {
     accountHost: normalizeHost(read('SNOWFLAKE_ACCOUNT_HOST')),
@@ -63,6 +76,7 @@ export function getEnv(): ServerEnv {
     agentName: read('SNOWFLAKE_AGENT_NAME') ?? 'TETHER_ASK',
     approverLabel: read('APPROVER_LABEL') ?? 'Clinician',
     dataMode: read('DATA_MODE')?.toLowerCase() === 'live' ? 'live' : 'fixtures',
+    exportViews: parseExportViews(read('EXPORT_VIEWS')),
   };
 }
 

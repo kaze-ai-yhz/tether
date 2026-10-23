@@ -1,5 +1,8 @@
 import 'server-only';
 
+import { promises as fs } from 'node:fs';
+import path from 'node:path';
+
 import askCacheFixture from '@/fixtures/ask_cache.json';
 import overrideKeysFixture from '@/fixtures/override_keys.json';
 import ruleEditsFixture from '@/fixtures/rule_edits.json';
@@ -12,7 +15,7 @@ import queueFixture from '@/fixtures/v_queue.json';
 import rulesFixture from '@/fixtures/v_rules.json';
 import timelineFixture from '@/fixtures/v_timeline.json';
 
-import { effectiveMode, getEnv, type EffectiveMode } from './env';
+import { effectiveMode, getEnv, type Credentials, type EffectiveMode, type ExportView } from './env';
 import { getActingAs } from './session';
 import { buildCall, execute, type Bind, type Row, type SnowflakeFailure } from './snowflake';
 import type {
@@ -270,6 +273,7 @@ function afterWrite(who: ActingAs, credentials: Parameters<typeof execute>[0]): 
     if (/:(state|queue|timeline|rules)/.test(key)) readCache.delete(key);
     else entry.loadedAt = 0;
   }
+  refreshExports(['V_APP_STATE', 'V_TIMELINE'], credentials);
   refreshSnapshots(who, credentials);
 }
 
@@ -294,7 +298,10 @@ function refreshSnapshots(who: ActingAs, credentials: Parameters<typeof execute>
       );
       const failed = results.find((r) => !r.ok);
       if (failed && !failed.ok) console.error(`[snapshots] refresh failed: ${failed.message}`);
-      else console.info(`[snapshots] refreshed for ${who} in ${((Date.now() - started) / 1000).toFixed(1)} s`);
+      else {
+        console.info(`[snapshots] refreshed for ${who} in ${((Date.now() - started) / 1000).toFixed(1)} s`);
+        refreshExports(['V_PATIENT_LIST', 'V_PATIENT_DETAIL'], credentials);
+      }
       for (const [key, entry] of readCache) if (/:patient/.test(key)) entry.loadedAt = 0;
     } while (snapshotAgain);
   })()
@@ -302,6 +309,154 @@ function refreshSnapshots(who: ActingAs, credentials: Parameters<typeof execute>
     .finally(() => {
       snapshotRun = null;
     });
+}
+
+// ---------------------------------------------------------------------------------------------
+// Saved exports (EXPORT_VIEWS). In live mode the listed views are read from JSON files in
+// app/web/.local/exports/ instead of being queried on every request; the queue, holds, rules and every
+// write stay live in Snowflake. A file is saved from Snowflake when it is missing, after every live write
+// (state and timeline at once, patient views once their snapshots are rebuilt), in the background once it
+// is older than EXPORT_MAX_AGE_MS, and by POST /api/export.
+// ---------------------------------------------------------------------------------------------
+
+const EXPORT_DIR = path.join(process.cwd(), '.local', 'exports');
+/** An older file is still served at once and re-saved in the background, so changes made outside the app show up. */
+const EXPORT_MAX_AGE_MS = 20_000;
+
+/** The live query behind each export; patient views read their snapshot and fall back to the view. */
+const EXPORT_QUERIES: Record<ExportView, { snapshot?: string; view: string }> = {
+  V_APP_STATE: { view: 'SELECT * FROM V_APP_STATE' },
+  V_PATIENT_LIST: {
+    snapshot: 'SELECT * FROM PATIENT_LIST_SNAP ORDER BY status_rank, patient_id',
+    view: 'SELECT * FROM V_PATIENT_LIST ORDER BY status_rank, patient_id',
+  },
+  V_PATIENT_DETAIL: {
+    snapshot: 'SELECT * FROM PATIENT_DETAIL_SNAP ORDER BY patient_id',
+    view: 'SELECT * FROM V_PATIENT_DETAIL ORDER BY patient_id',
+  },
+  V_TIMELINE: { view: 'SELECT * FROM V_TIMELINE ORDER BY patient_id, logged_at DESC' },
+};
+
+function exportFile(view: ExportView): string {
+  return path.join(EXPORT_DIR, `${view.toLowerCase()}.json`);
+}
+
+/** Credentials when this view is served from its export, else null (fixtures mode, or not listed). */
+function exportCredentials(view: ExportView, who: ActingAs): Credentials | null {
+  const env = getEnv();
+  if (!env.exportViews.includes(view)) return null;
+  const mode = effectiveMode(who, env);
+  return mode.mode === 'live' ? mode.credentials : null;
+}
+
+const exportRuns = new Map<ExportView, Promise<DataResult<number>>>();
+/** Saves queued or running per view; an age-based re-save is skipped while one is pending. */
+const exportPending = new Map<ExportView, number>();
+
+/** Queries the view and replaces its file (temp file, then rename). Saves of one view run in order. */
+function saveExport(view: ExportView, credentials: Credentials): Promise<DataResult<number>> {
+  const run = async (): Promise<DataResult<number>> => {
+    const { snapshot, view: viewSql } = EXPORT_QUERIES[view];
+    let result = snapshot ? await execute<Row>(credentials, snapshot, [], { waitSeconds: READ_WAIT_SECONDS }) : null;
+    if (!result || !result.ok) result = await execute<Row>(credentials, viewSql, [], { waitSeconds: READ_WAIT_SECONDS });
+    if (!result.ok) {
+      console.error(`[exports] ${view} not saved: ${result.message}`);
+      return fromFailure(result);
+    }
+    const rows = result.rows.map((r) => normalizeRow<Row>(r));
+    const savedAt = new Date().toLocaleString('sv-SE');
+    await fs.mkdir(EXPORT_DIR, { recursive: true });
+    const tmp = `${exportFile(view)}.${process.pid}.tmp`;
+    await fs.writeFile(tmp, JSON.stringify({ _source: `live export @ ${savedAt}`, rows }), 'utf8');
+    await fs.rename(tmp, exportFile(view));
+    return { ok: true, data: rows.length, fixtures: false };
+  };
+  exportPending.set(view, (exportPending.get(view) ?? 0) + 1);
+  const next = (exportRuns.get(view) ?? Promise.resolve(null))
+    .catch(() => null)
+    .then(run)
+    .finally(() => exportPending.set(view, (exportPending.get(view) ?? 1) - 1));
+  exportRuns.set(view, next);
+  return next;
+}
+
+/** Background re-save after a write; a failed save keeps the previous file. */
+function refreshExports(views: ExportView[], credentials: Credentials): void {
+  for (const view of views) {
+    if (!getEnv().exportViews.includes(view)) continue;
+    void saveExport(view, credentials).catch((err: unknown) => console.error(`[exports] ${view} not saved`, err));
+  }
+}
+
+let staleCheckAt = 0;
+const PATIENT_EXPORTS: ExportView[] = ['V_PATIENT_LIST', 'V_PATIENT_DETAIL'];
+
+/**
+ * Patient exports are saved from the snapshots. When an aged file is read: rebuild the snapshots if
+ * AUDIT_LOG (every write) is newer than the last rebuild, else re-save the exports if a rebuild made
+ * outside the app (scripts/run_sql.sh) is newer than the files.
+ */
+function checkPatientExports(who: ActingAs, credentials: Credentials): void {
+  if (snapshotRun || Date.now() - staleCheckAt < EXPORT_MAX_AGE_MS) return;
+  staleCheckAt = Date.now();
+  void (async () => {
+    const check = await execute<Row>(
+      credentials,
+      'SELECT DATE_PART(epoch_millisecond, MAX(refreshed_at)) AS snap_ms, ' +
+        '(SELECT MAX(logged_at) FROM AUDIT_LOG) > MAX(refreshed_at)::TIMESTAMP_NTZ AS stale ' +
+        'FROM SNAPSHOT_LOG WHERE ok',
+      [],
+      { waitSeconds: READ_WAIT_SECONDS },
+    );
+    const row = check.ok ? normalizeRow<{ stale?: unknown; snap_ms?: unknown }>(check.rows[0] ?? {}) : null;
+    if (!row || row.stale !== false) {
+      refreshSnapshots(who, credentials);
+      return;
+    }
+    const mtimes = await Promise.all(
+      PATIENT_EXPORTS.map((view) => fs.stat(exportFile(view)).then((s) => s.mtimeMs, () => 0)),
+    );
+    if (Number(row.snap_ms) > Math.min(...mtimes)) refreshExports(PATIENT_EXPORTS, credentials);
+  })().catch((err: unknown) => console.error('[exports] staleness check failed', err));
+}
+
+/** Rows of a saved export, saved first when the file is missing (first start, or after a reset). */
+async function readExport<T>(view: ExportView, who: ActingAs, credentials: Credentials): Promise<DataResult<T[]>> {
+  const file = exportFile(view);
+  const stat = await fs.stat(file).catch(() => null);
+  if (!stat) {
+    const saved = await saveExport(view, credentials);
+    if (!saved.ok) return saved;
+  } else if (Date.now() - stat.mtimeMs > EXPORT_MAX_AGE_MS && !exportPending.get(view)) {
+    if (PATIENT_EXPORTS.includes(view)) checkPatientExports(who, credentials);
+    else refreshExports([view], credentials);
+  }
+  const set = fixture<T>(JSON.parse(await fs.readFile(file, 'utf8')) as unknown);
+  return { ok: true, data: set.rows, fixtures: true, fixture_source: set.source };
+}
+
+/** Re-saves every exported view from Snowflake now, optionally rebuilding the patient snapshots first. */
+export async function saveExportsNow(
+  rebuildSnapshots: boolean,
+  actingAs?: ActingAs,
+): Promise<DataResult<{ saved: Partial<Record<ExportView, number>> }>> {
+  const { mode } = await modeFor(actingAs);
+  if (mode.mode !== 'live') {
+    return { ok: false, error: { code: 'BAD_REQUEST', message: 'Exports are saved from live Snowflake; the app is not live.' }, fixtures: true };
+  }
+  if (rebuildSnapshots) {
+    const { statement, binds } = buildCall('REFRESH_SNAPSHOTS', ['ALL']);
+    const rebuilt = await execute<Row>(mode.credentials, statement, binds, { waitSeconds: CALL_WAIT_SECONDS });
+    if (!rebuilt.ok) return fromFailure(rebuilt);
+  }
+  const views = getEnv().exportViews;
+  const results = await Promise.all(views.map((view) => saveExport(view, mode.credentials)));
+  const saved: Partial<Record<ExportView, number>> = {};
+  for (const [i, result] of results.entries()) {
+    if (!result.ok) return { ok: false, error: result.error, fixtures: false };
+    saved[views[i]] = result.data;
+  }
+  return { ok: true, data: { saved }, fixtures: false };
 }
 
 /** Snapshot first; the view if the snapshot is missing (not created yet, or this role lacks the grant). */
@@ -330,6 +485,12 @@ function combine<A, B, R>(a: DataResult<A>, b: DataResult<B>, join: (a: A, b: B)
 
 export async function getState(actingAs?: ActingAs): Promise<DataResult<AppState>> {
   const who = actingAs ?? (await getActingAs());
+  const exported = exportCredentials('V_APP_STATE', who);
+  if (exported) {
+    // Writes stay live, so this is not fixture mode: the banner stays off; fixture_source names the file.
+    const row = firstRow(await readExport<AppState>('V_APP_STATE', who, exported), 'The V_APP_STATE export has no row.');
+    return { ...row, fixtures: false };
+  }
   return cachedRead(`${who}:state`, FRESH_MS.state, async () => {
     const rows = await readRows<AppState>(who, 'SELECT * FROM V_APP_STATE', [], () => fixture(appStateFixture));
     return firstRow(rows, 'V_APP_STATE returned no row.');
@@ -352,6 +513,8 @@ export async function getQueue(actingAs?: ActingAs): Promise<DataResult<QueueBun
 
 export async function getPatients(actingAs?: ActingAs): Promise<DataResult<PatientListRow[]>> {
   const who = actingAs ?? (await getActingAs());
+  const exported = exportCredentials('V_PATIENT_LIST', who);
+  if (exported) return readExport<PatientListRow>('V_PATIENT_LIST', who, exported);
   return cachedRead(`${who}:patients`, FRESH_MS.patients, () =>
     readSnapshotOrView<PatientListRow>(
       who,
@@ -365,6 +528,12 @@ export async function getPatients(actingAs?: ActingAs): Promise<DataResult<Patie
 
 export async function getPatientDetail(patientId: string, actingAs?: ActingAs): Promise<DataResult<PatientDetail>> {
   const who = actingAs ?? (await getActingAs());
+  const exported = exportCredentials('V_PATIENT_DETAIL', who);
+  if (exported) {
+    const rows = await readExport<PatientDetail>('V_PATIENT_DETAIL', who, exported);
+    const one = rows.ok ? { ...rows, data: rows.data.filter((p) => p.patient_id === patientId) } : rows;
+    return firstRow(one, `No patient ${patientId} in the synthetic record.`);
+  }
   return cachedRead(`${who}:patient:${patientId}`, FRESH_MS.patient, async () => {
     const rows = await readSnapshotOrView<PatientDetail>(
       who,
@@ -382,6 +551,15 @@ export async function getPatientDetail(patientId: string, actingAs?: ActingAs): 
 
 export async function getTimeline(patientId: string, actingAs?: ActingAs): Promise<DataResult<TimelineEvent[]>> {
   const who = actingAs ?? (await getActingAs());
+  const exported = exportCredentials('V_TIMELINE', who);
+  if (exported) {
+    const rows = await readExport<TimelineEvent>('V_TIMELINE', who, exported);
+    if (!rows.ok) return rows;
+    const events = rows.data
+      .filter((e) => e.patient_id === patientId)
+      .sort((a, b) => String(b.logged_at).localeCompare(String(a.logged_at)));
+    return { ...rows, data: events };
+  }
   return cachedRead(`${who}:timeline:${patientId}`, FRESH_MS.timeline, () =>
     readRows<TimelineEvent>(
       who,
