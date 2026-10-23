@@ -1,0 +1,504 @@
+/* Ask drawer, step progress and SQL disclosure (DESIGN-SYSTEM §5, §6, §7). */
+
+/* Drawer: right edge, full height, 440 px (100vw on phones). */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  justify-content: flex-end;
+  background: color-mix(in srgb, var(--surface-canvas) 55%, transparent);
+}
+
+.overlay[data-entering] {
+  animation: fade var(--dur-panel) var(--ease-conduct);
+}
+
+.overlay[data-exiting] {
+  animation: fade var(--dur-panel) var(--ease-exit) reverse;
+}
+
+.drawer {
+  display: flex;
+  width: min(var(--ask-drawer-w), 100vw);
+  height: 100%;
+  background: var(--surface-raised);
+  border-left: 1px solid var(--line-strong);
+  border-radius: var(--radius-dialog) 0 0 var(--radius-dialog);
+  box-shadow: var(--shadow-raised);
+  outline: none;
+}
+
+.drawer[data-entering] {
+  animation: slide var(--dur-panel) var(--ease-conduct);
+}
+
+.drawer[data-exiting] {
+  animation: slide var(--dur-panel) var(--ease-exit) reverse;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+/* Reduced motion: no sliding, a short cross-fade instead. */
+@media (prefers-reduced-motion: reduce) {
+  .drawer[data-entering] {
+    animation: fade var(--dur-reduced-fade) linear;
+  }
+
+  .drawer[data-exiting] {
+    animation: fade var(--dur-reduced-fade) linear reverse;
+  }
+}
+
+@media (max-width: 480px) {
+  .drawer {
+    border-left: 0;
+    border-radius: 0;
+  }
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  outline: none;
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-12);
+  padding: var(--space-16) var(--space-16) var(--space-12) var(--space-24);
+  border-bottom: 1px solid var(--line-hairline);
+}
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  min-width: 0;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-line);
+  font-weight: var(--type-h3-weight);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-16);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-16) var(--space-24) var(--space-24);
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding-left: var(--space-16);
+  }
+
+  .body {
+    padding: var(--space-16);
+  }
+}
+
+/* Question field */
+.form {
+  display: block;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.label {
+  margin: 0;
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  font-weight: var(--type-meta-weight);
+  color: var(--text-muted);
+}
+
+.inputRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 32px;
+  padding: 0 var(--space-12);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-boundary);
+  border-radius: var(--radius-control);
+  color: var(--text-default);
+  font: inherit;
+}
+
+.input::placeholder {
+  color: var(--text-muted);
+}
+
+.input[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.input[data-disabled] {
+  color: var(--text-disabled);
+  border-color: var(--line-hairline);
+  cursor: not-allowed;
+}
+
+/* Step progress: Understand · Query · Check · Answer. Active and done steps in Marker. */
+.progress {
+  display: block;
+}
+
+.steps {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4) var(--space-8);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  font-weight: var(--type-meta-weight);
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--text-muted);
+  transition: color var(--dur-toggle) var(--ease-standard);
+}
+
+.step[data-state="active"],
+.step[data-state="done"] {
+  color: var(--marker-text);
+}
+
+.stepSep {
+  margin-right: var(--space-4);
+  color: var(--text-muted);
+}
+
+.stepGlyph {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 12px;
+  height: 12px;
+  color: var(--marker-mark);
+}
+
+.stepDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  border: 1px solid var(--line-boundary);
+}
+
+.step[data-state="active"] .stepDot {
+  border-color: var(--marker-mark);
+  background: var(--marker-mark);
+  animation: breathe 1400ms var(--ease-standard) infinite;
+}
+
+.step[data-state="skipped"] .stepDot {
+  border-style: dashed;
+}
+
+@keyframes breathe {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .step[data-state="active"] .stepDot {
+    animation: none;
+  }
+}
+
+/* Answer region */
+.result {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+  outline: none;
+}
+
+.result:empty {
+  display: none;
+}
+
+.answer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-12);
+}
+
+.answerMeta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.answerLabel {
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  font-weight: var(--type-meta-weight);
+  color: var(--text-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.answerText {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  color: var(--text-default);
+}
+
+.answerText p {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.note,
+.caution {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8);
+  margin: 0;
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+}
+
+.note {
+  color: var(--text-muted);
+}
+
+.caution {
+  align-self: stretch;
+  padding: var(--space-8) var(--space-12);
+  border: 1px solid var(--status-caution-border);
+  border-radius: var(--radius-control);
+  background: var(--status-caution-bg);
+  color: var(--status-caution-fg);
+}
+
+.noteIcon {
+  flex: none;
+  margin-top: var(--space-1);
+}
+
+.muted {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.provenance {
+  max-width: 100%;
+}
+
+.provenanceText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* SQL disclosure */
+.sqlDisclosure {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.sqlTrigger {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: var(--hit-min);
+  padding: 0 var(--space-4);
+  border: 0;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-default);
+  font: inherit;
+  font-size: var(--type-meta-size);
+  font-weight: var(--type-meta-weight);
+  cursor: pointer;
+  transition: background-color var(--dur-hover) var(--ease-standard);
+}
+
+.sqlTrigger[data-hovered] {
+  background: var(--surface-hover);
+}
+
+.sqlTrigger[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.sqlChevron {
+  flex: none;
+  color: var(--text-muted);
+  transition: transform var(--dur-toggle) var(--ease-standard);
+}
+
+.sqlDisclosure[data-expanded] .sqlChevron {
+  transform: rotate(90deg);
+}
+
+.sqlPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.sqlToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.sqlCaption {
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  color: var(--text-muted);
+}
+
+.sql {
+  margin: 0;
+  max-height: 240px;
+  overflow: auto;
+  padding: var(--space-8) var(--space-12);
+  background: var(--surface-sunken);
+  border: 1px solid var(--line-hairline);
+  border-radius: var(--radius-control);
+  color: var(--text-default);
+  font-family: var(--font-mono);
+  font-size: var(--type-mono-size);
+  line-height: var(--type-mono-line);
+  font-weight: var(--type-mono-weight);
+  white-space: pre;
+  tab-size: 2;
+}
+
+.sql:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Suggested questions: quiet, left-aligned, wrap on narrow screens. */
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.suggestionList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.suggestion {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-8);
+  width: 100%;
+  min-height: 32px;
+  padding: var(--space-8) var(--space-12);
+  border: 1px solid var(--line-hairline);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-default);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    background-color var(--dur-hover) var(--ease-standard),
+    border-color var(--dur-hover) var(--ease-standard);
+}
+
+.suggestion[data-hovered] {
+  background: var(--surface-hover);
+  border-color: var(--line-strong);
+}
+
+.suggestion[data-pressed] {
+  background: var(--surface-default);
+}
+
+.suggestion[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+.suggestionIcon {
+  flex: none;
+  margin-top: 3px;
+  color: var(--text-muted);
+}
+
+@media (max-width: 767px) {
+  .suggestion,
+  .sqlTrigger {
+    min-height: var(--hit-touch);
+  }
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
