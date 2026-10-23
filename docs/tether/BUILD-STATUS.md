@@ -1,6 +1,6 @@
 # Tether build status (live, updated at each milestone push)
 
-Last update: Fri Oct 23, 2026, 13:30 PT. Freeze 15:30, submit 16:30.
+Last update: Fri Oct 23, 2026, 14:20 PT (M0 done). Freeze 15:30, submit 16:30.
 Faiz's `README.md`, `docs/RUNBOOK.md` and `sql/care_rules_snowflake.sql` stay the source of truth; Tether never edits them.
 
 ## Faiz's base, adopted as is (commit 60fe5f1)
@@ -14,11 +14,11 @@ The RUNBOOK test table (15 patients) is the expected result Tether checks agains
 
 | Piece | What it does | State |
 |---|---|---|
-| Runner | `scripts/run_sql.sh` runs Faiz's file unchanged, then Tether files in order | In progress |
+| Runner | `scripts/run_sql.sh` runs Faiz's file unchanged, then Tether files in order | Done (M0) |
 | Claude reads the AI Plan | Plain-language reading of each signed AI Plan block (only that text and the SYN id go to Claude); code still decides what applies | Not started |
 | Todos (Table 1) and monitored values (Table 2) | Per patient: what is collected, when, from which rule or AI Plan line; days overdue and ladder rung | Not started |
 | Drafts | Claude drafts every non-held firing into `ACTION_QUEUE` with the patient's preferences (language, contact window); fixed text for red flags and PLAN-REVIEW; drug and dose check on every draft; every model input logged in `MODEL_CALLS` | Not started |
-| Approval queue app | Next.js on localhost:3000: queue, patients, patient detail, rules; nothing is sent without a clinician click | Scaffold in progress |
+| Approval queue app | Next.js on localhost:3000: queue, patients, patient detail, rules; nothing is sent without a clinician click | Shell + queue done; patients, rules in progress |
 | Simulated clock and calls | `ADVANCE_CLOCK(days)` moves `AS_OF`; simulated AI check-in call (answered, no answer, chest pain handoff); sends go to `OUTBOX` (simulated) | Not started |
 | Threshold edit | `UPDATE_RULE` with reason and audit; shows which patients' results change | Not started |
 | Governance | Real roles: `CARE_AGENT_ROLE` can draft but not approve; `CLINICIAN_ROLE` approves; `RUN_CHECKS()` | Not started |
@@ -31,9 +31,15 @@ SYN-002, 015.
 
 ## Verified in the lab account
 
-- `ATTENDEE_ROLE` can create the database and roles.
+- **M0 (14:16):** Faiz's SQL runs unchanged; live `V_RULE_FIRINGS` matches his RUNBOOK test table for all 15
+  patients (15/15 PASS). `V_PATIENT_OVERRIDES`: 26 applied, 1 held for confirmation (SYN-010 A1C goal 9.5%),
+  1 blocked (SYN-005 red-flag line), 0 unrecognized. His `GENERATE_DRAFTS` stops with "Use of session variable
+  '$CLAUDE_MODEL' is not allowed in owners rights stored procedure"; Tether drafts with its own procedure and the fix is
+  proposed in `docs/tether/PROPOSED-CHANGES.md`.
+- `ATTENDEE_ROLE` can create the database and roles; `CARE_AGENT_ROLE` and `CLINICIAN_ROLE` exist.
 - Claude through Cortex `AI_COMPLETE`: `claude-opus-5-5`, `claude-sonnet-5-5` and `claude-sonnet-4-5` all answer.
-  Structured JSON output works only on `claude-sonnet-4-5` (Faiz's default).
+  Structured JSON output works only on `claude-sonnet-4-5` (Faiz's default); `model_parameters` works on
+  `claude-opus-5-5` and `claude-sonnet-4-5`, not on `claude-sonnet-5-5`.
 - Cross-region inference is enabled.
 
 ## How you can help now (no code needed)
