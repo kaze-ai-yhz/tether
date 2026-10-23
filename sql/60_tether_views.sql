@@ -683,17 +683,24 @@ LEFT JOIN monitored mo       ON mo.patient_id = l.patient_id
 LEFT JOIN firings fr         ON fr.patient_id = l.patient_id;
 
 -- ---------------------------------------------------------------------
--- V_APP_STATE: one row for the top bar and demo panel. Counts come from the views above so the
--- numbers on screen match the queue and patient list exactly.
+-- V_APP_STATE: one row for the top bar and demo panel. Queue counts are read from base tables with
+-- the same filters as V_QUEUE, so the view compiles in seconds.
 -- call_ready = SENT AI check-in calls with no call yet (or whose only call was unanswered and has no
 -- follow-up action yet).
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE VIEW V_APP_STATE COPY GRANTS AS
-WITH queue_counts AS (   -- COUNT_IF over zero rows is NULL, hence the COALESCE
-  SELECT COUNT(*) AS pending_count, COALESCE(COUNT_IF(is_red_flag), 0) AS red_flag_count FROM V_QUEUE
-),
-list_counts AS (
-  SELECT COALESCE(COUNT_IF(display_status = 'Needs clinician'), 0) AS needs_clinician_count FROM V_PATIENT_LIST
+WITH queue_counts AS (
+  -- Read from base tables (not V_QUEUE / V_PATIENT_LIST, whose nested views take 30-60 s to compile).
+  -- Same rows as V_QUEUE (PENDING) and the same red-flag test. needs_clinician_count counts patients with a
+  -- pending item routed to the clinician, a red flag or a call handoff.
+  SELECT COUNT(DISTINCT q.action_id) AS pending_count,
+         COUNT(DISTINCT IFF(r.action_type = 'URGENT_ALERT' OR m.kind = 'CALL_HANDOFF', q.action_id, NULL)) AS red_flag_count,
+         COUNT(DISTINCT IFF(r.recipient = 'CLINICIAN' OR r.action_type = 'URGENT_ALERT' OR m.kind = 'CALL_HANDOFF',
+                            q.patient_id, NULL)) AS needs_clinician_count
+  FROM ACTION_QUEUE q
+  LEFT JOIN RULES r       ON r.rule_id = q.rule_id
+  LEFT JOIN ACTION_META m ON m.action_id = q.action_id
+  WHERE q.status = 'PENDING'
 ),
 held_counts AS (
   SELECT COUNT(*) AS held_count FROM V_HELD
@@ -725,13 +732,12 @@ call_ready AS (
     AND (c.action_id IS NULL OR (c.last_outcome = 'NO_ANSWER' AND la.last_action_at <= c.last_call_at))
 )
 SELECT TO_VARCHAR(a.as_of_date, 'YYYY-MM-DD') AS as_of_date,
-       qc.pending_count, qc.red_flag_count, lc.needs_clinician_count, hc.held_count,
+       qc.pending_count, qc.red_flag_count, qc.needs_clinician_count, hc.held_count,
        COALESCE(rm.roles_mode, 'SIMULATED')       AS roles_mode,
        COALESCE(m.models, OBJECT_CONSTRUCT())     AS models,
        COALESCE(cr.call_ready, ARRAY_CONSTRUCT()) AS call_ready
 FROM AS_OF a
 CROSS JOIN queue_counts qc
-CROSS JOIN list_counts lc
 CROSS JOIN held_counts hc
 CROSS JOIN models m
 CROSS JOIN roles_mode rm
