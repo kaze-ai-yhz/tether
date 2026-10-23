@@ -78,7 +78,8 @@ Keep SYN-001…015 as they are: they are Faiz's test table. New material goes in
 6. Rules: preview COPD-3 SpO2 88 -> 93 at 2026-10-23 (SYN-007 would move to COPD-3), nothing saved.
 7. Reset for another take (stop the app first, so nobody clicks Advance clock mid-reset):
    `bash scripts/run_sql.sh sql/care_rules_snowflake.sql` then
-   `snow sql -c hackathon -q "USE SCHEMA CARE_RULES.CORE; CALL TICK();"`, then restart the app and open each page once.
+   `snow sql -c hackathon -q "USE SCHEMA CARE_RULES.CORE; CALL TICK(); CALL REFRESH_SNAPSHOTS('ALL');"`, then restart
+   the app (clears its read cache) and open each page once.
 
 ## How to run (as pieces land)
 
