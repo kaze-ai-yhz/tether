@@ -65,6 +65,23 @@
   outline-offset: var(--focus-ring-offset);
 }
 
+/* Brand glyph: an ink dot at each end of a care-teal thread. */
+.brandMark {
+  flex: none;
+  margin-right: var(--space-8);
+}
+
+.brandThread {
+  fill: none;
+  stroke: var(--status-ok-fg);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+.brandDot {
+  fill: var(--ink);
+}
+
 .clock {
   display: inline-flex;
   align-items: center;
@@ -233,10 +250,48 @@
 }
 
 .navList {
+  --nav-link-h: 36px;
+  --nav-active: 0;
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
   list-style: none;
+}
+
+/* Active indicator: one plate behind the links that slides to the current item (CSS only). */
+.navList::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--nav-link-h);
+  border-radius: var(--radius-control);
+  background: var(--surface-raised);
+  box-shadow: inset 2px 0 0 var(--ink);
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(calc(var(--nav-active) * (var(--nav-link-h) + var(--space-4))));
+  transition:
+    transform var(--dur-panel) var(--ease-conduct),
+    opacity var(--dur-toggle) var(--ease-standard);
+}
+
+.navList:has(> .navItem > [aria-current="page"])::before {
+  opacity: 1;
+}
+
+.navList:has(> .navItem:nth-child(2) > [aria-current="page"]) {
+  --nav-active: 1;
+}
+
+.navList:has(> .navItem:nth-child(3) > [aria-current="page"]) {
+  --nav-active: 2;
+}
+
+.navList:has(> .navItem:nth-child(4) > [aria-current="page"]) {
+  --nav-active: 3;
 }
 
 .navItem {
@@ -247,7 +302,7 @@
   display: flex;
   align-items: center;
   gap: var(--space-12);
-  height: 36px;
+  height: var(--nav-link-h);
   padding: 0 var(--space-12);
   border-radius: var(--radius-control);
   color: var(--text-muted);
@@ -270,9 +325,16 @@
 
 .navLink[aria-current="page"] {
   color: var(--text-default);
-  background: var(--surface-raised);
-  box-shadow: inset 2px 0 0 var(--ink);
+  background: transparent;
   font-weight: 600;
+}
+
+/* Without :has() the plate cannot find the active item; the link draws its own indicator. */
+@supports not selector(:has(*)) {
+  .navLink[aria-current="page"] {
+    background: var(--surface-raised);
+    box-shadow: inset 2px 0 0 var(--ink);
+  }
 }
 
 .navIcon {
@@ -532,6 +594,10 @@
   .rail,
   .demo {
     transition: none;
+  }
+
+  .navList::before {
+    transition: opacity var(--dur-reduced-fade) linear;
   }
 
   .skipLink {

@@ -18,7 +18,10 @@ function SimClock() {
       <Icon name="clock" className={styles.clockIcon} />
       {date ? (
         <span>
-          As of <time dateTime={appState?.as_of_date ?? undefined}>{date}</time>{" "}
+          As of{" "}
+          <time key={date} dateTime={appState?.as_of_date ?? undefined} className="motion-flip">
+            {date}
+          </time>{" "}
           <span className={styles.clockSim}>(simulated)</span>
         </span>
       ) : (
@@ -82,6 +85,17 @@ function AskButton() {
   );
 }
 
+/** Brand glyph: a thread between two points (home and clinic). Decorative; the wordmark names the link. */
+function TetherGlyph() {
+  return (
+    <svg className={styles.brandMark} width="22" height="14" viewBox="0 0 22 14" aria-hidden="true" focusable="false">
+      <path className={styles.brandThread} d="M4 10.5C8 2.5 13.5 13 18 3.5" />
+      <circle className={styles.brandDot} cx="4" cy="10.5" r="2.25" />
+      <circle className={styles.brandDot} cx="18" cy="3.5" r="2.25" />
+    </svg>
+  );
+}
+
 /** 48 px frame bar: wordmark, simulated clock, Acting as switch, Ask. */
 export function TopBar() {
   const { appState } = useShell();
@@ -89,6 +103,7 @@ export function TopBar() {
   return (
     <header className={styles.topBar}>
       <Link href="/" className={styles.wordmark}>
+        <TetherGlyph />
         Tether
       </Link>
       <SimClock />
