@@ -11,6 +11,7 @@ Built at the Intelligence at Work Hackathon (Snowflake x Anthropic), Oct 23, 202
 | Path | What it is |
 | --- | --- |
 | `docs/RUNBOOK.md` | The runbook: pathways, thresholds and sources, safety checks, follow-up ladder, AI check-in calls, approval gate, test scenarios, hackathon checklist |
+| `docs/DEMO-VIDEO-SCRIPT.md` | Shot-by-shot script and SQL for the 1-minute demo video |
 | `docs/PITCH.md` | Two slides of pitch wording: clinician time, hospital admissions, life expectancy, lost workdays, families, with sources |
 | `data/soap_notes.csv` | 45 synthetic SOAP notes; 14 end with a clinician-signed AI Plan |
 | `data/gen_notes.py` | Generator for the notes |
