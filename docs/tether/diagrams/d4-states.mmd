@@ -1,0 +1,18 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Inter, system-ui, sans-serif", "fontSize": "14px", "background": "#0D1015", "primaryColor": "#171C23", "primaryTextColor": "#E7EAEE", "primaryBorderColor": "#6A7482", "lineColor": "#8A94A1", "secondaryColor": "#171C23", "tertiaryColor": "#11151B", "clusterBkg": "#0A0D11", "clusterBorder": "#363A41", "edgeLabelBackground": "#1D232B", "titleColor": "#98A1AC", "actorBkg": "#171C23", "actorBorder": "#6A7482", "actorTextColor": "#E7EAEE", "signalColor": "#B9C0C9", "signalTextColor": "#E7EAEE", "noteBkgColor": "#1D232B", "noteTextColor": "#E7EAEE", "noteBorderColor": "#4A525E", "labelBoxBkgColor": "#171C23", "labelTextColor": "#E7EAEE", "loopTextColor": "#B9C0C9", "activationBkgColor": "#252B34", "sequenceNumberColor": "#0A0D11"}}}%%
+stateDiagram-v2
+  [*] --> Pending: AI Plan read, plan composed
+  Pending --> Pending: reading on cadence, no rule fires
+  Pending --> Overdue: reading missed (days past cadence)
+  Overdue --> AwaitingApproval: ENG-1 2 d / ENG-2 5 d / ENG-3 AI call 10 d drafted
+  Pending --> AwaitingApproval: pathway rule fires (draft)
+  Pending --> NeedsClinician: red flag (urgent alert, no draft)
+  AwaitingApproval --> ActionTaken: clinician approves or edits, sent
+  AwaitingApproval --> Pending: clinician rejects (reason kept)
+  ActionTaken --> Pending: reading or reply arrives
+  ActionTaken --> NeedsClinician: call handoff, or two missed calls (ENG-4)
+  Overdue --> NeedsClinician: ENG-4 21 d or no device (ENG-DEV)
+  Pending --> Ongoing: at goal (BP-5, COPD-4, DM-4)
+  Ongoing --> Pending: next review
+  NeedsClinician --> Pending: clinician resolves
+  Ongoing --> Complete: clinician closes plan
+  Complete --> [*]

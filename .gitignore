@@ -1,0 +1,41 @@
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.p8
+*.key
+**/connections.toml
+**/config.toml
+.snowflake/
+~/.snowflake/
+snowflake.log
+
+# Local data: caches, archives, local decision logs (synthetic CSVs in data/synth/ ARE committed)
+data/raw/
+app/web/.local/
+data/cache/
+data/*.parquet
+data/*.csv
+
+# Node / Next.js
+node_modules/
+.next/
+out/
+*.tsbuildinfo
+next-env.d.ts
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local agent orchestration state (plans, step logs)
+.cortex/
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+*.swp

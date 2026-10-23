@@ -1,0 +1,38 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Inter, system-ui, sans-serif", "fontSize": "14px", "background": "#0D1015", "primaryColor": "#171C23", "primaryTextColor": "#E7EAEE", "primaryBorderColor": "#6A7482", "lineColor": "#8A94A1", "secondaryColor": "#171C23", "tertiaryColor": "#11151B", "clusterBkg": "#0A0D11", "clusterBorder": "#363A41", "edgeLabelBackground": "#1D232B", "titleColor": "#98A1AC", "actorBkg": "#171C23", "actorBorder": "#6A7482", "actorTextColor": "#E7EAEE", "signalColor": "#B9C0C9", "signalTextColor": "#E7EAEE", "noteBkgColor": "#1D232B", "noteTextColor": "#E7EAEE", "noteBorderColor": "#4A525E", "labelBoxBkgColor": "#171C23", "labelTextColor": "#E7EAEE", "loopTextColor": "#B9C0C9", "activationBkgColor": "#252B34", "sequenceNumberColor": "#0A0D11"}}}%%
+flowchart TB
+  subgraph IN["Inputs"]
+    direction LR
+    gdoc["Society guideline documents<br/>ALA · COPD, AHA · blood pressure,<br/>ADA · diabetes, vaccines, screening"]:::src
+    plans["AI Plans across many patients<br/>one doctor, 50 visits a day"]:::clin
+  end
+  subgraph AG["Agents that maintain the pool"]
+    direction LR
+    ingest["Guideline ingest · Update P0<br/>parse, chunk, index,<br/>diff against the current version"]:::ai
+    learn["Pattern learner<br/>finds the doctor's repeated custom rules,<br/>proposes them with counts and examples"]:::ai
+    compile["Runbook compiler<br/>keeps one living runbook per disease:<br/>checks, thresholds, actions, red flags, sources"]:::ai
+  end
+  approve["Doctor approves<br/>proposed doctor rules and new action buckets"]:::clin
+  subgraph POOL["Context pool · indexed for retrieval"]
+    direction LR
+    p0["P0 rules<br/>from guidelines"]:::eng
+    p1["P1 rules<br/>this doctor, approved"]:::eng
+    rb["Runbook per disease<br/>COPD · blood pressure · more<br/>every rule tagged with layer and source"]:::eng
+    bk["Action buckets<br/>Faiz action types: reminders ·<br/>check-ins · AI call · recommend to prescriber ·<br/>O2 eval · urgent alert"]:::eng
+  end
+  use["Plan composer for one patient<br/>precedence: P2 patient AI Plan, then P1 doctor, then P0 guideline<br/>red flags from P0 always apply"]:::ai
+  p2["P2 · this patient's AI Plan<br/>applied to this patient only"]:::clin
+  gdoc --> ingest --> p0
+  plans --> learn -->|"proposed rule"| approve -->|"approved"| p1
+  p0 --> compile
+  p1 --> compile
+  compile --> rb
+  bk --- rb
+  rb -->|"retrieve by disease"| use
+  p2 --> use
+  classDef doc fill:#11151B,stroke:#98A1AC,color:#E7EAEE,stroke-width:1px
+  classDef ai fill:#1E2510,stroke:#CFEA55,color:#E7EAEE,stroke-width:1.5px
+  classDef eng fill:#171C23,stroke:#E7EAEE,color:#E7EAEE,stroke-width:1.5px
+  classDef clin fill:#0E2620,stroke:#56CFA8,color:#E7EAEE,stroke-width:1.5px
+  classDef alert fill:#2B1219,stroke:#FF6B8B,color:#E7EAEE,stroke-width:1.5px
+  classDef ph fill:#1C140E,stroke:#E9884D,color:#E7EAEE,stroke-width:1.5px,stroke-dasharray:4 3
+  classDef src fill:#0A0D11,stroke:#5A8EE4,color:#E7EAEE,stroke-width:1.2px

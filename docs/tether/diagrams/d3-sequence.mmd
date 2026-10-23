@@ -1,0 +1,21 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Inter, system-ui, sans-serif", "fontSize": "14px", "background": "#0D1015", "primaryColor": "#171C23", "primaryTextColor": "#E7EAEE", "primaryBorderColor": "#6A7482", "lineColor": "#8A94A1", "secondaryColor": "#171C23", "tertiaryColor": "#11151B", "clusterBkg": "#0A0D11", "clusterBorder": "#363A41", "edgeLabelBackground": "#1D232B", "titleColor": "#98A1AC", "actorBkg": "#171C23", "actorBorder": "#6A7482", "actorTextColor": "#E7EAEE", "signalColor": "#B9C0C9", "signalTextColor": "#E7EAEE", "noteBkgColor": "#1D232B", "noteTextColor": "#E7EAEE", "noteBorderColor": "#4A525E", "labelBoxBkgColor": "#171C23", "labelTextColor": "#E7EAEE", "loopTextColor": "#B9C0C9", "activationBkgColor": "#252B34", "sequenceNumberColor": "#0A0D11"}}}%%
+sequenceDiagram
+  autonumber
+  participant N as SOAP note
+  participant X as AI Plan reader · Claude
+  participant P as Context pool
+  participant C as Plan composer · Claude
+  participant V as Validator · rules
+  participant T as Todo tables
+  N->>X: AI Plan section only, de-identified
+  X->>X: case = HTN, mode = custom, rule = walk 20 min daily
+  X->>P: retrieve COPD runbook, doctor rules, guideline chunks
+  P-->>C: P0 RULES and P1 rules with citations, action types
+  X-->>C: P2 patient rules with quotes from the AI Plan
+  C->>V: todo list as JSON, each step with bucket, threshold, source
+  alt every step grounded and inside a bucket
+    V->>T: write Table 1 todos and Table 2 monitor items
+    Note over T: status Pending, outbound steps wait in ACTION_QUEUE
+  else a step has no source or no bucket
+    V->>T: status Needs clinician, show the ungrounded step
+  end

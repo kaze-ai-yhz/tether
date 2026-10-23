@@ -1,0 +1,42 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Inter, system-ui, sans-serif", "fontSize": "14px", "background": "#0D1015", "primaryColor": "#171C23", "primaryTextColor": "#E7EAEE", "primaryBorderColor": "#6A7482", "lineColor": "#8A94A1", "secondaryColor": "#171C23", "tertiaryColor": "#11151B", "clusterBkg": "#0A0D11", "clusterBorder": "#363A41", "edgeLabelBackground": "#1D232B", "titleColor": "#98A1AC", "actorBkg": "#171C23", "actorBorder": "#6A7482", "actorTextColor": "#E7EAEE", "signalColor": "#B9C0C9", "signalTextColor": "#E7EAEE", "noteBkgColor": "#1D232B", "noteTextColor": "#E7EAEE", "noteBorderColor": "#4A525E", "labelBoxBkgColor": "#171C23", "labelTextColor": "#E7EAEE", "loopTextColor": "#B9C0C9", "activationBkgColor": "#252B34", "sequenceNumberColor": "#0A0D11"}}}%%
+flowchart TB
+  subgraph VISIT["At the visit"]
+    direction LR
+    appt["Appointment booked<br/>status: Scheduled"]:::doc
+    soap["Doctor writes the SOAP note<br/>S · O · A · P"]:::doc
+    aip["AI Plan line in the note<br/>Turn on auto follow-up · COPD · standard<br/>or custom: walk 20 min daily"]:::clin
+    appt --> soap --> aip
+  end
+  subgraph ENGINE["Tether engine"]
+    direction LR
+    deid["De-identify<br/>patient token only, no PII"]:::eng
+    read["Read the AI Plan section only<br/>Claude extracts case and custom rules"]:::ai
+    pool[("Context pool<br/>living runbook per disease")]:::src
+    compose["Compose this patient's todo list<br/>Claude, steps only from approved action buckets<br/>every step cites its source layer"]:::ai
+    check["Validator<br/>buckets, citations, red-flag floor"]:::eng
+    deid --> read --> compose
+    pool --> compose --> check
+  end
+  subgraph RUN["Follow-up runs"]
+    direction LR
+    todo["Todo list<br/>48 h: check pulse ox"]:::eng
+    collect["Collect the value<br/>home device or lab<br/>ladder ENG-1 2 d · ENG-2 5 d ·<br/>AI call 10 d · ENG-4 21 d"]:::ph
+    eval["Compare value to the plan threshold<br/>deterministic"]:::eng
+    act["Action<br/>draft → clinician approval queue"]:::ph
+    done["Complete or Ongoing follow-up"]:::clin
+    esc["Needs clinician"]:::alert
+    todo --> collect --> eval
+    eval -->|"94: nothing to do"| done
+    eval -->|"88: below threshold"| act --> todo
+    collect -->|"two missed calls (ENG-4)"| esc
+  end
+  aip --> deid
+  check -->|"plan passes"| todo
+  check -->|"step not grounded"| esc
+  classDef doc fill:#11151B,stroke:#98A1AC,color:#E7EAEE,stroke-width:1px
+  classDef ai fill:#1E2510,stroke:#CFEA55,color:#E7EAEE,stroke-width:1.5px
+  classDef eng fill:#171C23,stroke:#E7EAEE,color:#E7EAEE,stroke-width:1.5px
+  classDef clin fill:#0E2620,stroke:#56CFA8,color:#E7EAEE,stroke-width:1.5px
+  classDef alert fill:#2B1219,stroke:#FF6B8B,color:#E7EAEE,stroke-width:1.5px
+  classDef ph fill:#1C140E,stroke:#E9884D,color:#E7EAEE,stroke-width:1.5px,stroke-dasharray:4 3
+  classDef src fill:#0A0D11,stroke:#5A8EE4,color:#E7EAEE,stroke-width:1.2px

@@ -1,0 +1,47 @@
+%%{init: {"theme": "base", "themeVariables": {"fontFamily": "Inter, system-ui, sans-serif", "fontSize": "14px", "background": "#0D1015", "primaryColor": "#171C23", "primaryTextColor": "#E7EAEE", "primaryBorderColor": "#6A7482", "lineColor": "#8A94A1", "secondaryColor": "#171C23", "tertiaryColor": "#11151B", "clusterBkg": "#0A0D11", "clusterBorder": "#363A41", "edgeLabelBackground": "#1D232B", "titleColor": "#98A1AC", "actorBkg": "#171C23", "actorBorder": "#6A7482", "actorTextColor": "#E7EAEE", "signalColor": "#B9C0C9", "signalTextColor": "#E7EAEE", "noteBkgColor": "#1D232B", "noteTextColor": "#E7EAEE", "noteBorderColor": "#4A525E", "labelBoxBkgColor": "#171C23", "labelTextColor": "#E7EAEE", "loopTextColor": "#B9C0C9", "activationBkgColor": "#252B34", "sequenceNumberColor": "#0A0D11"}}}%%
+flowchart LR
+  subgraph APP["Tether app · Next.js, local"]
+    direction TB
+    tabP["Patients tab"]:::doc
+    tabR["Runbooks tab"]:::doc
+    ask["Ask drawer"]:::doc
+  end
+  subgraph SF["Snowflake · database TETHER"]
+    direction TB
+    notes["NOTES<br/>synthetic SOAP notes, de-identified"]:::eng
+    poolt["POOL<br/>guideline docs and chunks, doctor rules,<br/>runbooks per disease, action buckets"]:::eng
+    search["Cortex Search<br/>over the pool"]:::eng
+    run["RUN<br/>patients, cases, todos, monitor items,<br/>values, actions, audit"]:::eng
+    procs["Stored procedures<br/>read plan, compose plan, tick clock,<br/>collect, evaluate, approve rule"]:::eng
+    agent["Cortex Agent<br/>Analyst plus Search, read only"]:::eng
+  end
+  subgraph CL["Claude via Cortex AI functions"]
+    direction TB
+    opus["claude-opus-5-5<br/>compose plans, compile runbooks,<br/>learn doctor rules"]:::ai
+    sonnet["claude-sonnet-5-5<br/>read AI Plan, parse guideline updates"]:::ai
+  end
+  subgraph ADP["Adapters · simulated today"]
+    direction TB
+    watch["Apple Watch sync"]:::ph
+    dev["Home device"]:::ph
+    phone["Phone call or SMS"]:::ph
+    rx["Pharmacy and e-prescribing"]:::ph
+  end
+  tabP -->|"SQL API"| run
+  tabR -->|"SQL API"| poolt
+  ask -->|"Agent Run API"| agent
+  notes --> procs
+  procs --> opus
+  procs --> sonnet
+  poolt --> search --> procs
+  procs --> run
+  procs <--> ADP
+  agent --> run
+  agent --> search
+  classDef doc fill:#11151B,stroke:#98A1AC,color:#E7EAEE,stroke-width:1px
+  classDef ai fill:#1E2510,stroke:#CFEA55,color:#E7EAEE,stroke-width:1.5px
+  classDef eng fill:#171C23,stroke:#E7EAEE,color:#E7EAEE,stroke-width:1.5px
+  classDef clin fill:#0E2620,stroke:#56CFA8,color:#E7EAEE,stroke-width:1.5px
+  classDef alert fill:#2B1219,stroke:#FF6B8B,color:#E7EAEE,stroke-width:1.5px
+  classDef ph fill:#1C140E,stroke:#E9884D,color:#E7EAEE,stroke-width:1.5px,stroke-dasharray:4 3
+  classDef src fill:#0A0D11,stroke:#5A8EE4,color:#E7EAEE,stroke-width:1.2px
