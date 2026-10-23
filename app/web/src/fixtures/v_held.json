@@ -1,0 +1,14 @@
+{
+  "_source": "sample",
+  "rows": [
+    {
+      "patient_id": "SYN-008",
+      "display_name": "Synthetic patient 008",
+      "condition": "T2DM",
+      "held_rule": "DM-2",
+      "held_until": "2026-11-15",
+      "note_id": "N-024",
+      "evidence": "A1C 8.1% on 2026-10-10 (goal < 7.5%); would fire DM-2, held until 2026-11-15 per note N-024"
+    }
+  ]
+}

@@ -1,0 +1,159 @@
+.button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-8);
+  min-width: var(--hit-min);
+  min-height: var(--hit-min);
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--text-default);
+  font-family: var(--font-sans);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color var(--dur-hover) var(--ease-standard),
+    border-color var(--dur-hover) var(--ease-standard),
+    color var(--dur-hover) var(--ease-standard),
+    opacity var(--dur-press) var(--ease-standard);
+}
+
+.sm {
+  height: 28px;
+  padding: 0 var(--space-12);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.md {
+  height: 32px;
+  padding: 0 var(--space-16);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+}
+
+.lg {
+  height: var(--hit-touch);
+  padding: 0 var(--space-16);
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+}
+
+.iconOnly.sm {
+  width: 28px;
+  padding: 0;
+}
+
+.iconOnly.md {
+  width: 32px;
+  padding: 0;
+}
+
+.iconOnly.lg {
+  width: var(--hit-touch);
+  padding: 0;
+}
+
+.button[data-focus-visible] {
+  outline: var(--focus-ring-width) solid var(--focus-ring-color);
+  outline-offset: var(--focus-ring-offset);
+}
+
+/* Primary: Ink fill, one per screen. */
+.primary {
+  background: var(--ink);
+  border-color: var(--ink);
+  color: var(--text-on-ink);
+}
+
+.primary[data-hovered] {
+  background: color-mix(in srgb, var(--ink) 86%, var(--surface-canvas));
+}
+
+.primary[data-pressed] {
+  opacity: 0.85;
+}
+
+/* Secondary: outline in line.boundary. */
+.secondary {
+  border-color: var(--line-boundary);
+}
+
+.secondary[data-hovered],
+.tertiary[data-hovered] {
+  background: var(--surface-hover);
+}
+
+.secondary[data-pressed],
+.tertiary[data-pressed] {
+  background: var(--surface-raised);
+}
+
+/* Tertiary: text only. */
+.tertiary {
+  color: var(--text-default);
+}
+
+/* Destructive: alert outline, never a filled red button. */
+.destructive {
+  border-color: var(--status-alert-fg);
+  color: var(--status-alert-fg);
+}
+
+.destructive[data-hovered] {
+  background: var(--status-alert-bg);
+}
+
+.destructive[data-pressed] {
+  opacity: 0.85;
+}
+
+.button[data-disabled] {
+  cursor: not-allowed;
+  color: var(--text-disabled);
+  border-color: var(--line-hairline);
+  background: transparent;
+  opacity: 1;
+}
+
+.primary[data-disabled] {
+  background: var(--surface-hover);
+  border-color: var(--surface-hover);
+}
+
+.tertiary[data-disabled] {
+  border-color: transparent;
+}
+
+.button[data-pending] {
+  cursor: progress;
+}
+
+.spinner {
+  flex: none;
+  width: 12px;
+  height: 12px;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 800ms linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+    border-right-color: currentColor;
+    opacity: 0.6;
+  }
+}

@@ -1,0 +1,144 @@
+/* Chips: status, layer, model, simulated, placeholder (DESIGN-SYSTEM §2.2-2.3, §7). */
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 22px;
+  padding: 0 var(--space-8);
+  border: 1px solid transparent;
+  border-radius: var(--radius-chip);
+  font-family: var(--font-sans);
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  font-weight: var(--type-meta-weight);
+  white-space: nowrap;
+  vertical-align: middle;
+  font-variant-numeric: tabular-nums;
+  transition:
+    background-color var(--dur-toggle) var(--ease-standard),
+    color var(--dur-toggle) var(--ease-standard),
+    border-color var(--dur-toggle) var(--ease-standard);
+}
+
+.sm {
+  height: 20px;
+  padding: 0 6px;
+}
+
+.md {
+  height: 24px;
+  padding: 0 var(--space-8);
+}
+
+.icon {
+  flex: none;
+}
+
+.ok {
+  color: var(--status-ok-fg);
+  background: var(--status-ok-bg);
+  border-color: var(--status-ok-border);
+}
+
+.info {
+  color: var(--status-info-fg);
+  background: var(--status-info-bg);
+  border-color: var(--status-info-border);
+}
+
+.caution {
+  color: var(--status-caution-fg);
+  background: var(--status-caution-bg);
+  border-color: var(--status-caution-border);
+}
+
+.alert {
+  color: var(--status-alert-fg);
+  background: var(--status-alert-bg);
+  border-color: var(--status-alert-border);
+}
+
+.alertStrong {
+  color: var(--status-alert-strong-fg);
+  background: var(--status-alert-strong-bg);
+  border-color: var(--status-alert-strong-bg);
+  font-weight: 600;
+}
+
+.neutral {
+  color: var(--status-neutral-fg);
+  background: var(--status-neutral-bg);
+  border-color: var(--status-neutral-border);
+}
+
+/* Marker: machine work only (never a status, never a button). */
+.marker {
+  color: var(--marker-text);
+  background: var(--marker-wash);
+  border-color: color-mix(in srgb, var(--marker-mark) 45%, transparent);
+}
+
+.markerOutline {
+  color: var(--marker-text);
+  background: transparent;
+  border-color: var(--marker-mark);
+}
+
+.markerGlyph {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 1px;
+  background: var(--marker-mark);
+}
+
+.mono {
+  font-family: var(--font-mono);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+/* Two chips joined into one unit, e.g. LayerChip + "pending confirmation". */
+.group {
+  display: inline-flex;
+  align-items: stretch;
+  vertical-align: middle;
+}
+
+.group > .chip:not(:last-child) {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.group > .chip:not(:first-child) {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left-width: 0;
+}
+
+/* Simulated: neutral outline drawn dash-dot (CSS borders cannot dash-dot). */
+.simulated {
+  position: relative;
+  color: var(--text-muted);
+  background: transparent;
+  border-color: transparent;
+}
+
+.simulatedEdge {
+  position: absolute;
+  inset: -1px;
+  width: calc(100% + 2px);
+  height: calc(100% + 2px);
+  overflow: visible;
+  pointer-events: none;
+}
+
+.simulatedEdge rect {
+  width: calc(100% - 1px);
+  height: calc(100% - 1px);
+  fill: none;
+  stroke: var(--line-boundary);
+  stroke-width: 1;
+  stroke-dasharray: var(--dash-simulated);
+}

@@ -1,0 +1,982 @@
+{
+  "_source": "sample",
+  "rows": [
+    {
+      "action_id": 4,
+      "patient_id": "SYN-005",
+      "display_name": "Synthetic patient 005",
+      "condition": "HTN",
+      "rule_id": "BP-RED",
+      "current_rule_id": "BP-RED",
+      "stale": false,
+      "kind": "RED_FLAG",
+      "step": "Red flag",
+      "action_type": "URGENT_ALERT",
+      "recipient": "CLINICIAN",
+      "priority": 1,
+      "layer": "P0",
+      "citation": "2025 AHA/ACC HBP guideline: severe hypertension >=180/120",
+      "evidence": "BP 186/122 on 2026-10-22",
+      "patient_prefs": "AI_CALLS: allowed",
+      "override_note_id": null,
+      "draft_text": "[fixture] Fixed rule text (no model) appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Fixed rule text (no model) appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": null,
+      "draft_source": "RULE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": true,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-10-16",
+          "value1": 158.0,
+          "value2": 95.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 158.0,
+          "value2": 94.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 159.0,
+          "value2": 95.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 159.0,
+          "value2": 94.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 157.0,
+          "value2": 95.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 157.0,
+          "value2": 94.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 158.0,
+          "value2": 95.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 158.0,
+          "value2": 94.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 159.0,
+          "value2": 95.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 159.0,
+          "value2": 94.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 157.0,
+          "value2": 95.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 157.0,
+          "value2": 94.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 158.0,
+          "value2": 95.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 186.0,
+          "value2": 122.0,
+          "reading_type": "BP"
+        }
+      ]
+    },
+    {
+      "action_id": 8,
+      "patient_id": "SYN-009",
+      "display_name": "Synthetic patient 009",
+      "condition": "T2DM",
+      "rule_id": "DM-RED",
+      "current_rule_id": "DM-RED",
+      "stale": false,
+      "kind": "RED_FLAG",
+      "step": "Level 2 hypoglycemia",
+      "action_type": "URGENT_ALERT",
+      "recipient": "CLINICIAN",
+      "priority": 1,
+      "layer": "P0",
+      "citation": "ADA 2026: level 2 hypoglycemia <54 mg/dL",
+      "evidence": "Glucose 51 mg/dL on 2026-10-21",
+      "patient_prefs": "NOTIFY_IF: any glucose under 60",
+      "override_note_id": null,
+      "draft_text": "[fixture] Fixed rule text (no model) appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Fixed rule text (no model) appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": null,
+      "draft_source": "RULE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": true,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-10-21",
+          "value1": 51.0,
+          "value2": null,
+          "reading_type": "GLUCOSE"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 112.0,
+          "value2": null,
+          "reading_type": "GLUCOSE"
+        }
+      ]
+    },
+    {
+      "action_id": 5,
+      "patient_id": "SYN-005",
+      "display_name": "Synthetic patient 005",
+      "condition": "PLAN",
+      "rule_id": "PLAN-REVIEW",
+      "current_rule_id": "PLAN-REVIEW",
+      "stale": false,
+      "kind": "PLAN_REVIEW",
+      "step": "AI Plan line needs clinician review",
+      "action_type": "PLAN_REVIEW",
+      "recipient": "CLINICIAN",
+      "priority": 5,
+      "layer": "P2",
+      "citation": "Safety rules cannot be overridden; out-of-range or unrecognized lines are not applied",
+      "evidence": "Note N-015 (2026-10-01): \"- Red flag BP: only alert me above 200/130 (patient's cuff reads high)\" was SAFETY_BLOCKED; red flags and the approval gate cannot be overridden",
+      "patient_prefs": "AI_CALLS: allowed",
+      "override_note_id": "N-015",
+      "draft_text": "[fixture] Fixed rule text (no model) appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Fixed rule text (no model) appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": null,
+      "draft_source": "RULE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": []
+    },
+    {
+      "action_id": 10,
+      "patient_id": "SYN-010",
+      "display_name": "Synthetic patient 010",
+      "condition": "PLAN",
+      "rule_id": "PLAN-REVIEW",
+      "current_rule_id": "PLAN-REVIEW",
+      "stale": false,
+      "kind": "PLAN_REVIEW",
+      "step": "AI Plan line needs clinician review",
+      "action_type": "PLAN_REVIEW",
+      "recipient": "CLINICIAN",
+      "priority": 5,
+      "layer": "P2",
+      "citation": "Safety rules cannot be overridden; out-of-range or unrecognized lines are not applied",
+      "evidence": "Note N-029 (2026-03-15): \"- A1C goal: < 9.5%\" was NEEDS_CONFIRMATION; value outside the expected range, not applied",
+      "patient_prefs": null,
+      "override_note_id": "N-029",
+      "draft_text": "[fixture] Fixed rule text (no model) appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Fixed rule text (no model) appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": null,
+      "draft_source": "RULE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": []
+    },
+    {
+      "action_id": 2,
+      "patient_id": "SYN-003",
+      "display_name": "Synthetic patient 003",
+      "condition": "HTN",
+      "rule_id": "BP-2",
+      "current_rule_id": "BP-2",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "Start medication",
+      "action_type": "RECOMMEND_START",
+      "recipient": "PRESCRIBER",
+      "priority": 10,
+      "layer": "P0",
+      "citation": "2025 AHA/ACC: meds + lifestyle for stage 2, or stage 1 with DM/CKD/CVD/PREVENT >=7.5%",
+      "evidence": "STAGE2, high risk, no BP medication on file",
+      "patient_prefs": "LANGUAGE: Vietnamese",
+      "override_note_id": null,
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-10-16",
+          "value1": 151.0,
+          "value2": 96.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-16",
+          "value1": 152.0,
+          "value2": 97.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 152.0,
+          "value2": 96.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 153.0,
+          "value2": 97.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 153.0,
+          "value2": 96.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 151.0,
+          "value2": 97.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 151.0,
+          "value2": 96.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 152.0,
+          "value2": 97.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 152.0,
+          "value2": 96.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 153.0,
+          "value2": 97.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 153.0,
+          "value2": 96.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 151.0,
+          "value2": 97.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 151.0,
+          "value2": 96.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 152.0,
+          "value2": 97.0,
+          "reading_type": "BP"
+        }
+      ]
+    },
+    {
+      "action_id": 6,
+      "patient_id": "SYN-006",
+      "display_name": "Synthetic patient 006",
+      "condition": "COPD",
+      "rule_id": "COPD-3",
+      "current_rule_id": "COPD-3",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "Oxygen evaluation",
+      "action_type": "RECOMMEND_O2_EVAL",
+      "recipient": "CLINICIAN",
+      "priority": 10,
+      "layer": "P0",
+      "citation": "GOLD 2026: evaluate LTOT if resting SpO2 <=88%",
+      "evidence": "10 resting SpO2 readings <= 88% in 14 days (lowest 87%)",
+      "patient_prefs": "AI_CALLS: allowed; CONTACT_WINDOW: afternoons",
+      "override_note_id": null,
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-10-13",
+          "value1": 87.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-14",
+          "value1": 88.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-15",
+          "value1": 87.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-16",
+          "value1": 88.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 87.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 88.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 87.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 88.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 87.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 88.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        }
+      ]
+    },
+    {
+      "action_id": 12,
+      "patient_id": "SYN-012",
+      "display_name": "Synthetic patient 012",
+      "condition": "COPD",
+      "rule_id": "ENG-DEV",
+      "current_rule_id": "ENG-DEV",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "No working home device",
+      "action_type": "RECOMMEND_DEVICE",
+      "recipient": "CLINICIAN",
+      "priority": 12,
+      "layer": "P0",
+      "citation": "Team default: no device means no data; order device or arrange clinic readings",
+      "evidence": "Patient reports no working home device for SPO2",
+      "patient_prefs": "LANGUAGE: Mandarin",
+      "override_note_id": null,
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": []
+    },
+    {
+      "action_id": 13,
+      "patient_id": "SYN-013",
+      "display_name": "Synthetic patient 013",
+      "condition": "HTN",
+      "rule_id": "ENG-4",
+      "current_rule_id": "ENG-4",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "At risk of lost to follow-up",
+      "action_type": "LOST_TO_FOLLOWUP",
+      "recipient": "CLINICIAN",
+      "priority": 14,
+      "layer": "P0",
+      "citation": "Team default: clinician flag and visit offer at 21 days",
+      "evidence": "No BP reading since 2026-09-20 (26 days overdue)",
+      "patient_prefs": "AI_CALLS: allowed",
+      "override_note_id": null,
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-09-20",
+          "value1": 142.0,
+          "value2": 88.0,
+          "reading_type": "BP"
+        }
+      ]
+    },
+    {
+      "action_id": 3,
+      "patient_id": "SYN-004",
+      "display_name": "Synthetic patient 004",
+      "condition": "HTN",
+      "rule_id": "ADH",
+      "current_rule_id": "ADH",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "Adherence check-in",
+      "action_type": "ADHERENCE_CHECKIN",
+      "recipient": "PATIENT",
+      "priority": 15,
+      "layer": "P0",
+      "citation": "All guidelines: confirm adherence/technique before escalation",
+      "evidence": "On ACE inhibitor since change 2026-09-08; home avg 138/87 (goal < 130/80); patient reported missed doses",
+      "patient_prefs": null,
+      "override_note_id": null,
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-10-16",
+          "value1": 137.0,
+          "value2": 86.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-16",
+          "value1": 138.0,
+          "value2": 87.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 138.0,
+          "value2": 86.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 139.0,
+          "value2": 87.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 139.0,
+          "value2": 86.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 137.0,
+          "value2": 87.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 137.0,
+          "value2": 86.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 138.0,
+          "value2": 87.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 138.0,
+          "value2": 86.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 139.0,
+          "value2": 87.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 139.0,
+          "value2": 86.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 137.0,
+          "value2": 87.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 137.0,
+          "value2": 86.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 138.0,
+          "value2": 87.0,
+          "reading_type": "BP"
+        }
+      ]
+    },
+    {
+      "action_id": 11,
+      "patient_id": "SYN-011",
+      "display_name": "Synthetic patient 011",
+      "condition": "HTN",
+      "rule_id": "ENG-3H",
+      "current_rule_id": "ENG-3H",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "Missed reading: human call (AI calls not allowed)",
+      "action_type": "CARE_TEAM_CALL",
+      "recipient": "CLINICIAN",
+      "priority": 16,
+      "layer": "P2",
+      "citation": "Clinician AI Plan: no AI calls for this patient",
+      "evidence": "No BP reading since 2026-10-05 (11 days overdue); AI calls not allowed per note N-033",
+      "patient_prefs": "AI_CALLS: not allowed (prefers to speak with a person); CONTACT_WINDOW: weekday mornings",
+      "override_note_id": "N-033",
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-10-04",
+          "value1": 134.0,
+          "value2": 84.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-05",
+          "value1": 135.0,
+          "value2": 83.0,
+          "reading_type": "BP"
+        }
+      ]
+    },
+    {
+      "action_id": 1,
+      "patient_id": "SYN-001",
+      "display_name": "Synthetic patient 001",
+      "condition": "HTN",
+      "rule_id": "BP-1",
+      "current_rule_id": "BP-1",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "Lifestyle trial ended",
+      "action_type": "RECOMMEND_START",
+      "recipient": "PRESCRIBER",
+      "priority": 20,
+      "layer": "P0",
+      "citation": "2025 AHA/ACC: low-risk stage 1, start meds if >=130/80 after 3-6 mo lifestyle",
+      "evidence": "Home avg 136/85 (14 readings) after 135 days of lifestyle",
+      "patient_prefs": "CONTACT_WINDOW: mornings before 10 AM; LANGUAGE: English",
+      "override_note_id": null,
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-10-16",
+          "value1": 135.0,
+          "value2": 84.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-16",
+          "value1": 136.0,
+          "value2": 85.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 136.0,
+          "value2": 84.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 137.0,
+          "value2": 85.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 137.0,
+          "value2": 84.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 135.0,
+          "value2": 85.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 135.0,
+          "value2": 84.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 136.0,
+          "value2": 85.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 136.0,
+          "value2": 84.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 137.0,
+          "value2": 85.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 137.0,
+          "value2": 84.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 135.0,
+          "value2": 85.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 135.0,
+          "value2": 84.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 136.0,
+          "value2": 85.0,
+          "reading_type": "BP"
+        }
+      ]
+    },
+    {
+      "action_id": 7,
+      "patient_id": "SYN-007",
+      "display_name": "Synthetic patient 007",
+      "condition": "COPD",
+      "rule_id": "COPD-2",
+      "current_rule_id": "COPD-2",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "Exacerbation review",
+      "action_type": "RECOMMEND_REVIEW",
+      "recipient": "PRESCRIBER",
+      "priority": 20,
+      "layer": "P0",
+      "citation": "GOLD 2026: one moderate exacerbation prompts escalation review",
+      "evidence": "Exacerbation severity 2 on 2026-09-25",
+      "patient_prefs": "AI_CALLS: allowed; CHECKINS: monthly, by phone",
+      "override_note_id": null,
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-10-13",
+          "value1": 93.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-14",
+          "value1": 94.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-15",
+          "value1": 93.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-16",
+          "value1": 94.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-17",
+          "value1": 93.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-18",
+          "value1": 94.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-19",
+          "value1": 93.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-20",
+          "value1": 94.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-21",
+          "value1": 93.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        },
+        {
+          "taken_on": "2026-10-22",
+          "value1": 94.0,
+          "value2": null,
+          "reading_type": "SPO2"
+        }
+      ]
+    },
+    {
+      "action_id": 14,
+      "patient_id": "SYN-014",
+      "display_name": "Synthetic patient 014",
+      "condition": "HTN",
+      "rule_id": "ENG-1",
+      "current_rule_id": "ENG-1",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "Missed reading: reminder",
+      "action_type": "READING_REMINDER",
+      "recipient": "PATIENT",
+      "priority": 28,
+      "layer": "P0",
+      "citation": "Team default: remind at 2 days overdue",
+      "evidence": "No BP reading since 2026-10-14 (2 days overdue)",
+      "patient_prefs": "REMINDER_CHANNEL: text only",
+      "override_note_id": null,
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": true,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-10-13",
+          "value1": 133.0,
+          "value2": 82.0,
+          "reading_type": "BP"
+        },
+        {
+          "taken_on": "2026-10-14",
+          "value1": 132.0,
+          "value2": 83.0,
+          "reading_type": "BP"
+        }
+      ]
+    },
+    {
+      "action_id": 9,
+      "patient_id": "SYN-010",
+      "display_name": "Synthetic patient 010",
+      "condition": "T2DM",
+      "rule_id": "DM-1",
+      "current_rule_id": "DM-1",
+      "stale": false,
+      "kind": "DRAFT",
+      "step": "A1C due",
+      "action_type": "LAB_REMINDER",
+      "recipient": "PATIENT",
+      "priority": 30,
+      "layer": "P0",
+      "citation": "ADA 2026: A1C every 3 mo if not at goal, at least 2x/yr if at goal",
+      "evidence": "A1C 6.6% on 2026-03-15 (goal < 7%)",
+      "patient_prefs": null,
+      "override_note_id": null,
+      "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+      "draft_body": "[fixture] Claude draft appears here in live mode",
+      "why_text": "[fixture] Why line appears here in live mode",
+      "status": "PENDING",
+      "created_at": "2026-10-23T13:45:00.000",
+      "sim_date": "2026-10-23",
+      "model": "claude-sonnet-5-5",
+      "draft_source": "CLAUDE",
+      "safety_ok": true,
+      "safety_notes": null,
+      "is_red_flag": false,
+      "batchable": false,
+      "ai_call_consent": true,
+      "recent_readings": [
+        {
+          "taken_on": "2026-03-15",
+          "value1": 6.6,
+          "value2": null,
+          "reading_type": "A1C"
+        }
+      ]
+    }
+  ]
+}

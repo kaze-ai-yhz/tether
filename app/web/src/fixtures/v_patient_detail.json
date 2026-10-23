@@ -1,0 +1,3424 @@
+{
+  "_source": "sample",
+  "rows": [
+    {
+      "patient_id": "SYN-001",
+      "display_name": "Synthetic patient 001",
+      "age": 48,
+      "conditions": [
+        "HTN"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 3,
+      "current_rule_id": "BP-1",
+      "current_step": "Lifestyle trial ended",
+      "rung": null,
+      "display_status": "Awaiting approval",
+      "status_rank": 2,
+      "status_reason": "Draft waiting for approval: BP-1 Lifestyle trial ended",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-22",
+      "pending_count": 1,
+      "prefs": "CONTACT_WINDOW: mornings before 10 AM; LANGUAGE: English",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": 4.0,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-001",
+          "note_date": "2026-06-10",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-001   Date: 2026-06-10   Clinician: Dr. Synthetic\n\nS: 48 y/o man, routine visit. Two elevated office readings this year. One week of home log averages 137/85. No chest pain, headache or vision change.\nO: BP 138/86, HR 72, BMI 29.8. Exam unremarkable.\nA: Stage 1 hypertension. PREVENT 10-year CVD risk 4%. No diabetes, CKD or CVD.\nP: Lifestyle trial: DASH-style eating, sodium reduction, 150 min/week activity, limit alcohol. Home BP twice daily for the week before each review. Review at 3 months.\nSigned: Dr. Synthetic   2026-06-10",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-002",
+          "note_date": "2026-08-12",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-001   Date: 2026-08-12   Clinician: Dr. Synthetic\n\nS: Walking 3 times a week, cutting salt. Home log average 138/85.\nO: BP 136/86, weight down 1.5 kg.\nA: Stage 1 hypertension, not at goal on lifestyle.\nP: Continue lifestyle trial. Reassess at 4 to 6 months.\nSigned: Dr. Synthetic   2026-08-12",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-003",
+          "note_date": "2026-10-02",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-001   Date: 2026-10-02   Clinician: Dr. Synthetic\n\nS: Continues home readings. Feels well.\nO: BP 136/84, HR 70.\nA: Stage 1 hypertension, still above goal after 4 months of lifestyle.\nP: If home average remains 130/80 or higher, discuss starting medication at next review.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- Contact window: mornings before 10 AM\n- Language: English\nSigned: Dr. Synthetic   2026-10-02",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-003",
+          "note_date": "2026-10-02",
+          "line": "- Contact window: mornings before 10 AM",
+          "raw_key": "contact window",
+          "raw_value": "mornings before 10 AM",
+          "setting": "CONTACT_WINDOW",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-003",
+          "note_date": "2026-10-02",
+          "line": "- Language: English",
+          "raw_key": "language",
+          "raw_value": "English",
+          "setting": "LANGUAGE",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "CONTACT_WINDOW",
+          "raw_value": "mornings before 10 AM",
+          "note_id": "N-003"
+        },
+        {
+          "setting": "LANGUAGE",
+          "raw_value": "English",
+          "note_id": "N-003"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-001-HTN",
+        "condition": "HTN",
+        "note_id": "N-003",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- Contact window: mornings before 10 AM",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- Language: English",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-001-HTN-1",
+          "plan_id": "PLAN-SYN-001-HTN",
+          "seq": 1,
+          "todo_text": "Collect BP at least every 7 days (home device)",
+          "rule_id": "CAD-HTN",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-29",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-001-HTN-2",
+          "plan_id": "PLAN-SYN-001-HTN",
+          "seq": 2,
+          "todo_text": "Watch: Red flag (2025 AHA/ACC HBP guideline: severe hypertension >=180/120)",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-001-HTN-3",
+          "plan_id": "PLAN-SYN-001-HTN",
+          "seq": 3,
+          "todo_text": "Review: Lifestyle trial ended",
+          "rule_id": "BP-1",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-001",
+          "condition": "HTN",
+          "reading_type": "BP",
+          "resource": "Home device",
+          "cadence_days": 7,
+          "cadence_rule_id": "CAD-HTN",
+          "layer": "P0",
+          "last_value": "136/85",
+          "last_on": "2026-10-22",
+          "days_since": 1,
+          "days_overdue": -6,
+          "collect_flag": true,
+          "action_flag": true,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 1,
+          "condition": "HTN",
+          "rule_id": "BP-1",
+          "kind": "DRAFT",
+          "step": "Lifestyle trial ended",
+          "action_type": "RECOMMEND_START",
+          "recipient": "PRESCRIBER",
+          "layer": "P0",
+          "evidence": "Home avg 136/85 (14 readings) after 135 days of lifestyle",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-001",
+          "condition": "HTN",
+          "rule_id": "BP-1",
+          "step": "Lifestyle trial ended",
+          "action_type": "RECOMMEND_START",
+          "recipient": "PRESCRIBER",
+          "priority": 20,
+          "evidence": "Home avg 136/85 (14 readings) after 135 days of lifestyle",
+          "citation": "2025 AHA/ACC: low-risk stage 1, start meds if >=130/80 after 3-6 mo lifestyle",
+          "patient_prefs": "CONTACT_WINDOW: mornings before 10 AM; LANGUAGE: English",
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-002",
+      "display_name": "Synthetic patient 002",
+      "age": 41,
+      "conditions": [
+        "HTN"
+      ],
+      "ai_plan_mode": "Standard",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 2,
+      "current_rule_id": null,
+      "current_step": null,
+      "rung": null,
+      "display_status": "Ongoing follow-up",
+      "status_rank": 5,
+      "status_reason": "Readings current; no rule fired",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-22",
+      "pending_count": 0,
+      "prefs": null,
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": 3.0,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-004",
+          "note_date": "2026-07-20",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-002   Date: 2026-07-20   Clinician: Dr. Synthetic\n\nS: 41 y/o woman. Elevated readings at work wellness screen. Home log averages 134/83.\nO: BP 134/84, BMI 26.1.\nA: Stage 1 hypertension. PREVENT 3%.\nP: Lifestyle trial with home monitoring. Review at 3 months.\nSigned: Dr. Synthetic   2026-07-20",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-005",
+          "note_date": "2026-08-30",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-002   Date: 2026-08-30   Clinician: Dr. Synthetic\n\nS: Started cycling, reduced takeout meals.\nO: BP 129/79.\nA: Stage 1 hypertension, improving.\nP: Continue lifestyle trial.\nSigned: Dr. Synthetic   2026-08-30",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-006",
+          "note_date": "2026-10-15",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-002   Date: 2026-10-15   Clinician: Dr. Synthetic\n\nS: Home log average 126/77 over 7 days.\nO: BP 126/78.\nA: Stage 1 hypertension, at goal on lifestyle.\nP: Continue lifestyle. Home BP weekly. Review in 3 months.\nSigned: Dr. Synthetic   2026-10-15",
+          "has_ai_plan": false
+        }
+      ],
+      "overrides": [],
+      "active_overrides": [],
+      "plan": {
+        "plan_id": "PLAN-SYN-002-HTN",
+        "condition": "HTN",
+        "note_id": null,
+        "mode": "Standard",
+        "status": "ACTIVE",
+        "reading": null,
+        "reading_model": null,
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-002-HTN-1",
+          "plan_id": "PLAN-SYN-002-HTN",
+          "seq": 1,
+          "todo_text": "Collect BP at least every 7 days (home device)",
+          "rule_id": "CAD-HTN",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-29",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-002-HTN-2",
+          "plan_id": "PLAN-SYN-002-HTN",
+          "seq": 2,
+          "todo_text": "Watch: Red flag (2025 AHA/ACC HBP guideline: severe hypertension >=180/120)",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-002",
+          "condition": "HTN",
+          "reading_type": "BP",
+          "resource": "Home device",
+          "cadence_days": 7,
+          "cadence_rule_id": "CAD-HTN",
+          "layer": "P0",
+          "last_value": "126/78",
+          "last_on": "2026-10-22",
+          "days_since": 1,
+          "days_overdue": -6,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [],
+      "calls": [],
+      "firings": []
+    },
+    {
+      "patient_id": "SYN-003",
+      "display_name": "Synthetic patient 003",
+      "age": 57,
+      "conditions": [
+        "HTN"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 3,
+      "current_rule_id": "BP-2",
+      "current_step": "Start medication",
+      "rung": null,
+      "display_status": "Awaiting approval",
+      "status_rank": 2,
+      "status_reason": "Draft waiting for approval: BP-2 Start medication",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-22",
+      "pending_count": 1,
+      "prefs": "LANGUAGE: Vietnamese",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": 9.0,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-007",
+          "note_date": "2025-10-20",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-003   Date: 2025-10-20   Clinician: Dr. Synthetic\n\nS: 57 y/o man, annual exam. No complaints.\nO: BP 138/88, BMI 30.2.\nA: Elevated office BP.\nP: Recheck BP, home monitoring advised.\nSigned: Dr. Synthetic   2025-10-20",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-008",
+          "note_date": "2026-04-22",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-003   Date: 2026-04-22   Clinician: Dr. Synthetic\n\nS: Did not start home monitoring. Occasional morning headaches.\nO: BP 146/92.\nA: Elevated BP, needs confirmation with home readings.\nP: Home BP cuff provided. Log twice daily for a week.\nSigned: Dr. Synthetic   2026-04-22",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-009",
+          "note_date": "2026-10-15",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-003   Date: 2026-10-15   Clinician: Dr. Synthetic\n\nS: Home log average 152/96 over 7 days.\nO: BP 150/96, HR 78.\nA: Stage 2 hypertension. PREVENT 9%.\nP: Discussed starting medication with lifestyle. Patient wants to talk with his wife first; will decide this week.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- Language: Vietnamese\nSigned: Dr. Synthetic   2026-10-15",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-009",
+          "note_date": "2026-10-15",
+          "line": "- Language: Vietnamese",
+          "raw_key": "language",
+          "raw_value": "Vietnamese",
+          "setting": "LANGUAGE",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "LANGUAGE",
+          "raw_value": "Vietnamese",
+          "note_id": "N-009"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-003-HTN",
+        "condition": "HTN",
+        "note_id": "N-009",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- Language: Vietnamese",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-003-HTN-1",
+          "plan_id": "PLAN-SYN-003-HTN",
+          "seq": 1,
+          "todo_text": "Collect BP at least every 7 days (home device)",
+          "rule_id": "CAD-HTN",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-29",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-003-HTN-2",
+          "plan_id": "PLAN-SYN-003-HTN",
+          "seq": 2,
+          "todo_text": "Watch: Red flag (2025 AHA/ACC HBP guideline: severe hypertension >=180/120)",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-003-HTN-3",
+          "plan_id": "PLAN-SYN-003-HTN",
+          "seq": 3,
+          "todo_text": "Review: Start medication",
+          "rule_id": "BP-2",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-003",
+          "condition": "HTN",
+          "reading_type": "BP",
+          "resource": "Home device",
+          "cadence_days": 7,
+          "cadence_rule_id": "CAD-HTN",
+          "layer": "P0",
+          "last_value": "152/97",
+          "last_on": "2026-10-22",
+          "days_since": 1,
+          "days_overdue": -6,
+          "collect_flag": true,
+          "action_flag": true,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 2,
+          "condition": "HTN",
+          "rule_id": "BP-2",
+          "kind": "DRAFT",
+          "step": "Start medication",
+          "action_type": "RECOMMEND_START",
+          "recipient": "PRESCRIBER",
+          "layer": "P0",
+          "evidence": "STAGE2, high risk, no BP medication on file",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-003",
+          "condition": "HTN",
+          "rule_id": "BP-2",
+          "step": "Start medication",
+          "action_type": "RECOMMEND_START",
+          "recipient": "PRESCRIBER",
+          "priority": 10,
+          "evidence": "STAGE2, high risk, no BP medication on file",
+          "citation": "2025 AHA/ACC: meds + lifestyle for stage 2, or stage 1 with DM/CKD/CVD/PREVENT >=7.5%",
+          "patient_prefs": "LANGUAGE: Vietnamese",
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-004",
+      "display_name": "Synthetic patient 004",
+      "age": 62,
+      "conditions": [
+        "HTN"
+      ],
+      "ai_plan_mode": "Standard",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 3,
+      "current_rule_id": "ADH",
+      "current_step": "Adherence check-in",
+      "rung": null,
+      "display_status": "Awaiting approval",
+      "status_rank": 2,
+      "status_reason": "Draft waiting for approval: ADH Adherence check-in",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-22",
+      "pending_count": 1,
+      "prefs": null,
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": 8.0,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-010",
+          "note_date": "2026-08-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-004   Date: 2026-08-01   Clinician: Dr. Synthetic\n\nS: 62 y/o woman. Home log average 148/92.\nO: BP 150/92, BMI 28.4.\nA: Stage 2 hypertension.\nP: Discussed medication and lifestyle. Return in 1 month.\nSigned: Dr. Synthetic   2026-08-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-011",
+          "note_date": "2026-09-08",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-004   Date: 2026-09-08   Clinician: Dr. Synthetic\n\nS: Ready to start medication.\nO: BP 146/90.\nA: Stage 2 hypertension.\nP: Started ACE inhibitor. Home BP twice daily. Recheck 4 to 6 weeks.\nSigned: Dr. Synthetic   2026-09-08",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-012",
+          "note_date": "2026-10-06",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-004   Date: 2026-10-06   Clinician: Dr. Synthetic\n\nS: Phone visit. Missing doses 2 to 3 times a week; copay is a concern.\nO: Home average 138/86.\nA: Stage 2 hypertension, not at goal; adherence barrier is cost.\nP: Pharmacy to check lower-cost options. Reinforce daily dosing.\nSigned: Dr. Synthetic   2026-10-06",
+          "has_ai_plan": false
+        }
+      ],
+      "overrides": [],
+      "active_overrides": [],
+      "plan": {
+        "plan_id": "PLAN-SYN-004-HTN",
+        "condition": "HTN",
+        "note_id": null,
+        "mode": "Standard",
+        "status": "ACTIVE",
+        "reading": null,
+        "reading_model": null,
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-004-HTN-1",
+          "plan_id": "PLAN-SYN-004-HTN",
+          "seq": 1,
+          "todo_text": "Collect BP at least every 7 days (home device)",
+          "rule_id": "CAD-HTN",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-29",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-004-HTN-2",
+          "plan_id": "PLAN-SYN-004-HTN",
+          "seq": 2,
+          "todo_text": "Watch: Red flag (2025 AHA/ACC HBP guideline: severe hypertension >=180/120)",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-004-HTN-3",
+          "plan_id": "PLAN-SYN-004-HTN",
+          "seq": 3,
+          "todo_text": "Review: Adherence check-in",
+          "rule_id": "ADH",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-004",
+          "condition": "HTN",
+          "reading_type": "BP",
+          "resource": "Home device",
+          "cadence_days": 7,
+          "cadence_rule_id": "CAD-HTN",
+          "layer": "P0",
+          "last_value": "138/87",
+          "last_on": "2026-10-22",
+          "days_since": 1,
+          "days_overdue": -6,
+          "collect_flag": true,
+          "action_flag": true,
+          "rung": null,
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-004",
+          "condition": "HTN",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": "Missed doses reported",
+          "last_on": "2026-10-18",
+          "days_since": 5,
+          "days_overdue": -25,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 3,
+          "condition": "HTN",
+          "rule_id": "ADH",
+          "kind": "DRAFT",
+          "step": "Adherence check-in",
+          "action_type": "ADHERENCE_CHECKIN",
+          "recipient": "PATIENT",
+          "layer": "P0",
+          "evidence": "On ACE inhibitor since change 2026-09-08; home avg 138/87 (goal < 130/80); patient reported missed doses",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-004",
+          "condition": "HTN",
+          "rule_id": "ADH",
+          "step": "Adherence check-in",
+          "action_type": "ADHERENCE_CHECKIN",
+          "recipient": "PATIENT",
+          "priority": 15,
+          "evidence": "On ACE inhibitor since change 2026-09-08; home avg 138/87 (goal < 130/80); patient reported missed doses",
+          "citation": "All guidelines: confirm adherence/technique before escalation",
+          "patient_prefs": null,
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-005",
+      "display_name": "Synthetic patient 005",
+      "age": 66,
+      "conditions": [
+        "HTN"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "NEEDS_REVIEW",
+      "todos_done": 0,
+      "todos_total": 5,
+      "current_rule_id": "BP-RED",
+      "current_step": "Red flag",
+      "rung": null,
+      "display_status": "Needs clinician",
+      "status_rank": 1,
+      "status_reason": "BP-RED Red flag: BP 186/122 on 2026-10-22",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-22",
+      "pending_count": 2,
+      "prefs": "AI_CALLS: allowed",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": 12.0,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-013",
+          "note_date": "2026-05-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-005   Date: 2026-05-01   Clinician: Dr. Synthetic\n\nS: 66 y/o man. Home log average 162/98.\nO: BP 160/98.\nA: Stage 2 hypertension.\nP: Started fixed-dose combination. Home monitoring.\nSigned: Dr. Synthetic   2026-05-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-014",
+          "note_date": "2026-08-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-005   Date: 2026-08-01   Clinician: Dr. Synthetic\n\nS: Tolerating medication. Home average 156/94.\nO: BP 154/94.\nA: Stage 2 hypertension, not at goal.\nP: Dose increased. Recheck in 4 weeks.\nSigned: Dr. Synthetic   2026-08-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-015",
+          "note_date": "2026-10-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-005   Date: 2026-10-01   Clinician: Dr. Synthetic\n\nS: Thinks his home cuff reads high compared with the office.\nO: BP 152/92. Home cuff checked against office cuff: within 5 mmHg.\nA: Stage 2 hypertension, not at goal. Home cuff is accurate.\nP: Continue current regimen, reassess adherence.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- Red flag BP: only alert me above 200/130 (patient's cuff reads high)\n- AI calls: allowed\nSigned: Dr. Synthetic   2026-10-01",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-015",
+          "note_date": "2026-10-01",
+          "line": "- Red flag BP: only alert me above 200/130 (patient's cuff reads high)",
+          "raw_key": "red flag bp",
+          "raw_value": "only alert me above 200/130 (patient's cuff reads high)",
+          "setting": null,
+          "status": "SAFETY_BLOCKED"
+        },
+        {
+          "note_id": "N-015",
+          "note_date": "2026-10-01",
+          "line": "- AI calls: allowed",
+          "raw_key": "ai calls",
+          "raw_value": "allowed",
+          "setting": "AI_CALLS",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "AI_CALLS",
+          "raw_value": "allowed",
+          "note_id": "N-015"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-005-HTN",
+        "condition": "HTN",
+        "note_id": "N-015",
+        "mode": "Custom",
+        "status": "NEEDS_REVIEW",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- Red flag BP: only alert me above 200/130 (patient's cuff reads high)",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- AI calls: allowed",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": false,
+          "reasons": [
+            "N-015: \"- Red flag BP: only alert me above 200/130 (patient's cuff reads high)\" was SAFETY_BLOCKED"
+          ]
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-005-HTN-1",
+          "plan_id": "PLAN-SYN-005-HTN",
+          "seq": 1,
+          "todo_text": "Collect BP at least every 7 days (home device)",
+          "rule_id": "CAD-HTN",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-29",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-005-HTN-2",
+          "plan_id": "PLAN-SYN-005-HTN",
+          "seq": 2,
+          "todo_text": "Watch: Red flag (2025 AHA/ACC HBP guideline: severe hypertension >=180/120)",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-005-HTN-3",
+          "plan_id": "PLAN-SYN-005-HTN",
+          "seq": 3,
+          "todo_text": "Review: Red flag",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        },
+        {
+          "todo_id": "PLAN-SYN-005-HTN-4",
+          "plan_id": "PLAN-SYN-005-HTN",
+          "seq": 4,
+          "todo_text": "Review: AI Plan line needs clinician review",
+          "rule_id": "PLAN-REVIEW",
+          "setting": null,
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        },
+        {
+          "todo_id": "PLAN-SYN-005-HTN-5",
+          "plan_id": "PLAN-SYN-005-HTN",
+          "seq": 5,
+          "todo_text": "AI Plan: AI calls: allowed (note N-015)",
+          "rule_id": null,
+          "setting": "AI_CALLS",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-005",
+          "condition": "HTN",
+          "reading_type": "BP",
+          "resource": "Home device",
+          "cadence_days": 7,
+          "cadence_rule_id": "CAD-HTN",
+          "layer": "P0",
+          "last_value": "186/122",
+          "last_on": "2026-10-22",
+          "days_since": 1,
+          "days_overdue": -6,
+          "collect_flag": true,
+          "action_flag": true,
+          "rung": null,
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-005",
+          "condition": "HTN",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": "Taking as prescribed",
+          "last_on": "2026-10-18",
+          "days_since": 5,
+          "days_overdue": -25,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 4,
+          "condition": "HTN",
+          "rule_id": "BP-RED",
+          "kind": "RED_FLAG",
+          "step": "Red flag",
+          "action_type": "URGENT_ALERT",
+          "recipient": "CLINICIAN",
+          "layer": "P0",
+          "evidence": "BP 186/122 on 2026-10-22",
+          "draft_text": "[fixture] Fixed rule text (no model) appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": null,
+          "draft_source": "RULE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        },
+        {
+          "action_id": 5,
+          "condition": "PLAN",
+          "rule_id": "PLAN-REVIEW",
+          "kind": "PLAN_REVIEW",
+          "step": "AI Plan line needs clinician review",
+          "action_type": "PLAN_REVIEW",
+          "recipient": "CLINICIAN",
+          "layer": "P2",
+          "evidence": "Note N-015 (2026-10-01): \"- Red flag BP: only alert me above 200/130 (patient's cuff reads high)\" was SAFETY_BLOCKED; red flags and the approval gate cannot be overridden",
+          "draft_text": "[fixture] Fixed rule text (no model) appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": null,
+          "draft_source": "RULE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-005",
+          "condition": "HTN",
+          "rule_id": "BP-RED",
+          "step": "Red flag",
+          "action_type": "URGENT_ALERT",
+          "recipient": "CLINICIAN",
+          "priority": 1,
+          "evidence": "BP 186/122 on 2026-10-22",
+          "citation": "2025 AHA/ACC HBP guideline: severe hypertension >=180/120",
+          "patient_prefs": "AI_CALLS: allowed",
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": true,
+          "is_held": false,
+          "held_rule": null
+        },
+        {
+          "patient_id": "SYN-005",
+          "condition": "PLAN",
+          "rule_id": "PLAN-REVIEW",
+          "step": "AI Plan line needs clinician review",
+          "action_type": "PLAN_REVIEW",
+          "recipient": "CLINICIAN",
+          "priority": 5,
+          "evidence": "Note N-015 (2026-10-01): \"- Red flag BP: only alert me above 200/130 (patient's cuff reads high)\" was SAFETY_BLOCKED; red flags and the approval gate cannot be overridden",
+          "citation": "Safety rules cannot be overridden; out-of-range or unrecognized lines are not applied",
+          "patient_prefs": "AI_CALLS: allowed",
+          "layer": "P2",
+          "override_note_id": "N-015",
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-006",
+      "display_name": "Synthetic patient 006",
+      "age": 71,
+      "conditions": [
+        "COPD"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 3,
+      "current_rule_id": "COPD-3",
+      "current_step": "Oxygen evaluation",
+      "rung": null,
+      "display_status": "Needs clinician",
+      "status_rank": 1,
+      "status_reason": "COPD-3 Oxygen evaluation: 10 resting SpO2 readings <= 88% in 14 days (lowest 87%)",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-22",
+      "pending_count": 1,
+      "prefs": "AI_CALLS: allowed; CONTACT_WINDOW: afternoons",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": null,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-016",
+          "note_date": "2025-11-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-006   Date: 2025-11-01   Clinician: Dr. Synthetic\n\nS: 71 y/o woman, former smoker. Spirometry confirmed COPD. Two exacerbations this year.\nO: SpO2 92% at rest. Scattered wheeze.\nA: COPD, GOLD group E.\nP: Started LAMA/LABA inhaler. Inhaler technique taught. Pulmonary rehab referral.\nSigned: Dr. Synthetic   2025-11-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-017",
+          "note_date": "2026-06-10",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-006   Date: 2026-06-10   Clinician: Dr. Synthetic\n\nS: More breathless on stairs.\nO: SpO2 90% at rest.\nA: COPD, symptomatic.\nP: Technique reviewed, good. Home pulse oximeter, log daily.\nSigned: Dr. Synthetic   2026-06-10",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-018",
+          "note_date": "2026-09-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-006   Date: 2026-09-01   Clinician: Dr. Synthetic\n\nS: Home SpO2 88 to 89% at rest most days.\nO: SpO2 89% at rest.\nA: COPD with low resting SpO2.\nP: Regimen adjusted. Continue daily SpO2 logging.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- Contact window: afternoons\n- AI calls: allowed\nSigned: Dr. Synthetic   2026-09-01",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-018",
+          "note_date": "2026-09-01",
+          "line": "- Contact window: afternoons",
+          "raw_key": "contact window",
+          "raw_value": "afternoons",
+          "setting": "CONTACT_WINDOW",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-018",
+          "note_date": "2026-09-01",
+          "line": "- AI calls: allowed",
+          "raw_key": "ai calls",
+          "raw_value": "allowed",
+          "setting": "AI_CALLS",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "AI_CALLS",
+          "raw_value": "allowed",
+          "note_id": "N-018"
+        },
+        {
+          "setting": "CONTACT_WINDOW",
+          "raw_value": "afternoons",
+          "note_id": "N-018"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-006-COPD",
+        "condition": "COPD",
+        "note_id": "N-018",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- Contact window: afternoons",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- AI calls: allowed",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-006-COPD-1",
+          "plan_id": "PLAN-SYN-006-COPD",
+          "seq": 1,
+          "todo_text": "Collect SPO2 at least every 1 days (home device)",
+          "rule_id": "CAD-COPD",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-23",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-006-COPD-2",
+          "plan_id": "PLAN-SYN-006-COPD",
+          "seq": 2,
+          "todo_text": "Review: Oxygen evaluation",
+          "rule_id": "COPD-3",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        },
+        {
+          "todo_id": "PLAN-SYN-006-COPD-3",
+          "plan_id": "PLAN-SYN-006-COPD",
+          "seq": 3,
+          "todo_text": "AI Plan: AI calls: allowed (note N-018)",
+          "rule_id": null,
+          "setting": "AI_CALLS",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-006",
+          "condition": "COPD",
+          "reading_type": "SPO2",
+          "resource": "Home device",
+          "cadence_days": 1,
+          "cadence_rule_id": "CAD-COPD",
+          "layer": "P0",
+          "last_value": "88 %",
+          "last_on": "2026-10-22",
+          "days_since": 1,
+          "days_overdue": 0,
+          "collect_flag": true,
+          "action_flag": true,
+          "rung": null,
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-006",
+          "condition": "COPD",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": "Taking as prescribed",
+          "last_on": "2026-10-15",
+          "days_since": 8,
+          "days_overdue": -22,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 6,
+          "condition": "COPD",
+          "rule_id": "COPD-3",
+          "kind": "DRAFT",
+          "step": "Oxygen evaluation",
+          "action_type": "RECOMMEND_O2_EVAL",
+          "recipient": "CLINICIAN",
+          "layer": "P0",
+          "evidence": "10 resting SpO2 readings <= 88% in 14 days (lowest 87%)",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-006",
+          "condition": "COPD",
+          "rule_id": "COPD-3",
+          "step": "Oxygen evaluation",
+          "action_type": "RECOMMEND_O2_EVAL",
+          "recipient": "CLINICIAN",
+          "priority": 10,
+          "evidence": "10 resting SpO2 readings <= 88% in 14 days (lowest 87%)",
+          "citation": "GOLD 2026: evaluate LTOT if resting SpO2 <=88%",
+          "patient_prefs": "AI_CALLS: allowed; CONTACT_WINDOW: afternoons",
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-007",
+      "display_name": "Synthetic patient 007",
+      "age": 68,
+      "conditions": [
+        "COPD"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 3,
+      "current_rule_id": "COPD-2",
+      "current_step": "Exacerbation review",
+      "rung": null,
+      "display_status": "Awaiting approval",
+      "status_rank": 2,
+      "status_reason": "Draft waiting for approval: COPD-2 Exacerbation review",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-22",
+      "pending_count": 1,
+      "prefs": "AI_CALLS: allowed; CHECKINS: monthly, by phone",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": null,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-019",
+          "note_date": "2025-04-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-007   Date: 2025-04-01   Clinician: Dr. Synthetic\n\nS: 68 y/o man. Spirometry confirmed COPD.\nO: SpO2 95%.\nA: COPD, GOLD group B.\nP: Started LAMA inhaler.\nSigned: Dr. Synthetic   2025-04-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-020",
+          "note_date": "2026-03-10",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-007   Date: 2026-03-10   Clinician: Dr. Synthetic\n\nS: Stable, walking daily.\nO: SpO2 95%.\nA: COPD, stable.\nP: Continue current inhaler.\nSigned: Dr. Synthetic   2026-03-10",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-021",
+          "note_date": "2026-09-28",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-007   Date: 2026-09-28   Clinician: Dr. Synthetic\n\nS: Moderate exacerbation on 9/25, treated at urgent care with an oral steroid course. Now near baseline. Using inhaler daily.\nO: SpO2 94%.\nA: COPD after one moderate exacerbation.\nP: Review maintenance therapy at follow-up.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- AI calls: allowed\n- Adherence check-ins: monthly, by phone\nSigned: Dr. Synthetic   2026-09-28",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-021",
+          "note_date": "2026-09-28",
+          "line": "- AI calls: allowed",
+          "raw_key": "ai calls",
+          "raw_value": "allowed",
+          "setting": "AI_CALLS",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-021",
+          "note_date": "2026-09-28",
+          "line": "- Adherence check-ins: monthly, by phone",
+          "raw_key": "adherence check-ins",
+          "raw_value": "monthly, by phone",
+          "setting": "CHECKINS",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "AI_CALLS",
+          "raw_value": "allowed",
+          "note_id": "N-021"
+        },
+        {
+          "setting": "CHECKINS",
+          "raw_value": "monthly, by phone",
+          "note_id": "N-021"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-007-COPD",
+        "condition": "COPD",
+        "note_id": "N-021",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- AI calls: allowed",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- Adherence check-ins: monthly, by phone",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-007-COPD-1",
+          "plan_id": "PLAN-SYN-007-COPD",
+          "seq": 1,
+          "todo_text": "Collect SPO2 at least every 1 days (home device)",
+          "rule_id": "CAD-COPD",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-23",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-007-COPD-2",
+          "plan_id": "PLAN-SYN-007-COPD",
+          "seq": 2,
+          "todo_text": "Review: Exacerbation review",
+          "rule_id": "COPD-2",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        },
+        {
+          "todo_id": "PLAN-SYN-007-COPD-3",
+          "plan_id": "PLAN-SYN-007-COPD",
+          "seq": 3,
+          "todo_text": "AI Plan: AI calls: allowed (note N-021)",
+          "rule_id": null,
+          "setting": "AI_CALLS",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-007",
+          "condition": "COPD",
+          "reading_type": "SPO2",
+          "resource": "Home device",
+          "cadence_days": 1,
+          "cadence_rule_id": "CAD-COPD",
+          "layer": "P0",
+          "last_value": "94 %",
+          "last_on": "2026-10-22",
+          "days_since": 1,
+          "days_overdue": 0,
+          "collect_flag": true,
+          "action_flag": true,
+          "rung": null,
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-007",
+          "condition": "COPD",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": "Taking as prescribed",
+          "last_on": "2026-10-15",
+          "days_since": 8,
+          "days_overdue": -22,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 7,
+          "condition": "COPD",
+          "rule_id": "COPD-2",
+          "kind": "DRAFT",
+          "step": "Exacerbation review",
+          "action_type": "RECOMMEND_REVIEW",
+          "recipient": "PRESCRIBER",
+          "layer": "P0",
+          "evidence": "Exacerbation severity 2 on 2026-09-25",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-007",
+          "condition": "COPD",
+          "rule_id": "COPD-2",
+          "step": "Exacerbation review",
+          "action_type": "RECOMMEND_REVIEW",
+          "recipient": "PRESCRIBER",
+          "priority": 20,
+          "evidence": "Exacerbation severity 2 on 2026-09-25",
+          "citation": "GOLD 2026: one moderate exacerbation prompts escalation review",
+          "patient_prefs": "AI_CALLS: allowed; CHECKINS: monthly, by phone",
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-008",
+      "display_name": "Synthetic patient 008",
+      "age": 55,
+      "conditions": [
+        "T2DM"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 6,
+      "current_rule_id": "HOLD",
+      "current_step": "Escalation held by clinician",
+      "rung": null,
+      "display_status": "Pending",
+      "status_rank": 4,
+      "status_reason": "Escalation held until 2026-11-15 by the clinician, note N-024",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-10",
+      "pending_count": 0,
+      "prefs": "AI_CALLS: allowed; CHECKINS: weekly, by text; CONTACT_WINDOW: after 6 PM only; DO_NOT_CONTACT: family members; LANGUAGE: Spanish; NOTIFY_IF: home glucose over 300 twice in a week",
+      "held_until": "2026-11-15",
+      "has_diabetes": true,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": null,
+      "a1c_goal": 7.0,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-022",
+          "note_date": "2026-01-12",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-008   Date: 2026-01-12   Clinician: Dr. Synthetic\n\nS: 55 y/o man with T2DM on metformin.\nO: A1C 7.4%, BMI 31.0.\nA: T2DM, near goal.\nP: Continue metformin. Recheck A1C 3 to 6 months.\nSigned: Dr. Synthetic   2026-01-12",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-023",
+          "note_date": "2026-06-20",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-008   Date: 2026-06-20   Clinician: Dr. Synthetic\n\nS: Working night shifts.\nO: A1C 7.6%, BP 132/80.\nA: T2DM above goal.\nP: Diet review. Recheck A1C 3 months.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- A1C goal: < 7.0%\n- AI calls: allowed\nSigned: Dr. Synthetic   2026-06-20",
+          "has_ai_plan": true
+        },
+        {
+          "note_id": "N-024",
+          "note_date": "2026-10-10",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-008   Date: 2026-10-10   Clinician: Dr. Synthetic\n\nS: Missing evening doses 2 to 3 times a week due to shift work. No hypoglycemia symptoms. Walking 20 min most days.\nO: BP 134/82, BMI 31.4. A1C 8.1%, up from 7.6% in June. Foot exam normal.\nA: T2DM above individualized goal. Adherence barrier: shift work.\nP: Discussed adherence strategies. Consider intensification if A1C remains above goal after adherence improves. Recheck A1C in 3 months.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- A1C goal: < 7.5%\n- Hold escalation: until 2026-11-15 (adherence trial first)\n- Adherence check-ins: weekly, by text\n- Contact window: after 6 PM only\n- Language: Spanish\n- AI calls: allowed\n- Do not contact: family members\n- Notify me directly if: home glucose over 300 twice in a week\nSigned: Dr. Synthetic   2026-10-10",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-023",
+          "note_date": "2026-06-20",
+          "line": "- A1C goal: < 7.0%",
+          "raw_key": "a1c goal",
+          "raw_value": "< 7.0%",
+          "setting": "A1C_GOAL",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-023",
+          "note_date": "2026-06-20",
+          "line": "- AI calls: allowed",
+          "raw_key": "ai calls",
+          "raw_value": "allowed",
+          "setting": "AI_CALLS",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-024",
+          "note_date": "2026-10-10",
+          "line": "- A1C goal: < 7.5%",
+          "raw_key": "a1c goal",
+          "raw_value": "< 7.5%",
+          "setting": "A1C_GOAL",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-024",
+          "note_date": "2026-10-10",
+          "line": "- Hold escalation: until 2026-11-15 (adherence trial first)",
+          "raw_key": "hold escalation",
+          "raw_value": "until 2026-11-15 (adherence trial first)",
+          "setting": "HOLD_ESCALATION_UNTIL",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-024",
+          "note_date": "2026-10-10",
+          "line": "- Adherence check-ins: weekly, by text",
+          "raw_key": "adherence check-ins",
+          "raw_value": "weekly, by text",
+          "setting": "CHECKINS",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-024",
+          "note_date": "2026-10-10",
+          "line": "- Contact window: after 6 PM only",
+          "raw_key": "contact window",
+          "raw_value": "after 6 PM only",
+          "setting": "CONTACT_WINDOW",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-024",
+          "note_date": "2026-10-10",
+          "line": "- Language: Spanish",
+          "raw_key": "language",
+          "raw_value": "Spanish",
+          "setting": "LANGUAGE",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-024",
+          "note_date": "2026-10-10",
+          "line": "- AI calls: allowed",
+          "raw_key": "ai calls",
+          "raw_value": "allowed",
+          "setting": "AI_CALLS",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-024",
+          "note_date": "2026-10-10",
+          "line": "- Do not contact: family members",
+          "raw_key": "do not contact",
+          "raw_value": "family members",
+          "setting": "DO_NOT_CONTACT",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-024",
+          "note_date": "2026-10-10",
+          "line": "- Notify me directly if: home glucose over 300 twice in a week",
+          "raw_key": "notify me directly if",
+          "raw_value": "home glucose over 300 twice in a week",
+          "setting": "NOTIFY_IF",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "A1C_GOAL",
+          "raw_value": "< 7.5%",
+          "note_id": "N-024"
+        },
+        {
+          "setting": "AI_CALLS",
+          "raw_value": "allowed",
+          "note_id": "N-024"
+        },
+        {
+          "setting": "CHECKINS",
+          "raw_value": "weekly, by text",
+          "note_id": "N-024"
+        },
+        {
+          "setting": "CONTACT_WINDOW",
+          "raw_value": "after 6 PM only",
+          "note_id": "N-024"
+        },
+        {
+          "setting": "DO_NOT_CONTACT",
+          "raw_value": "family members",
+          "note_id": "N-024"
+        },
+        {
+          "setting": "HOLD_ESCALATION_UNTIL",
+          "raw_value": "until 2026-11-15 (adherence trial first)",
+          "note_id": "N-024"
+        },
+        {
+          "setting": "LANGUAGE",
+          "raw_value": "Spanish",
+          "note_id": "N-024"
+        },
+        {
+          "setting": "NOTIFY_IF",
+          "raw_value": "home glucose over 300 twice in a week",
+          "note_id": "N-024"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-008-T2DM",
+        "condition": "T2DM",
+        "note_id": "N-024",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- A1C goal: < 7.5%",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- Hold escalation: until 2026-11-15 (adherence trial first)",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- Adherence check-ins: weekly, by text",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- Contact window: after 6 PM only",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- Language: Spanish",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- AI calls: allowed",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- Do not contact: family members",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- Notify me directly if: home glucose over 300 twice in a week",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": {
+        "held_rule": "DM-2",
+        "held_until": "2026-11-15",
+        "note_id": "N-024"
+      },
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-008-T2DM-1",
+          "plan_id": "PLAN-SYN-008-T2DM",
+          "seq": 1,
+          "todo_text": "Collect A1C at least every 90 days (lab)",
+          "rule_id": "DM-1",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2027-01-08",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-008-T2DM-2",
+          "plan_id": "PLAN-SYN-008-T2DM",
+          "seq": 2,
+          "todo_text": "Watch: Level 2 hypoglycemia (ADA 2026: level 2 hypoglycemia <54 mg/dL)",
+          "rule_id": "DM-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-008-T2DM-3",
+          "plan_id": "PLAN-SYN-008-T2DM",
+          "seq": 3,
+          "todo_text": "Review: Escalation held by clinician",
+          "rule_id": "HOLD",
+          "setting": null,
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        },
+        {
+          "todo_id": "PLAN-SYN-008-T2DM-4",
+          "plan_id": "PLAN-SYN-008-T2DM",
+          "seq": 4,
+          "todo_text": "AI Plan: A1C goal: < 7.5% (note N-024)",
+          "rule_id": null,
+          "setting": "A1C_GOAL",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-008-T2DM-5",
+          "plan_id": "PLAN-SYN-008-T2DM",
+          "seq": 5,
+          "todo_text": "AI Plan: Hold escalation: until 2026-11-15 (adherence trial first) (note N-024)",
+          "rule_id": null,
+          "setting": "HOLD_ESCALATION_UNTIL",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        },
+        {
+          "todo_id": "PLAN-SYN-008-T2DM-6",
+          "plan_id": "PLAN-SYN-008-T2DM",
+          "seq": 6,
+          "todo_text": "AI Plan: AI calls: allowed (note N-024)",
+          "rule_id": null,
+          "setting": "AI_CALLS",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-008",
+          "condition": "T2DM",
+          "reading_type": "A1C",
+          "resource": "Lab",
+          "cadence_days": 90,
+          "cadence_rule_id": "DM-1",
+          "layer": "P0",
+          "last_value": "8.1 %",
+          "last_on": "2026-10-10",
+          "days_since": 13,
+          "days_overdue": -77,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-008",
+          "condition": "T2DM",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": "Taking as prescribed",
+          "last_on": "2026-10-12",
+          "days_since": 11,
+          "days_overdue": -19,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-008",
+          "condition": "T2DM",
+          "rule_id": "HOLD",
+          "step": "Escalation held by clinician",
+          "action_type": "HELD_BY_CLINICIAN",
+          "recipient": "NONE",
+          "priority": 60,
+          "evidence": "A1C 8.1% on 2026-10-10 (goal < 7.5%); would fire DM-2, held until 2026-11-15 per note N-024",
+          "citation": "Clinician AI Plan: hold escalation until a date; red flags are never held",
+          "patient_prefs": "AI_CALLS: allowed; CHECKINS: weekly, by text; CONTACT_WINDOW: after 6 PM only; DO_NOT_CONTACT: family members; LANGUAGE: Spanish; NOTIFY_IF: home glucose over 300 twice in a week",
+          "layer": "P2",
+          "override_note_id": "N-024",
+          "is_red_flag": false,
+          "is_held": true,
+          "held_rule": "DM-2"
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-009",
+      "display_name": "Synthetic patient 009",
+      "age": 74,
+      "conditions": [
+        "T2DM"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 4,
+      "current_rule_id": "DM-RED",
+      "current_step": "Level 2 hypoglycemia",
+      "rung": null,
+      "display_status": "Needs clinician",
+      "status_rank": 1,
+      "status_reason": "DM-RED Level 2 hypoglycemia: Glucose 51 mg/dL on 2026-10-21",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-22",
+      "pending_count": 1,
+      "prefs": "NOTIFY_IF: any glucose under 60",
+      "held_until": null,
+      "has_diabetes": true,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": null,
+      "a1c_goal": 8.0,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-025",
+          "note_date": "2026-03-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-009   Date: 2026-03-01   Clinician: Dr. Synthetic\n\nS: 74 y/o woman with T2DM on basal insulin.\nO: A1C 7.9%.\nA: T2DM at individualized goal (< 8%).\nP: Continue current insulin dose.\nSigned: Dr. Synthetic   2026-03-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-026",
+          "note_date": "2026-07-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-009   Date: 2026-07-01   Clinician: Dr. Synthetic\n\nS: Fasting glucose often over 180.\nO: A1C 8.2%.\nA: T2DM above goal.\nP: Basal insulin dose adjusted. Glucose log every 3 days.\nSigned: Dr. Synthetic   2026-07-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-027",
+          "note_date": "2026-09-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-009   Date: 2026-09-01   Clinician: Dr. Synthetic\n\nS: Two mild low-sugar episodes, treated at home.\nO: A1C 7.6%.\nA: T2DM with mild hypoglycemia.\nP: Hypoglycemia education reviewed. Family aware of symptoms.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- Notify me directly if: any glucose under 60\nSigned: Dr. Synthetic   2026-09-01",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-027",
+          "note_date": "2026-09-01",
+          "line": "- Notify me directly if: any glucose under 60",
+          "raw_key": "notify me directly if",
+          "raw_value": "any glucose under 60",
+          "setting": "NOTIFY_IF",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "NOTIFY_IF",
+          "raw_value": "any glucose under 60",
+          "note_id": "N-027"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-009-T2DM",
+        "condition": "T2DM",
+        "note_id": "N-027",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- Notify me directly if: any glucose under 60",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-009-T2DM-1",
+          "plan_id": "PLAN-SYN-009-T2DM",
+          "seq": 1,
+          "todo_text": "Collect GLUCOSE at least every 3 days (home device)",
+          "rule_id": "CAD-T2DM",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-25",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-009-T2DM-2",
+          "plan_id": "PLAN-SYN-009-T2DM",
+          "seq": 2,
+          "todo_text": "Collect A1C at least every 180 days (lab)",
+          "rule_id": "DM-1",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2027-02-28",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-009-T2DM-3",
+          "plan_id": "PLAN-SYN-009-T2DM",
+          "seq": 3,
+          "todo_text": "Watch: Level 2 hypoglycemia (ADA 2026: level 2 hypoglycemia <54 mg/dL)",
+          "rule_id": "DM-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-009-T2DM-4",
+          "plan_id": "PLAN-SYN-009-T2DM",
+          "seq": 4,
+          "todo_text": "Review: Level 2 hypoglycemia",
+          "rule_id": "DM-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-009",
+          "condition": "T2DM",
+          "reading_type": "GLUCOSE",
+          "resource": "Home device",
+          "cadence_days": 3,
+          "cadence_rule_id": "CAD-T2DM",
+          "layer": "P0",
+          "last_value": "112 mg/dL",
+          "last_on": "2026-10-22",
+          "days_since": 1,
+          "days_overdue": -2,
+          "collect_flag": true,
+          "action_flag": true,
+          "rung": null,
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-009",
+          "condition": "T2DM",
+          "reading_type": "A1C",
+          "resource": "Lab",
+          "cadence_days": 180,
+          "cadence_rule_id": "DM-1",
+          "layer": "P0",
+          "last_value": "7.6 %",
+          "last_on": "2026-09-01",
+          "days_since": 52,
+          "days_overdue": -128,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-009",
+          "condition": "T2DM",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": null,
+          "last_on": null,
+          "days_since": 2701,
+          "days_overdue": 2671,
+          "collect_flag": false,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 8,
+          "condition": "T2DM",
+          "rule_id": "DM-RED",
+          "kind": "RED_FLAG",
+          "step": "Level 2 hypoglycemia",
+          "action_type": "URGENT_ALERT",
+          "recipient": "CLINICIAN",
+          "layer": "P0",
+          "evidence": "Glucose 51 mg/dL on 2026-10-21",
+          "draft_text": "[fixture] Fixed rule text (no model) appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": null,
+          "draft_source": "RULE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-009",
+          "condition": "T2DM",
+          "rule_id": "DM-RED",
+          "step": "Level 2 hypoglycemia",
+          "action_type": "URGENT_ALERT",
+          "recipient": "CLINICIAN",
+          "priority": 1,
+          "evidence": "Glucose 51 mg/dL on 2026-10-21",
+          "citation": "ADA 2026: level 2 hypoglycemia <54 mg/dL",
+          "patient_prefs": "NOTIFY_IF: any glucose under 60",
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": true,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-010",
+      "display_name": "Synthetic patient 010",
+      "age": 50,
+      "conditions": [
+        "T2DM"
+      ],
+      "ai_plan_mode": "Standard",
+      "plan_status": "NEEDS_REVIEW",
+      "todos_done": 0,
+      "todos_total": 4,
+      "current_rule_id": "DM-1",
+      "current_step": "A1C due",
+      "rung": null,
+      "display_status": "Needs clinician",
+      "status_rank": 1,
+      "status_reason": "PLAN-REVIEW AI Plan line needs clinician review: Note N-029 (2026-03-15): \"- A1C goal: < 9.5%\" was NEEDS_CONFIRMATION; value outside the expected range, not applied",
+      "next_visit_on": null,
+      "last_reading_on": "2026-03-15",
+      "pending_count": 2,
+      "prefs": null,
+      "held_until": null,
+      "has_diabetes": true,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": null,
+      "a1c_goal": 7.0,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-028",
+          "note_date": "2025-09-10",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-010   Date: 2025-09-10   Clinician: Dr. Synthetic\n\nS: 50 y/o man with T2DM on metformin.\nO: A1C 6.8%.\nA: T2DM at goal.\nP: Continue metformin.\nSigned: Dr. Synthetic   2025-09-10",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-029",
+          "note_date": "2026-03-15",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-010   Date: 2026-03-15   Clinician: Dr. Synthetic\n\nS: Doing well.\nO: A1C 6.6%.\nA: T2DM at goal.\nP: Continue metformin. A1C in 6 months.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- A1C goal: < 9.5%\nSigned: Dr. Synthetic   2026-03-15",
+          "has_ai_plan": true
+        },
+        {
+          "note_id": "N-030",
+          "note_date": "2026-06-20",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-010   Date: 2026-06-20   Clinician: Dr. Synthetic\n\nS: Telehealth for low back strain after lifting.\nO: No red flags on history.\nA: Mechanical low back pain.\nP: Heat, activity as tolerated. Diabetes labs due in September.\nSigned: Dr. Synthetic   2026-06-20",
+          "has_ai_plan": false
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-029",
+          "note_date": "2026-03-15",
+          "line": "- A1C goal: < 9.5%",
+          "raw_key": "a1c goal",
+          "raw_value": "< 9.5%",
+          "setting": "A1C_GOAL",
+          "status": "NEEDS_CONFIRMATION"
+        }
+      ],
+      "active_overrides": [],
+      "plan": {
+        "plan_id": "PLAN-SYN-010-T2DM",
+        "condition": "T2DM",
+        "note_id": "N-029",
+        "mode": "Standard",
+        "status": "NEEDS_REVIEW",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- A1C goal: < 9.5%",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": false,
+          "reasons": [
+            "N-029: \"- A1C goal: < 9.5%\" was NEEDS_CONFIRMATION"
+          ]
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-010-T2DM-1",
+          "plan_id": "PLAN-SYN-010-T2DM",
+          "seq": 1,
+          "todo_text": "Collect A1C at least every 180 days (lab)",
+          "rule_id": "DM-1",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-23",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-010-T2DM-2",
+          "plan_id": "PLAN-SYN-010-T2DM",
+          "seq": 2,
+          "todo_text": "Watch: Level 2 hypoglycemia (ADA 2026: level 2 hypoglycemia <54 mg/dL)",
+          "rule_id": "DM-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-010-T2DM-3",
+          "plan_id": "PLAN-SYN-010-T2DM",
+          "seq": 3,
+          "todo_text": "Review: A1C due",
+          "rule_id": "DM-1",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        },
+        {
+          "todo_id": "PLAN-SYN-010-T2DM-4",
+          "plan_id": "PLAN-SYN-010-T2DM",
+          "seq": 4,
+          "todo_text": "Review: AI Plan line needs clinician review",
+          "rule_id": "PLAN-REVIEW",
+          "setting": null,
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-010",
+          "condition": "T2DM",
+          "reading_type": "A1C",
+          "resource": "Lab",
+          "cadence_days": 180,
+          "cadence_rule_id": "DM-1",
+          "layer": "P0",
+          "last_value": "6.6 %",
+          "last_on": "2026-03-15",
+          "days_since": 222,
+          "days_overdue": 42,
+          "collect_flag": false,
+          "action_flag": true,
+          "rung": null,
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-010",
+          "condition": "T2DM",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": null,
+          "last_on": null,
+          "days_since": 1377,
+          "days_overdue": 1347,
+          "collect_flag": false,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 9,
+          "condition": "T2DM",
+          "rule_id": "DM-1",
+          "kind": "DRAFT",
+          "step": "A1C due",
+          "action_type": "LAB_REMINDER",
+          "recipient": "PATIENT",
+          "layer": "P0",
+          "evidence": "A1C 6.6% on 2026-03-15 (goal < 7%)",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        },
+        {
+          "action_id": 10,
+          "condition": "PLAN",
+          "rule_id": "PLAN-REVIEW",
+          "kind": "PLAN_REVIEW",
+          "step": "AI Plan line needs clinician review",
+          "action_type": "PLAN_REVIEW",
+          "recipient": "CLINICIAN",
+          "layer": "P2",
+          "evidence": "Note N-029 (2026-03-15): \"- A1C goal: < 9.5%\" was NEEDS_CONFIRMATION; value outside the expected range, not applied",
+          "draft_text": "[fixture] Fixed rule text (no model) appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": null,
+          "draft_source": "RULE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-010",
+          "condition": "T2DM",
+          "rule_id": "DM-1",
+          "step": "A1C due",
+          "action_type": "LAB_REMINDER",
+          "recipient": "PATIENT",
+          "priority": 30,
+          "evidence": "A1C 6.6% on 2026-03-15 (goal < 7%)",
+          "citation": "ADA 2026: A1C every 3 mo if not at goal, at least 2x/yr if at goal",
+          "patient_prefs": null,
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        },
+        {
+          "patient_id": "SYN-010",
+          "condition": "PLAN",
+          "rule_id": "PLAN-REVIEW",
+          "step": "AI Plan line needs clinician review",
+          "action_type": "PLAN_REVIEW",
+          "recipient": "CLINICIAN",
+          "priority": 5,
+          "evidence": "Note N-029 (2026-03-15): \"- A1C goal: < 9.5%\" was NEEDS_CONFIRMATION; value outside the expected range, not applied",
+          "citation": "Safety rules cannot be overridden; out-of-range or unrecognized lines are not applied",
+          "patient_prefs": null,
+          "layer": "P2",
+          "override_note_id": "N-029",
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-011",
+      "display_name": "Synthetic patient 011",
+      "age": 52,
+      "conditions": [
+        "HTN"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 4,
+      "current_rule_id": "ENG-3H",
+      "current_step": "Missed reading: human call (AI calls not allowed)",
+      "rung": "ENG-3H",
+      "display_status": "Needs clinician",
+      "status_rank": 1,
+      "status_reason": "ENG-3H Missed reading: human call (AI calls not allowed): No BP reading since 2026-10-05 (11 days overdue); AI calls not allowed per note N-033",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-05",
+      "pending_count": 1,
+      "prefs": "AI_CALLS: not allowed (prefers to speak with a person); CONTACT_WINDOW: weekday mornings",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": 5.0,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-031",
+          "note_date": "2026-02-14",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-011   Date: 2026-02-14   Clinician: Dr. Synthetic\n\nS: 52 y/o woman, annual exam.\nO: BP 132/84.\nA: Elevated office BP.\nP: Home monitoring advised.\nSigned: Dr. Synthetic   2026-02-14",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-032",
+          "note_date": "2026-08-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-011   Date: 2026-08-01   Clinician: Dr. Synthetic\n\nS: Home log average 136/85.\nO: BP 136/86, PREVENT 5%.\nA: Stage 1 hypertension, low risk.\nP: Lifestyle trial with home monitoring. Review at 3 months.\nSigned: Dr. Synthetic   2026-08-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-033",
+          "note_date": "2026-09-05",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-011   Date: 2026-09-05   Clinician: Dr. Synthetic\n\nS: Logging most days. Home average 135/84.\nO: BP 134/84.\nA: Stage 1 hypertension, lifestyle trial ongoing.\nP: Continue.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- AI calls: not allowed (prefers to speak with a person)\n- Contact window: weekday mornings\nSigned: Dr. Synthetic   2026-09-05",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-033",
+          "note_date": "2026-09-05",
+          "line": "- AI calls: not allowed (prefers to speak with a person)",
+          "raw_key": "ai calls",
+          "raw_value": "not allowed (prefers to speak with a person)",
+          "setting": "AI_CALLS",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-033",
+          "note_date": "2026-09-05",
+          "line": "- Contact window: weekday mornings",
+          "raw_key": "contact window",
+          "raw_value": "weekday mornings",
+          "setting": "CONTACT_WINDOW",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "AI_CALLS",
+          "raw_value": "not allowed (prefers to speak with a person)",
+          "note_id": "N-033"
+        },
+        {
+          "setting": "CONTACT_WINDOW",
+          "raw_value": "weekday mornings",
+          "note_id": "N-033"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-011-HTN",
+        "condition": "HTN",
+        "note_id": "N-033",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- AI calls: not allowed (prefers to speak with a person)",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- Contact window: weekday mornings",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-011-HTN-1",
+          "plan_id": "PLAN-SYN-011-HTN",
+          "seq": 1,
+          "todo_text": "Collect BP at least every 7 days (home device)",
+          "rule_id": "CAD-HTN",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-23",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-011-HTN-2",
+          "plan_id": "PLAN-SYN-011-HTN",
+          "seq": 2,
+          "todo_text": "Watch: Red flag (2025 AHA/ACC HBP guideline: severe hypertension >=180/120)",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-011-HTN-3",
+          "plan_id": "PLAN-SYN-011-HTN",
+          "seq": 3,
+          "todo_text": "Review: Missed reading: human call (AI calls not allowed)",
+          "rule_id": "ENG-3H",
+          "setting": null,
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        },
+        {
+          "todo_id": "PLAN-SYN-011-HTN-4",
+          "plan_id": "PLAN-SYN-011-HTN",
+          "seq": 4,
+          "todo_text": "AI Plan: AI calls: not allowed (prefers to speak with a person) (note N-033)",
+          "rule_id": null,
+          "setting": "AI_CALLS",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-011",
+          "condition": "HTN",
+          "reading_type": "BP",
+          "resource": "Home device",
+          "cadence_days": 7,
+          "cadence_rule_id": "CAD-HTN",
+          "layer": "P0",
+          "last_value": "135/83",
+          "last_on": "2026-10-05",
+          "days_since": 18,
+          "days_overdue": 11,
+          "collect_flag": false,
+          "action_flag": true,
+          "rung": "ENG-3H",
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 11,
+          "condition": "HTN",
+          "rule_id": "ENG-3H",
+          "kind": "DRAFT",
+          "step": "Missed reading: human call (AI calls not allowed)",
+          "action_type": "CARE_TEAM_CALL",
+          "recipient": "CLINICIAN",
+          "layer": "P2",
+          "evidence": "No BP reading since 2026-10-05 (11 days overdue); AI calls not allowed per note N-033",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-011",
+          "condition": "HTN",
+          "rule_id": "ENG-3H",
+          "step": "Missed reading: human call (AI calls not allowed)",
+          "action_type": "CARE_TEAM_CALL",
+          "recipient": "CLINICIAN",
+          "priority": 16,
+          "evidence": "No BP reading since 2026-10-05 (11 days overdue); AI calls not allowed per note N-033",
+          "citation": "Clinician AI Plan: no AI calls for this patient",
+          "patient_prefs": "AI_CALLS: not allowed (prefers to speak with a person); CONTACT_WINDOW: weekday mornings",
+          "layer": "P2",
+          "override_note_id": "N-033",
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-012",
+      "display_name": "Synthetic patient 012",
+      "age": 69,
+      "conditions": [
+        "COPD"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 2,
+      "current_rule_id": "ENG-DEV",
+      "current_step": "No working home device",
+      "rung": "ENG-DEV",
+      "display_status": "Needs clinician",
+      "status_rank": 1,
+      "status_reason": "ENG-DEV No working home device: Patient reports no working home device for SPO2",
+      "next_visit_on": null,
+      "last_reading_on": null,
+      "pending_count": 1,
+      "prefs": "LANGUAGE: Mandarin",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": null,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-034",
+          "note_date": "2025-12-03",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-012   Date: 2025-12-03   Clinician: Dr. Synthetic\n\nS: 69 y/o man with chronic cough and exertional breathlessness.\nO: SpO2 94%.\nA: Chronic cough.\nP: Spirometry ordered.\nSigned: Dr. Synthetic   2025-12-03",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-035",
+          "note_date": "2026-10-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-012   Date: 2026-10-01   Clinician: Dr. Synthetic\n\nS: Spirometry confirmed COPD.\nO: SpO2 93%.\nA: COPD, GOLD group B.\nP: Started LAMA inhaler. Enrolled in home SpO2 monitoring.\nSigned: Dr. Synthetic   2026-10-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-036",
+          "note_date": "2026-10-20",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-012   Date: 2026-10-20   Clinician: Dr. Synthetic\n\nS: Phone call. Has not been able to buy a pulse oximeter.\nO: No home readings.\nA: COPD, monitoring not started.\nP: Care team to arrange a device.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- Language: Mandarin\nSigned: Dr. Synthetic   2026-10-20",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-036",
+          "note_date": "2026-10-20",
+          "line": "- Language: Mandarin",
+          "raw_key": "language",
+          "raw_value": "Mandarin",
+          "setting": "LANGUAGE",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "LANGUAGE",
+          "raw_value": "Mandarin",
+          "note_id": "N-036"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-012-COPD",
+        "condition": "COPD",
+        "note_id": "N-036",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- Language: Mandarin",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-012-COPD-1",
+          "plan_id": "PLAN-SYN-012-COPD",
+          "seq": 1,
+          "todo_text": "Collect SPO2 at least every 1 days (home device)",
+          "rule_id": "CAD-COPD",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-23",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-012-COPD-2",
+          "plan_id": "PLAN-SYN-012-COPD",
+          "seq": 2,
+          "todo_text": "Review: No working home device",
+          "rule_id": "ENG-DEV",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-012",
+          "condition": "COPD",
+          "reading_type": "SPO2",
+          "resource": "Home device",
+          "cadence_days": 1,
+          "cadence_rule_id": "CAD-COPD",
+          "layer": "P0",
+          "last_value": null,
+          "last_on": null,
+          "days_since": 22,
+          "days_overdue": 21,
+          "collect_flag": false,
+          "action_flag": true,
+          "rung": "ENG-DEV",
+          "paused": true,
+          "note": "No working device reported 2026-10-20"
+        },
+        {
+          "patient_id": "SYN-012",
+          "condition": "COPD",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": null,
+          "last_on": null,
+          "days_since": 22,
+          "days_overdue": -8,
+          "collect_flag": false,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 12,
+          "condition": "COPD",
+          "rule_id": "ENG-DEV",
+          "kind": "DRAFT",
+          "step": "No working home device",
+          "action_type": "RECOMMEND_DEVICE",
+          "recipient": "CLINICIAN",
+          "layer": "P0",
+          "evidence": "Patient reports no working home device for SPO2",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-012",
+          "condition": "COPD",
+          "rule_id": "ENG-DEV",
+          "step": "No working home device",
+          "action_type": "RECOMMEND_DEVICE",
+          "recipient": "CLINICIAN",
+          "priority": 12,
+          "evidence": "Patient reports no working home device for SPO2",
+          "citation": "Team default: no device means no data; order device or arrange clinic readings",
+          "patient_prefs": "LANGUAGE: Mandarin",
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-013",
+      "display_name": "Synthetic patient 013",
+      "age": 63,
+      "conditions": [
+        "HTN"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 4,
+      "current_rule_id": "ENG-4",
+      "current_step": "At risk of lost to follow-up",
+      "rung": "ENG-4",
+      "display_status": "Needs clinician",
+      "status_rank": 1,
+      "status_reason": "ENG-4 At risk of lost to follow-up: No BP reading since 2026-09-20 (26 days overdue)",
+      "next_visit_on": null,
+      "last_reading_on": "2026-09-20",
+      "pending_count": 1,
+      "prefs": "AI_CALLS: allowed",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": 9.0,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-037",
+          "note_date": "2026-04-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-013   Date: 2026-04-01   Clinician: Dr. Synthetic\n\nS: 63 y/o man. Home log average 158/96.\nO: BP 156/96, PREVENT 9%.\nA: Stage 2 hypertension.\nP: Started fixed-dose combination.\nSigned: Dr. Synthetic   2026-04-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-038",
+          "note_date": "2026-07-01",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-013   Date: 2026-07-01   Clinician: Dr. Synthetic\n\nS: Home average 146/90.\nO: BP 144/90.\nA: Stage 2 hypertension, not at goal.\nP: Dose increased.\nSigned: Dr. Synthetic   2026-07-01",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-039",
+          "note_date": "2026-08-05",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-013   Date: 2026-08-05   Clinician: Dr. Synthetic\n\nS: Phone visit. Tolerating medication. Busy at work.\nO: Home average 142/88.\nA: Stage 2 hypertension, improving.\nP: Keep logging home BP weekly.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- AI calls: allowed\nSigned: Dr. Synthetic   2026-08-05",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-039",
+          "note_date": "2026-08-05",
+          "line": "- AI calls: allowed",
+          "raw_key": "ai calls",
+          "raw_value": "allowed",
+          "setting": "AI_CALLS",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "AI_CALLS",
+          "raw_value": "allowed",
+          "note_id": "N-039"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-013-HTN",
+        "condition": "HTN",
+        "note_id": "N-039",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- AI calls: allowed",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-013-HTN-1",
+          "plan_id": "PLAN-SYN-013-HTN",
+          "seq": 1,
+          "todo_text": "Collect BP at least every 7 days (home device)",
+          "rule_id": "CAD-HTN",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-23",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-013-HTN-2",
+          "plan_id": "PLAN-SYN-013-HTN",
+          "seq": 2,
+          "todo_text": "Watch: Red flag (2025 AHA/ACC HBP guideline: severe hypertension >=180/120)",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-013-HTN-3",
+          "plan_id": "PLAN-SYN-013-HTN",
+          "seq": 3,
+          "todo_text": "Review: At risk of lost to follow-up",
+          "rule_id": "ENG-4",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        },
+        {
+          "todo_id": "PLAN-SYN-013-HTN-4",
+          "plan_id": "PLAN-SYN-013-HTN",
+          "seq": 4,
+          "todo_text": "AI Plan: AI calls: allowed (note N-039)",
+          "rule_id": null,
+          "setting": "AI_CALLS",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-013",
+          "condition": "HTN",
+          "reading_type": "BP",
+          "resource": "Home device",
+          "cadence_days": 7,
+          "cadence_rule_id": "CAD-HTN",
+          "layer": "P0",
+          "last_value": "142/88",
+          "last_on": "2026-09-20",
+          "days_since": 33,
+          "days_overdue": 26,
+          "collect_flag": false,
+          "action_flag": true,
+          "rung": "ENG-4",
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-013",
+          "condition": "HTN",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": null,
+          "last_on": null,
+          "days_since": 205,
+          "days_overdue": 175,
+          "collect_flag": false,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 13,
+          "condition": "HTN",
+          "rule_id": "ENG-4",
+          "kind": "DRAFT",
+          "step": "At risk of lost to follow-up",
+          "action_type": "LOST_TO_FOLLOWUP",
+          "recipient": "CLINICIAN",
+          "layer": "P0",
+          "evidence": "No BP reading since 2026-09-20 (26 days overdue)",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-013",
+          "condition": "HTN",
+          "rule_id": "ENG-4",
+          "step": "At risk of lost to follow-up",
+          "action_type": "LOST_TO_FOLLOWUP",
+          "recipient": "CLINICIAN",
+          "priority": 14,
+          "evidence": "No BP reading since 2026-09-20 (26 days overdue)",
+          "citation": "Team default: clinician flag and visit offer at 21 days",
+          "patient_prefs": "AI_CALLS: allowed",
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-014",
+      "display_name": "Synthetic patient 014",
+      "age": 45,
+      "conditions": [
+        "HTN"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 3,
+      "current_rule_id": "ENG-1",
+      "current_step": "Missed reading: reminder",
+      "rung": "ENG-1",
+      "display_status": "Awaiting approval",
+      "status_rank": 2,
+      "status_reason": "Draft waiting for approval: ENG-1 Missed reading: reminder",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-14",
+      "pending_count": 1,
+      "prefs": "REMINDER_CHANNEL: text only",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": 6.0,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-040",
+          "note_date": "2025-09-18",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-014   Date: 2025-09-18   Clinician: Dr. Synthetic\n\nS: 45 y/o woman, annual exam.\nO: BP 128/82.\nA: Elevated BP.\nP: Recheck next year.\nSigned: Dr. Synthetic   2025-09-18",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-041",
+          "note_date": "2026-03-04",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-014   Date: 2026-03-04   Clinician: Dr. Synthetic\n\nS: Sinus congestion for 10 days.\nO: BP 134/84, afebrile.\nA: Acute sinusitis. Elevated BP.\nP: Supportive care. Home BP monitoring advised.\nSigned: Dr. Synthetic   2026-03-04",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-042",
+          "note_date": "2026-09-15",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-014   Date: 2026-09-15   Clinician: Dr. Synthetic\n\nS: Home log average 133/82.\nO: BP 134/82, PREVENT 6%.\nA: Stage 1 hypertension, low risk.\nP: Lifestyle trial with home monitoring.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- Reminders: text only\nSigned: Dr. Synthetic   2026-09-15",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-042",
+          "note_date": "2026-09-15",
+          "line": "- Reminders: text only",
+          "raw_key": "reminders",
+          "raw_value": "text only",
+          "setting": "REMINDER_CHANNEL",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "REMINDER_CHANNEL",
+          "raw_value": "text only",
+          "note_id": "N-042"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-014-HTN",
+        "condition": "HTN",
+        "note_id": "N-042",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- Reminders: text only",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-014-HTN-1",
+          "plan_id": "PLAN-SYN-014-HTN",
+          "seq": 1,
+          "todo_text": "Collect BP at least every 7 days (home device)",
+          "rule_id": "CAD-HTN",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-23",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-014-HTN-2",
+          "plan_id": "PLAN-SYN-014-HTN",
+          "seq": 2,
+          "todo_text": "Watch: Red flag (2025 AHA/ACC HBP guideline: severe hypertension >=180/120)",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-014-HTN-3",
+          "plan_id": "PLAN-SYN-014-HTN",
+          "seq": 3,
+          "todo_text": "Review: Missed reading: reminder",
+          "rule_id": "ENG-1",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-014",
+          "condition": "HTN",
+          "reading_type": "BP",
+          "resource": "Home device",
+          "cadence_days": 7,
+          "cadence_rule_id": "CAD-HTN",
+          "layer": "P0",
+          "last_value": "132/83",
+          "last_on": "2026-10-14",
+          "days_since": 9,
+          "days_overdue": 2,
+          "collect_flag": false,
+          "action_flag": true,
+          "rung": "ENG-1",
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [
+        {
+          "action_id": 14,
+          "condition": "HTN",
+          "rule_id": "ENG-1",
+          "kind": "DRAFT",
+          "step": "Missed reading: reminder",
+          "action_type": "READING_REMINDER",
+          "recipient": "PATIENT",
+          "layer": "P0",
+          "evidence": "No BP reading since 2026-10-14 (2 days overdue)",
+          "draft_text": "[fixture] Claude draft appears here in live mode\nWhy: [fixture] Why line appears here in live mode",
+          "status": "PENDING",
+          "channel": null,
+          "created_at": "2026-10-23T13:45:00.000",
+          "sim_date": "2026-10-23",
+          "model": "claude-sonnet-5-5",
+          "draft_source": "CLAUDE",
+          "reviewed_by": null,
+          "reviewed_at": null,
+          "review_note": null,
+          "sends": []
+        }
+      ],
+      "calls": [],
+      "firings": [
+        {
+          "patient_id": "SYN-014",
+          "condition": "HTN",
+          "rule_id": "ENG-1",
+          "step": "Missed reading: reminder",
+          "action_type": "READING_REMINDER",
+          "recipient": "PATIENT",
+          "priority": 28,
+          "evidence": "No BP reading since 2026-10-14 (2 days overdue)",
+          "citation": "Team default: remind at 2 days overdue",
+          "patient_prefs": "REMINDER_CHANNEL: text only",
+          "layer": "P0",
+          "override_note_id": null,
+          "is_red_flag": false,
+          "is_held": false,
+          "held_rule": null
+        }
+      ]
+    },
+    {
+      "patient_id": "SYN-015",
+      "display_name": "Synthetic patient 015",
+      "age": 82,
+      "conditions": [
+        "HTN"
+      ],
+      "ai_plan_mode": "Custom",
+      "plan_status": "ACTIVE",
+      "todos_done": 0,
+      "todos_total": 4,
+      "current_rule_id": null,
+      "current_step": null,
+      "rung": null,
+      "display_status": "Ongoing follow-up",
+      "status_rank": 5,
+      "status_reason": "Readings current; no rule fired",
+      "next_visit_on": null,
+      "last_reading_on": "2026-10-22",
+      "pending_count": 0,
+      "prefs": "AI_CALLS: allowed",
+      "held_until": null,
+      "has_diabetes": false,
+      "has_ckd": false,
+      "has_clinical_cvd": false,
+      "prevent_10yr_pct": 18.0,
+      "a1c_goal": null,
+      "doctor_id": "DR-SYNTHETIC",
+      "ai_call_consent": true,
+      "notes": [
+        {
+          "note_id": "N-043",
+          "note_date": "2025-01-10",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-015   Date: 2025-01-10   Clinician: Dr. Synthetic\n\nS: 82 y/o woman. Home log average 156/88.\nO: BP 158/88.\nA: Stage 2 hypertension.\nP: Started fixed-dose combination.\nSigned: Dr. Synthetic   2025-01-10",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-044",
+          "note_date": "2026-04-08",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-015   Date: 2026-04-08   Clinician: Dr. Synthetic\n\nS: Dizzy when standing up quickly.\nO: BP 142/86 seated, 128/80 standing.\nA: Stage 2 hypertension with orthostatic symptoms.\nP: Hydration and slow position changes. Continue regimen.\nSigned: Dr. Synthetic   2026-04-08",
+          "has_ai_plan": false
+        },
+        {
+          "note_id": "N-045",
+          "note_date": "2026-08-15",
+          "clinician": "Dr. Synthetic",
+          "note_text": "SOAP NOTE: SYN-015   Date: 2026-08-15   Clinician: Dr. Synthetic\n\nS: Fall at home in July, no injury. Still lightheaded on standing.\nO: BP 136/84 seated, 122/76 standing.\nA: Stage 2 hypertension with orthostatic hypotension and fall risk.\nP: Dose reduced. Physical therapy for balance. Individualized BP goal set.\n\nAI PLAN (clinician directives; supersede the note and rule defaults)\n- BP goal: < 140/90 (age 82, orthostatic dizziness, fall in July 2026)\n- AI calls: allowed\nSigned: Dr. Synthetic   2026-08-15",
+          "has_ai_plan": true
+        }
+      ],
+      "overrides": [
+        {
+          "note_id": "N-045",
+          "note_date": "2026-08-15",
+          "line": "- BP goal: < 140/90 (age 82, orthostatic dizziness, fall in July 2026)",
+          "raw_key": "bp goal",
+          "raw_value": "< 140/90 (age 82, orthostatic dizziness, fall in July 2026)",
+          "setting": "BP_GOAL",
+          "status": "APPLIED"
+        },
+        {
+          "note_id": "N-045",
+          "note_date": "2026-08-15",
+          "line": "- AI calls: allowed",
+          "raw_key": "ai calls",
+          "raw_value": "allowed",
+          "setting": "AI_CALLS",
+          "status": "APPLIED"
+        }
+      ],
+      "active_overrides": [
+        {
+          "setting": "AI_CALLS",
+          "raw_value": "allowed",
+          "note_id": "N-045"
+        },
+        {
+          "setting": "BP_GOAL",
+          "raw_value": "< 140/90 (age 82, orthostatic dizziness, fall in July 2026)",
+          "note_id": "N-045"
+        }
+      ],
+      "plan": {
+        "plan_id": "PLAN-SYN-015-HTN",
+        "condition": "HTN",
+        "note_id": "N-045",
+        "mode": "Custom",
+        "status": "ACTIVE",
+        "reading": {
+          "summary": "[fixture] Claude's plain-language reading of the AI Plan appears here in live mode",
+          "lines": [
+            {
+              "line": "- BP goal: < 140/90 (age 82, orthostatic dizziness, fall in July 2026)",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            },
+            {
+              "line": "- AI calls: allowed",
+              "meaning": "[fixture] Claude's reading of this line appears here in live mode",
+              "concern": null
+            }
+          ]
+        },
+        "reading_model": "claude-sonnet-4-5",
+        "validation": {
+          "ok": true,
+          "reasons": []
+        }
+      },
+      "held": null,
+      "todos": [
+        {
+          "todo_id": "PLAN-SYN-015-HTN-1",
+          "plan_id": "PLAN-SYN-015-HTN",
+          "seq": 1,
+          "todo_text": "Collect BP at least every 7 days (home device)",
+          "rule_id": "CAD-HTN",
+          "setting": null,
+          "layer": "P0",
+          "due_on": "2026-10-29",
+          "done": false,
+          "kind": "COLLECT"
+        },
+        {
+          "todo_id": "PLAN-SYN-015-HTN-2",
+          "plan_id": "PLAN-SYN-015-HTN",
+          "seq": 2,
+          "todo_text": "Watch: Red flag (2025 AHA/ACC HBP guideline: severe hypertension >=180/120)",
+          "rule_id": "BP-RED",
+          "setting": null,
+          "layer": "P0",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-015-HTN-3",
+          "plan_id": "PLAN-SYN-015-HTN",
+          "seq": 3,
+          "todo_text": "AI Plan: BP goal: < 140/90 (age 82, orthostatic dizziness, fall in July 2026) (note N-045)",
+          "rule_id": null,
+          "setting": "BP_GOAL",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "WATCH"
+        },
+        {
+          "todo_id": "PLAN-SYN-015-HTN-4",
+          "plan_id": "PLAN-SYN-015-HTN",
+          "seq": 4,
+          "todo_text": "AI Plan: AI calls: allowed (note N-045)",
+          "rule_id": null,
+          "setting": "AI_CALLS",
+          "layer": "P2",
+          "due_on": null,
+          "done": false,
+          "kind": "REVIEW"
+        }
+      ],
+      "monitored": [
+        {
+          "patient_id": "SYN-015",
+          "condition": "HTN",
+          "reading_type": "BP",
+          "resource": "Home device",
+          "cadence_days": 7,
+          "cadence_rule_id": "CAD-HTN",
+          "layer": "P0",
+          "last_value": "136/85",
+          "last_on": "2026-10-22",
+          "days_since": 1,
+          "days_overdue": -6,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        },
+        {
+          "patient_id": "SYN-015",
+          "condition": "HTN",
+          "reading_type": "ADHERENCE",
+          "resource": "Patient report",
+          "cadence_days": 30,
+          "cadence_rule_id": "ADH",
+          "layer": "P0",
+          "last_value": "Taking as prescribed",
+          "last_on": "2026-10-15",
+          "days_since": 8,
+          "days_overdue": -22,
+          "collect_flag": true,
+          "action_flag": false,
+          "rung": null,
+          "paused": false,
+          "note": null
+        }
+      ],
+      "actions": [],
+      "calls": [],
+      "firings": []
+    }
+  ]
+}

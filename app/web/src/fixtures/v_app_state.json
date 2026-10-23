@@ -1,0 +1,18 @@
+{
+  "_source": "sample",
+  "rows": [
+    {
+      "as_of_date": "2026-10-23",
+      "pending_count": 14,
+      "red_flag_count": 2,
+      "needs_clinician_count": 7,
+      "roles_mode": "REAL",
+      "models": {
+        "model_reader": "claude-sonnet-4-5",
+        "model_drafter": "claude-sonnet-5-5",
+        "model_caller": "claude-sonnet-5-5"
+      },
+      "call_ready": []
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "_source": "sample",
+  "rows": [
+    {
+      "key_prefix": "a1c goal",
+      "setting": "A1C_GOAL",
+      "value_type": "NUM",
+      "min_value": 6.5,
+      "max_value": 8.5,
+      "min_value2": null,
+      "max_value2": null,
+      "max_days": null,
+      "description": "Individualized A1C goal; ADA: under 7% for many, under 8% less stringent"
+    },
+    {
+      "key_prefix": "bp goal",
+      "setting": "BP_GOAL",
+      "value_type": "BP",
+      "min_value": 120,
+      "max_value": 150,
+      "min_value2": 70,
+      "max_value2": 90,
+      "max_days": null,
+      "description": "Individualized home BP goal"
+    },
+    {
+      "key_prefix": "hold escalation",
+      "setting": "HOLD_ESCALATION_UNTIL",
+      "value_type": "DATE",
+      "min_value": null,
+      "max_value": null,
+      "min_value2": null,
+      "max_value2": null,
+      "max_days": 180,
+      "description": "Hold medication escalation drafts until this date; red flags still fire"
+    },
+    {
+      "key_prefix": "ai calls",
+      "setting": "AI_CALLS",
+      "value_type": "YESNO",
+      "min_value": null,
+      "max_value": null,
+      "min_value2": null,
+      "max_value2": null,
+      "max_days": null,
+      "description": "Allow AI check-in calls"
+    },
+    {
+      "key_prefix": "contact window",
+      "setting": "CONTACT_WINDOW",
+      "value_type": "TEXT",
+      "min_value": null,
+      "max_value": null,
+      "min_value2": null,
+      "max_value2": null,
+      "max_days": null,
+      "description": "When to contact the patient"
+    },
+    {
+      "key_prefix": "language",
+      "setting": "LANGUAGE",
+      "value_type": "TEXT",
+      "min_value": null,
+      "max_value": null,
+      "min_value2": null,
+      "max_value2": null,
+      "max_days": null,
+      "description": "Language for messages and calls"
+    },
+    {
+      "key_prefix": "do not contact",
+      "setting": "DO_NOT_CONTACT",
+      "value_type": "TEXT",
+      "min_value": null,
+      "max_value": null,
+      "min_value2": null,
+      "max_value2": null,
+      "max_days": null,
+      "description": "People or channels not to contact"
+    },
+    {
+      "key_prefix": "adherence check-ins",
+      "setting": "CHECKINS",
+      "value_type": "TEXT",
+      "min_value": null,
+      "max_value": null,
+      "min_value2": null,
+      "max_value2": null,
+      "max_days": null,
+      "description": "Check-in frequency and channel"
+    },
+    {
+      "key_prefix": "reminders",
+      "setting": "REMINDER_CHANNEL",
+      "value_type": "TEXT",
+      "min_value": null,
+      "max_value": null,
+      "min_value2": null,
+      "max_value2": null,
+      "max_days": null,
+      "description": "Reminder channel"
+    },
+    {
+      "key_prefix": "notify me directly if",
+      "setting": "NOTIFY_IF",
+      "value_type": "TEXT",
+      "min_value": null,
+      "max_value": null,
+      "min_value2": null,
+      "max_value2": null,
+      "max_days": null,
+      "description": "Extra condition for a direct clinician alert (shown on every draft)"
+    }
+  ]
+}

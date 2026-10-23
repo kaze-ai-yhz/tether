@@ -1,0 +1,38 @@
+{
+  "_source": "sample",
+  "rows": [
+    {
+      "term": "red flag"
+    },
+    {
+      "term": "only alert"
+    },
+    {
+      "term": "alert only"
+    },
+    {
+      "term": "do not alert"
+    },
+    {
+      "term": "disable"
+    },
+    {
+      "term": "turn off"
+    },
+    {
+      "term": "ignore reading"
+    },
+    {
+      "term": "skip approval"
+    },
+    {
+      "term": "no approval"
+    },
+    {
+      "term": "auto-send"
+    },
+    {
+      "term": "without approval"
+    }
+  ]
+}

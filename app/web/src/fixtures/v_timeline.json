@@ -1,0 +1,245 @@
+{
+  "_source": "sample",
+  "rows": [
+    {
+      "patient_id": "SYN-001",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-001 · AI Plan in N-003 read (sample)"
+    },
+    {
+      "patient_id": "SYN-001",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-001 · 3 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-002",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-002 · 2 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-003",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-003 · AI Plan in N-009 read (sample)"
+    },
+    {
+      "patient_id": "SYN-003",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-003 · 3 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-004",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-004 · 3 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-005",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-005 · AI Plan in N-015 read (sample)"
+    },
+    {
+      "patient_id": "SYN-005",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-005 · 5 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-005",
+      "logged_at": "2026-10-23T13:40:03.000",
+      "actor": "CARE_AGENT",
+      "event": "RED_FLAG_ALERT",
+      "action_id": 4,
+      "detail": "SYN-005 · BP-RED: BP 186/122 on 2026-10-22 (sample)"
+    },
+    {
+      "patient_id": "SYN-006",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-006 · AI Plan in N-018 read (sample)"
+    },
+    {
+      "patient_id": "SYN-006",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-006 · 3 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-007",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-007 · AI Plan in N-021 read (sample)"
+    },
+    {
+      "patient_id": "SYN-007",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-007 · 3 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-008",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-008 · AI Plan in N-024 read (sample)"
+    },
+    {
+      "patient_id": "SYN-008",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-008 · 6 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-009",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-009 · AI Plan in N-027 read (sample)"
+    },
+    {
+      "patient_id": "SYN-009",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-009 · 4 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-009",
+      "logged_at": "2026-10-23T13:40:03.000",
+      "actor": "CARE_AGENT",
+      "event": "RED_FLAG_ALERT",
+      "action_id": 8,
+      "detail": "SYN-009 · DM-RED: Glucose 51 mg/dL on 2026-10-21 (sample)"
+    },
+    {
+      "patient_id": "SYN-010",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-010 · AI Plan in N-029 read (sample)"
+    },
+    {
+      "patient_id": "SYN-010",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-010 · 4 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-011",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-011 · AI Plan in N-033 read (sample)"
+    },
+    {
+      "patient_id": "SYN-011",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-011 · 4 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-012",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-012 · AI Plan in N-036 read (sample)"
+    },
+    {
+      "patient_id": "SYN-012",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-012 · 2 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-013",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-013 · AI Plan in N-039 read (sample)"
+    },
+    {
+      "patient_id": "SYN-013",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-013 · 4 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-014",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-014 · AI Plan in N-042 read (sample)"
+    },
+    {
+      "patient_id": "SYN-014",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-014 · 3 todos composed from rules (sample)"
+    },
+    {
+      "patient_id": "SYN-015",
+      "logged_at": "2026-10-23T13:40:01.000",
+      "actor": "CARE_AGENT",
+      "event": "AI_PLAN_READ",
+      "action_id": null,
+      "detail": "SYN-015 · AI Plan in N-045 read (sample)"
+    },
+    {
+      "patient_id": "SYN-015",
+      "logged_at": "2026-10-23T13:40:02.000",
+      "actor": "CARE_AGENT",
+      "event": "PLAN_COMPOSED",
+      "action_id": null,
+      "detail": "SYN-015 · 4 todos composed from rules (sample)"
+    }
+  ]
+}

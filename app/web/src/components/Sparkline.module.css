@@ -1,0 +1,51 @@
+.wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  vertical-align: middle;
+}
+
+.svg {
+  display: block;
+  overflow: visible;
+}
+
+.series1,
+.series2 {
+  fill: none;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.series1 {
+  stroke: var(--series-1);
+}
+
+.series2 {
+  stroke: var(--series-2);
+  opacity: 0.85;
+}
+
+.threshold {
+  stroke: var(--status-alert-fg);
+  stroke-width: 1;
+}
+
+.dot {
+  fill: var(--series-1);
+}
+
+.thresholdLabel {
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  font-weight: var(--type-meta-weight);
+  color: var(--status-alert-fg);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.none {
+  font-size: var(--type-meta-size);
+  color: var(--text-muted);
+}

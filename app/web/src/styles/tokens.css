@@ -1,0 +1,281 @@
+/*
+ * Tether design tokens (docs/tether/DESIGN-SYSTEM.md §2-6).
+ * Dark is the default theme (stage). Light shares every token path via [data-theme="light"].
+ * Mirrored for TypeScript in src/styles/tokens.ts; keep both files in sync.
+ */
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* 2.1 Neutrals */
+  --surface-canvas: #0a0d11;
+  --surface-default: #11151b;
+  --surface-raised: #171c23;
+  --surface-sunken: #07090c;
+  --surface-hover: #1d232b;
+  --line-hairline: #252b34;
+  --line-strong: #363a41;
+  --line-boundary: #6a7482;
+  --text-default: #e7eaee;
+  --text-on-ink: #0a0d11;
+  --text-muted: #98a1ac;
+  --text-disabled: #4a525e;
+  --ink: var(--text-default);
+  --focus-ring-color: var(--ink);
+
+  /* 2.2 AI provenance: Marker */
+  --marker-text: #cfea55;
+  --marker-mark: #cfea55;
+  --marker-wash: #1e2510;
+
+  /* 2.3 Clinical status (fg / bg / border) */
+  --status-ok-fg: #56cfa8;
+  --status-ok-bg: #0e2620;
+  --status-ok-border: #2a6b58;
+  --status-info-fg: #7fa9ee;
+  --status-info-bg: #0f1a2b;
+  --status-info-border: #2c4a78;
+  --status-caution-fg: #f0b45a;
+  --status-caution-bg: #2a1f0e;
+  --status-caution-border: #7a5524;
+  --status-alert-fg: #ff6b8b;
+  --status-alert-bg: #2b1219;
+  --status-alert-border: #7d2e42;
+  --status-alert-strong-fg: #0a0d11;
+  --status-alert-strong-bg: #ff6b8b;
+  --status-neutral-fg: var(--text-muted);
+  --status-neutral-bg: var(--surface-sunken);
+  --status-neutral-border: var(--line-strong);
+
+  /* 2.4 Data series */
+  --series-1: #5a8ee4;
+  --series-2: #d75f94;
+  --series-3: #884baf;
+
+  /* 2.4 Wait / overdue ramp, low to high */
+  --overdue-1: #7a4627;
+  --overdue-2: #9c562c;
+  --overdue-3: #c86d34;
+  --overdue-4: #e9884d;
+  --overdue-5: #fdab7c;
+
+  /* 4. Elevation: dark uses surface steps, not shadows */
+  --shadow-raised: none;
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+
+  --surface-canvas: #f5f6f7;
+  --surface-default: #ffffff;
+  --surface-raised: #ffffff;
+  --surface-sunken: #eceef1;
+  --surface-hover: #eceef1;
+  --line-hairline: #d5d9df;
+  --line-strong: #b9c0c9;
+  --line-boundary: #7f8895;
+  --text-default: #10141a;
+  --text-on-ink: #f5f6f7;
+  --text-muted: #535c68;
+  --text-disabled: #9aa2ad;
+  --ink: var(--text-default);
+  --focus-ring-color: var(--ink);
+
+  --marker-text: #4d6000;
+  --marker-mark: #7a9a00;
+  --marker-wash: #eef6cf;
+
+  --status-ok-fg: #1c7445;
+  --status-ok-bg: #e7f3ec;
+  --status-ok-border: #8fc4a6;
+  --status-info-fg: #1762b6;
+  --status-info-bg: #e8f0fa;
+  --status-info-border: #9dbde6;
+  --status-caution-fg: #8f3e00;
+  --status-caution-bg: #fbf0e6;
+  --status-caution-border: #e6a782;
+  --status-alert-fg: #b0213a;
+  --status-alert-bg: #fbeaed;
+  --status-alert-border: #e29aa8;
+  --status-alert-strong-fg: #ffffff;
+  --status-alert-strong-bg: #b0213a;
+  --status-neutral-fg: var(--text-muted);
+  --status-neutral-bg: var(--surface-sunken);
+  --status-neutral-border: var(--line-strong);
+
+  --series-1: #1762b6;
+  --series-2: #902559;
+  --series-3: #bf75d0;
+
+  --overdue-1: #e6a782;
+  --overdue-2: #da8956;
+  --overdue-3: #ca6d2b;
+  --overdue-4: #b15300;
+  --overdue-5: #8f3e00;
+
+  --shadow-raised: 0 1px 2px rgba(16, 20, 26, 0.06), 0 8px 24px rgba(16, 20, 26, 0.08);
+}
+
+/* Without an explicit data-theme, follow the OS preference (the app sets data-theme="dark"). */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --surface-canvas: #f5f6f7;
+    --surface-default: #ffffff;
+    --surface-raised: #ffffff;
+    --surface-sunken: #eceef1;
+    --surface-hover: #eceef1;
+    --line-hairline: #d5d9df;
+    --line-strong: #b9c0c9;
+    --line-boundary: #7f8895;
+    --text-default: #10141a;
+    --text-on-ink: #f5f6f7;
+    --text-muted: #535c68;
+    --text-disabled: #9aa2ad;
+    --ink: var(--text-default);
+    --focus-ring-color: var(--ink);
+    --marker-text: #4d6000;
+    --marker-mark: #7a9a00;
+    --marker-wash: #eef6cf;
+    --status-ok-fg: #1c7445;
+    --status-ok-bg: #e7f3ec;
+    --status-ok-border: #8fc4a6;
+    --status-info-fg: #1762b6;
+    --status-info-bg: #e8f0fa;
+    --status-info-border: #9dbde6;
+    --status-caution-fg: #8f3e00;
+    --status-caution-bg: #fbf0e6;
+    --status-caution-border: #e6a782;
+    --status-alert-fg: #b0213a;
+    --status-alert-bg: #fbeaed;
+    --status-alert-border: #e29aa8;
+    --status-alert-strong-fg: #ffffff;
+    --status-alert-strong-bg: #b0213a;
+    --status-neutral-fg: var(--text-muted);
+    --status-neutral-bg: var(--surface-sunken);
+    --status-neutral-border: var(--line-strong);
+    --series-1: #1762b6;
+    --series-2: #902559;
+    --series-3: #bf75d0;
+    --overdue-1: #e6a782;
+    --overdue-2: #da8956;
+    --overdue-3: #ca6d2b;
+    --overdue-4: #b15300;
+    --overdue-5: #8f3e00;
+    --shadow-raised: 0 1px 2px rgba(16, 20, 26, 0.06), 0 8px 24px rgba(16, 20, 26, 0.08);
+  }
+}
+
+:root {
+  /* 3. Typography. --font-inter / --font-newsreader / --font-jetbrains-mono come from next/font. */
+  --font-sans: var(--font-inter), "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-newsreader), "Newsreader", Georgia, "Times New Roman", serif;
+  --font-mono: var(--font-jetbrains-mono), "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+
+  --type-display-size: 56px;
+  --type-display-line: 60px;
+  --type-display-weight: 400;
+  --type-h1-size: 32px;
+  --type-h1-line: 38px;
+  --type-h1-weight: 400;
+  --type-h2-size: 22px;
+  --type-h2-line: 28px;
+  --type-h2-weight: 600;
+  --type-h3-size: 16px;
+  --type-h3-line: 22px;
+  --type-h3-weight: 600;
+  --type-body-size: 14px;
+  --type-body-line: 20px;
+  --type-body-weight: 400;
+  --type-meta-size: 12px;
+  --type-meta-line: 16px;
+  --type-meta-weight: 500;
+  --type-readout-size: 28px;
+  --type-readout-line: 32px;
+  --type-readout-weight: 600;
+  --type-readout-unit-scale: 0.6;
+  --type-mono-size: 13px;
+  --type-mono-line: 18px;
+  --type-mono-weight: 400;
+
+  /* 4. Space scale (px) */
+  --space-0: 0px;
+  --space-1: 1px;
+  --space-2: 2px;
+  --space-4: 4px;
+  --space-8: 8px;
+  --space-12: 12px;
+  --space-16: 16px;
+  --space-24: 24px;
+  --space-32: 32px;
+  --space-40: 40px;
+  --space-48: 48px;
+  --space-64: 64px;
+  --space-80: 80px;
+  --space-96: 96px;
+  --gap-control: var(--space-8);
+  --gap-card: var(--space-16);
+  --gap-cards: var(--space-24);
+  --page-margin: var(--space-32);
+
+  /* 4. Radii */
+  --radius-chip: 2px;
+  --radius-control: 4px;
+  --radius-card: 6px;
+  --radius-dialog: 8px;
+  --radius-pill: 999px;
+
+  /* 4. Hit targets */
+  --hit-min: 24px;
+  --hit-touch: 40px;
+
+  /* 5. Layout */
+  --topbar-h: 48px;
+  --rail-w: 56px;
+  --rail-w-expanded: 224px;
+  --inspector-w: 400px;
+  --inspector-w-min: 360px;
+  --inspector-w-max: 560px;
+  --demo-panel-w: 360px;
+  --ask-drawer-w: 440px;
+  --action-bar-h: 64px;
+  --content-max: 1600px;
+  --gutter: 24px;
+
+  /* 6. Motion */
+  --dur-press: 60ms;
+  --dur-hover: 80ms;
+  --dur-toggle: 120ms;
+  --dur-reveal: 180ms;
+  --dur-panel: 240ms;
+  --dur-dialog: 320ms;
+  --dur-settle: 900ms;
+  --dur-reduced-fade: 200ms;
+  --ease-conduct: cubic-bezier(0.2, 0, 0, 1);
+  --ease-exit: cubic-bezier(0.4, 0, 1, 1);
+  --ease-standard: cubic-bezier(0.3, 0, 0.2, 1);
+
+  /* 8. Focus ring: 2px Ink, 2px offset (color set per theme) */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* 2.5 Line styles carry provenance (SVG stroke-dasharray values) */
+  --dash-proposed: 4 3;
+  --dash-simulated: 6 3 1 3;
+  --dash-not-connected: 1 3;
+}
+
+/* 6. Reduced motion: no sliding, movement becomes a 200 ms cross-fade. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-press: 0ms;
+    --dur-hover: 0ms;
+    --dur-toggle: 0ms;
+    --dur-reveal: var(--dur-reduced-fade);
+    --dur-panel: var(--dur-reduced-fade);
+    --dur-dialog: var(--dur-reduced-fade);
+    --dur-settle: var(--dur-reduced-fade);
+  }
+}

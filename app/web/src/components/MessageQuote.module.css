@@ -1,0 +1,28 @@
+.quote {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  margin: 0;
+  padding: var(--space-12) var(--space-16);
+  background: var(--surface-sunken);
+  border-left: 2px solid var(--line-boundary);
+  border-radius: 0 var(--radius-control) var(--radius-control) 0;
+}
+
+.body {
+  margin: 0;
+  font-size: var(--type-body-size);
+  line-height: var(--type-body-line);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  font-weight: var(--type-meta-weight);
+  color: var(--text-muted);
+}
