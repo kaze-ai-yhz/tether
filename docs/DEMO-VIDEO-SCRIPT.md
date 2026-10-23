@@ -1,42 +1,34 @@
 # Tether: 1-Minute Demo Video Script
 
-Screen recording of Snowsight with a voiceover. About 140 words, which fits 60 seconds at a natural pace.
+Screen recording with a voiceover. About 130 words, which fits 60 seconds at a natural pace.
 
 | Time | On screen | Voiceover |
 | --- | --- | --- |
-| 0:00 to 0:08 | Title card: "Tether: keeping chronic patients connected between visits." Built today with Snowflake and Claude. | "Half of chronic disease medications aren't taken as prescribed. Tether is the follow-up team practices can't hire, and a physician approves every action." |
-| 0:08 to 0:22 | Snowsight: run `SELECT * FROM V_RULE_FIRINGS;` and scroll the results | "Snowflake holds the patients, home readings and guideline rules. Here, a blood pressure of 186 over 122 goes straight to the doctor. A COPD patient at 88 percent is sent for an oxygen evaluation, not another inhaler change. A patient silent for a month is flagged before they're lost." |
-| 0:22 to 0:38 | Open SYN-015's note, delete the "BP goal" line, rerun the query | "Doctors steer Tether from their notes. This 82-year-old fell, so her doctor set a gentler blood pressure goal. Remove that line, and Tether recommends a dose increase." |
-| 0:38 to 0:46 | Show SYN-005's blocked line in `V_PATIENT_OVERRIDES` | "But no note can switch off a safety alert. This one is blocked and sent back to the doctor." |
-| 0:46 to 0:56 | `CALL GENERATE_DRAFTS();` then open one draft, then run `REVIEW_ACTION` | "Claude drafts each message in the patient's language and cites the guideline. Nothing goes out until the clinician approves." |
-| 0:56 to 1:00 | End card: Tether, plus the GitHub link | "Tether: a phone call instead of a hospital bed." |
+| 0:00 to 0:10 | Title card: "Tether: keeping chronic patients connected between visits" | "Half of chronic disease medications aren't taken as prescribed. Office staff can't call every patient to check, so problems surface in the ER." |
+| 0:10 to 0:25 | Patient list with each patient's next step (`V_RULE_FIRINGS` or the app) | "Tether watches home blood pressure, oxygen and glucose readings, plus refills, against AHA, GOLD and ADA guidelines, and flags who needs attention today." |
+| 0:25 to 0:40 | Follow-up rows: reminder, AI check-in call, flag to clinician | "When a patient misses readings or doses, Tether follows up for the staff: a text reminder first, then an AI check-in call. Only the patients who still need a person reach the care team." |
+| 0:40 to 0:53 | One Claude draft, then the approve click | "Claude drafts each message in the patient's language. The clinician reviews and approves with one click, instead of making the call." |
+| 0:53 to 1:00 | End card: Tether, plus the GitHub link | "Fewer phone calls for staff, better compliance for patients. That's Tether." |
+
+The 50% figure is sourced in `docs/PITCH.md`. The script describes how Tether reduces calls but does not claim a specific number of hours saved, since that has not been measured.
 
 ## Recording tips
 
-- **Prepare:** run `sql/care_rules_snowflake.sql` and `CALL GENERATE_DRAFTS();` once beforehand so drafts already exist. Keep the three queries open in separate worksheet tabs.
-- **Tools:** QuickTime (File, New Screen Recording) or Loom. Zoom the browser to about 125% so text is readable.
+- **Prepare:** run `sql/care_rules_snowflake.sql` and `CALL GENERATE_DRAFTS();` once beforehand so drafts already exist.
+- **Record:** on a Mac, press Cmd + Shift + 5, choose Record Selected Portion, and set the microphone under Options. Zoom the browser to about 125% so text is readable.
 - **Share:** upload as Unlisted on YouTube, check the link plays in a private window, then paste it into the submission form.
 
-## SQL for each shot
+## SQL for each shot (if recording in Snowsight)
 
 ```sql
--- Shot 2
+-- Patient list and next steps
 SELECT patient_id, condition, rule_id, recipient, evidence FROM V_RULE_FIRINGS ORDER BY priority, patient_id;
 
--- Shot 3: remove SYN-015's individualized BP goal, then rerun shot 2
-UPDATE CLINICAL_NOTES
-   SET note_text = REPLACE(note_text, '- BP goal: < 140/90 (age 82, orthostatic dizziness, fall in July 2026)', '')
- WHERE note_id = 'N-045';
-SELECT patient_id, rule_id, evidence FROM V_RULE_FIRINGS WHERE patient_id = 'SYN-015';
+-- Follow-up ladder rows
+SELECT patient_id, rule_id, step, recipient, evidence FROM V_RULE_FIRINGS WHERE rule_id LIKE 'ENG-%' ORDER BY patient_id;
 
--- Shot 4
-SELECT patient_id, note_id, line, status FROM V_PATIENT_OVERRIDES WHERE status <> 'APPLIED';
-
--- Shot 5
+-- Claude draft and approval
 CALL GENERATE_DRAFTS();
 SELECT action_id, patient_id, rule_id, draft_text FROM ACTION_QUEUE ORDER BY action_id;
 CALL REVIEW_ACTION(1, 'APPROVED', 'Reviewed for demo', NULL);
-SELECT * FROM AUDIT_LOG ORDER BY logged_at DESC;
 ```
-
-To restore SYN-015's goal after recording, rerun the CLINICAL_NOTES insert from the SQL file.
