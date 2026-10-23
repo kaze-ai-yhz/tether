@@ -49,6 +49,10 @@ const CALL_WAIT_SECONDS = 150;
 
 /** Procs only CLINICIAN_ROLE may use (plan decision 9). Fixtures mode mirrors the refusal. */
 const CLINICIAN_ONLY = new Set(['TETHER_REVIEW', 'UPDATE_RULE', 'PREVIEW_RULE_EDIT', 'DEMO_RESET']);
+/** Procs that change nothing the screens show, so a call does not clear the read cache. */
+const READ_ONLY_PROCS = new Set(['PREVIEW_RULE_EDIT', 'LOG_REVIEW_DENIED']);
+/** How long a cached read counts as fresh, per screen. */
+const FRESH_MS = { state: 15_000, queue: 10_000, patients: 30_000, patient: 30_000, timeline: 15_000, rules: 60_000 };
 
 // ---------------------------------------------------------------------------------------------
 // Row normalization (live rows and fixtures alike)
@@ -208,7 +212,109 @@ async function callProc<T extends ProcResult>(
       fixtures: false,
     };
   }
+  if (!READ_ONLY_PROCS.has(name)) afterWrite(who, mode.credentials);
   return { ok: true, data: proc as T, fixtures: false };
+}
+
+// ---------------------------------------------------------------------------------------------
+// Read cache. Snowflake compiles the stacked app views on every query (V_PATIENT_DETAIL about 66 s,
+// V_PATIENT_LIST about 32 s, against 2-3 s of execution), so live reads are kept per acting role for a
+// short time, concurrent requests share one query, and an expired copy is served while a fresh one loads
+// in the background. A successful write clears the queue, state, timeline and rules reads at once and
+// rebuilds the patient snapshots (sql/65_perf_snapshots.sql) in the background.
+// ---------------------------------------------------------------------------------------------
+
+interface CacheEntry {
+  loadedAt: number;
+  settled?: DataResult<unknown>;
+  inflight?: Promise<DataResult<unknown>>;
+}
+
+const readCache = new Map<string, CacheEntry>();
+
+function loadInto<T>(key: string, loader: () => Promise<DataResult<T>>): Promise<DataResult<T>> {
+  const entry = readCache.get(key) ?? { loadedAt: 0 };
+  if (entry.inflight) return entry.inflight as Promise<DataResult<T>>;
+  const pending = loader().then(
+    (result) => {
+      entry.inflight = undefined;
+      if (result.ok) {
+        entry.settled = result;
+        entry.loadedAt = Date.now();
+      }
+      return result;
+    },
+    (err: unknown) => {
+      entry.inflight = undefined;
+      throw err;
+    },
+  );
+  entry.inflight = pending;
+  readCache.set(key, entry);
+  return pending;
+}
+
+/** Fresh copy: served as is. Expired copy: served now, reloaded in the background. No copy: loaded. */
+async function cachedRead<T>(key: string, freshMs: number, loader: () => Promise<DataResult<T>>): Promise<DataResult<T>> {
+  const entry = readCache.get(key);
+  if (entry?.settled) {
+    if (Date.now() - entry.loadedAt >= freshMs) void loadInto(key, loader).catch(() => undefined);
+    return entry.settled as DataResult<T>;
+  }
+  return loadInto(key, loader);
+}
+
+/** Reads whose stale copy would contradict a write the user just made are dropped; patient reads expire. */
+function afterWrite(who: ActingAs, credentials: Parameters<typeof execute>[0]): void {
+  for (const [key, entry] of readCache) {
+    if (/:(state|queue|timeline|rules)/.test(key)) readCache.delete(key);
+    else entry.loadedAt = 0;
+  }
+  refreshSnapshots(who, credentials);
+}
+
+let snapshotRun: Promise<void> | null = null;
+let snapshotAgain = false;
+
+/** One rebuild at a time; a write during a rebuild schedules exactly one more. */
+function refreshSnapshots(who: ActingAs, credentials: Parameters<typeof execute>[0]): void {
+  if (snapshotRun) {
+    snapshotAgain = true;
+    return;
+  }
+  snapshotRun = (async () => {
+    do {
+      snapshotAgain = false;
+      const started = Date.now();
+      const results = await Promise.all(
+        ['PATIENT_LIST', 'PATIENT_DETAIL'].map((which) => {
+          const { statement, binds } = buildCall('REFRESH_SNAPSHOTS', [which]);
+          return execute<Row>(credentials, statement, binds, { waitSeconds: CALL_WAIT_SECONDS });
+        }),
+      );
+      const failed = results.find((r) => !r.ok);
+      if (failed && !failed.ok) console.error(`[snapshots] refresh failed: ${failed.message}`);
+      else console.info(`[snapshots] refreshed for ${who} in ${((Date.now() - started) / 1000).toFixed(1)} s`);
+      for (const [key, entry] of readCache) if (/:patient/.test(key)) entry.loadedAt = 0;
+    } while (snapshotAgain);
+  })()
+    .catch((err: unknown) => console.error('[snapshots] refresh failed', err))
+    .finally(() => {
+      snapshotRun = null;
+    });
+}
+
+/** Snapshot first; the view if the snapshot is missing (not created yet, or this role lacks the grant). */
+async function readSnapshotOrView<T>(
+  who: ActingAs,
+  snapshotSql: string,
+  viewSql: string,
+  binds: Bind[],
+  fromFixture: () => FixtureSet<T>,
+): Promise<DataResult<T[]>> {
+  const snap = await readRows<T>(who, snapshotSql, binds, fromFixture);
+  if (snap.ok) return snap;
+  return readRows<T>(who, viewSql, binds, fromFixture);
 }
 
 /** Combines parallel reads into one result; the first failure wins. */
@@ -223,54 +329,82 @@ function combine<A, B, R>(a: DataResult<A>, b: DataResult<B>, join: (a: A, b: B)
 // ---------------------------------------------------------------------------------------------
 
 export async function getState(actingAs?: ActingAs): Promise<DataResult<AppState>> {
-  const rows = await readRows<AppState>(actingAs, 'SELECT * FROM V_APP_STATE', [], () => fixture(appStateFixture));
-  return firstRow(rows, 'V_APP_STATE returned no row.');
+  const who = actingAs ?? (await getActingAs());
+  return cachedRead(`${who}:state`, FRESH_MS.state, async () => {
+    const rows = await readRows<AppState>(who, 'SELECT * FROM V_APP_STATE', [], () => fixture(appStateFixture));
+    return firstRow(rows, 'V_APP_STATE returned no row.');
+  });
 }
 
 /** PENDING drafts (red flags first) plus clinician holds, which are never drafts. */
 export async function getQueue(actingAs?: ActingAs): Promise<DataResult<QueueBundle>> {
   const who = actingAs ?? (await getActingAs());
-  const [items, held] = await Promise.all([
-    readRows<QueueItem>(who, 'SELECT * FROM V_QUEUE ORDER BY is_red_flag DESC, priority, action_id', [], () =>
-      fixture(queueFixture),
-    ),
-    readRows<HeldItem>(who, 'SELECT * FROM V_HELD ORDER BY held_until, patient_id', [], () => fixture(heldFixture)),
-  ]);
-  return combine(items, held, (i, h) => ({ items: i, held: h }));
+  return cachedRead(`${who}:queue`, FRESH_MS.queue, async () => {
+    const [items, held] = await Promise.all([
+      readRows<QueueItem>(who, 'SELECT * FROM V_QUEUE ORDER BY is_red_flag DESC, priority, action_id', [], () =>
+        fixture(queueFixture),
+      ),
+      readRows<HeldItem>(who, 'SELECT * FROM V_HELD ORDER BY held_until, patient_id', [], () => fixture(heldFixture)),
+    ]);
+    return combine(items, held, (i, h) => ({ items: i, held: h }));
+  });
 }
 
 export async function getPatients(actingAs?: ActingAs): Promise<DataResult<PatientListRow[]>> {
-  return readRows<PatientListRow>(actingAs, 'SELECT * FROM V_PATIENT_LIST ORDER BY status_rank, patient_id', [], () =>
-    fixture(patientListFixture),
+  const who = actingAs ?? (await getActingAs());
+  return cachedRead(`${who}:patients`, FRESH_MS.patients, () =>
+    readSnapshotOrView<PatientListRow>(
+      who,
+      'SELECT * FROM PATIENT_LIST_SNAP ORDER BY status_rank, patient_id',
+      'SELECT * FROM V_PATIENT_LIST ORDER BY status_rank, patient_id',
+      [],
+      () => fixture(patientListFixture),
+    ),
   );
 }
 
 export async function getPatientDetail(patientId: string, actingAs?: ActingAs): Promise<DataResult<PatientDetail>> {
-  const rows = await readRows<PatientDetail>(actingAs, 'SELECT * FROM V_PATIENT_DETAIL WHERE patient_id = ?', [patientId], () => {
-    const set = fixture<PatientDetail>(patientDetailFixture);
-    return { ...set, rows: set.rows.filter((p) => p.patient_id === patientId) };
+  const who = actingAs ?? (await getActingAs());
+  return cachedRead(`${who}:patient:${patientId}`, FRESH_MS.patient, async () => {
+    const rows = await readSnapshotOrView<PatientDetail>(
+      who,
+      'SELECT * FROM PATIENT_DETAIL_SNAP WHERE patient_id = ?',
+      'SELECT * FROM V_PATIENT_DETAIL WHERE patient_id = ?',
+      [patientId],
+      () => {
+        const set = fixture<PatientDetail>(patientDetailFixture);
+        return { ...set, rows: set.rows.filter((p) => p.patient_id === patientId) };
+      },
+    );
+    return firstRow(rows, `No patient ${patientId} in the synthetic record.`);
   });
-  return firstRow(rows, `No patient ${patientId} in the synthetic record.`);
 }
 
 export async function getTimeline(patientId: string, actingAs?: ActingAs): Promise<DataResult<TimelineEvent[]>> {
-  return readRows<TimelineEvent>(
-    actingAs,
-    'SELECT * FROM V_TIMELINE WHERE patient_id = ? ORDER BY logged_at DESC',
-    [patientId],
-    () => {
-      const set = fixture<TimelineEvent>(timelineFixture);
-      const rows = set.rows
-        .filter((e) => e.patient_id === patientId)
-        .sort((a, b) => b.logged_at.localeCompare(a.logged_at));
-      return { ...set, rows };
-    },
+  const who = actingAs ?? (await getActingAs());
+  return cachedRead(`${who}:timeline:${patientId}`, FRESH_MS.timeline, () =>
+    readRows<TimelineEvent>(
+      who,
+      'SELECT * FROM V_TIMELINE WHERE patient_id = ? ORDER BY logged_at DESC',
+      [patientId],
+      () => {
+        const set = fixture<TimelineEvent>(timelineFixture);
+        const rows = set.rows
+          .filter((e) => e.patient_id === patientId)
+          .sort((a, b) => b.logged_at.localeCompare(a.logged_at));
+        return { ...set, rows };
+      },
+    ),
   );
 }
 
 /** Rules tab: RULES (P0) with edit history, plus Faiz's AI Plan keys and locked terms (read-only). */
 export async function getRules(actingAs?: ActingAs): Promise<DataResult<RulesBundle>> {
   const who = actingAs ?? (await getActingAs());
+  return cachedRead(`${who}:rules`, FRESH_MS.rules, () => loadRules(who));
+}
+
+async function loadRules(who: ActingAs): Promise<DataResult<RulesBundle>> {
   const [rules, edits, keys, terms] = await Promise.all([
     readRows<RuleRow>(who, 'SELECT * FROM V_RULES ORDER BY condition, priority, rule_id', [], () => fixture(rulesFixture)),
     readRows<RuleEdit>(who, 'SELECT * FROM RULE_EDITS ORDER BY edited_at DESC, edit_id DESC LIMIT 50', [], () =>
