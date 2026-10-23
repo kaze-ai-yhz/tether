@@ -1,77 +1,66 @@
 # Tether build status (live, updated at each milestone push)
 
-Last update: Fri Oct 23, 2026, 13:25 PT, push M0 (planning docs). Freeze 15:30, submit 16:30.
-Faiz's `README.md`, `docs/RUNBOOK.md` and `sql/care_rules_snowflake.sql` are unchanged and stay the source of truth.
+Last update: Fri Oct 23, 2026, 13:30 PT. Freeze 15:30, submit 16:30.
+Faiz's `README.md`, `docs/RUNBOOK.md` and `sql/care_rules_snowflake.sql` stay the source of truth; Tether never edits them.
 
-## Where we are
+## Faiz's base, adopted as is (commit 60fe5f1)
 
-| Milestone | Scope (BUILD-PLAN.md) | State |
+Faiz's SQL now holds the SOAP notes (`CLINICAL_NOTES`, 45 notes), the signed AI Plan block and its parser
+(`OVERRIDE_KEYS`, `SAFETY_LOCKED_TERMS`, `V_PATIENT_OVERRIDES`, `V_ACTIVE_OVERRIDES`), individualized goals, HOLD,
+the human-call swap (`ENG-3H`) and `PLAN-REVIEW` items. Tether builds on these objects and does not duplicate them.
+The RUNBOOK test table (15 patients) is the expected result Tether checks against.
+
+## What Tether adds on top (new files `sql/10_…`–`99_…` and `app/web/`)
+
+| Piece | What it does | State |
 |---|---|---|
-| M0 Repo and base | Faiz's SQL run as is, 14 SYN firings checked, SOAP notes + AI Plan lines, Tether tables, roles | In progress |
-| M1 Pool | `UPDATE_RULE` with audit, patient (P2) rules, `V_P2_FIRINGS`, `V_ALL_FIRINGS`, threshold edit changes the result | Not started |
-| M2 Plans and queue | Claude reads the AI Plan line, todos (Table 1), drafts into `ACTION_QUEUE`, app queue with approve / edit / reject | App scaffold in progress |
-| M3 Tracking | Simulated clock, ENG ladder, monitored values (Table 2), simulated AI check-in call with handoff, sends to `OUTBOX` | Not started |
-| M4 Governance | Agent role cannot approve (real Snowflake roles), `RUN_CHECKS()` all PASS, demo reset | Not started |
+| Runner | `scripts/run_sql.sh` runs Faiz's file unchanged, then Tether files in order | In progress |
+| Claude reads the AI Plan | Plain-language reading of each signed AI Plan block (only that text and the SYN id go to Claude); code still decides what applies | Not started |
+| Todos (Table 1) and monitored values (Table 2) | Per patient: what is collected, when, from which rule or AI Plan line; days overdue and ladder rung | Not started |
+| Drafts | Claude drafts every non-held firing into `ACTION_QUEUE` with the patient's preferences (language, contact window); fixed text for red flags and PLAN-REVIEW; drug and dose check on every draft; every model input logged in `MODEL_CALLS` | Not started |
+| Approval queue app | Next.js on localhost:3000: queue, patients, patient detail, rules; nothing is sent without a clinician click | Scaffold in progress |
+| Simulated clock and calls | `ADVANCE_CLOCK(days)` moves `AS_OF`; simulated AI check-in call (answered, no answer, chest pain handoff); sends go to `OUTBOX` (simulated) | Not started |
+| Threshold edit | `UPDATE_RULE` with reason and audit; shows which patients' results change | Not started |
+| Governance | Real roles: `CARE_AGENT_ROLE` can draft but not approve; `CLINICIAN_ROLE` approves; `RUN_CHECKS()` | Not started |
 | Stretch | Ask drawer (Cortex Agent over a semantic view) | Not started |
 | Cut | P1 doctor-rule learner, Update P0 guideline ingest, Cortex Search | Not built |
 
-## Verified in the lab account (read-only probes)
+Expected statuses at the start of the demo: Needs clinician SYN-005, 006, 009, 010, 011, 012, 013; Awaiting approval
+SYN-001, 003, 004, 007, 014; Pending SYN-008 (escalation held until 2026-11-15 by the clinician); Ongoing follow-up
+SYN-002, 015.
 
-- `ATTENDEE_ROLE` can create the database and roles. Real roles `CARE_AGENT_ROLE` and `CLINICIAN_ROLE` are planned.
+## Verified in the lab account
+
+- `ATTENDEE_ROLE` can create the database and roles.
 - Claude through Cortex `AI_COMPLETE`: `claude-opus-5-5`, `claude-sonnet-5-5` and `claude-sonnet-4-5` all answer.
-  Structured JSON output works only on `claude-sonnet-4-5` (Faiz's default), so it reads the AI Plan line.
+  Structured JSON output works only on `claude-sonnet-4-5` (Faiz's default).
 - Cross-region inference is enabled.
-
-## Decisions taken by default (Faiz, please confirm or change)
-
-- C-05: the AI Plan line in the SOAP note enrolls a patient. Patients without it are not automated; red flags still alert.
-- C-04: patient (P2) rules from the AI Plan line can only add or tighten; red flags are a floor.
-- A plan whose custom line is not allowed (drug or dose, loosening, unknown text) is shown as Needs clinician; the
-  guideline (P0) rules keep running for that patient.
-- `LIFESTYLE_REMINDER` (verbatim text from the note, for example "Walk 20 minutes daily") is used as an action type
-  and is attached to the next patient message. Pending Faiz's approval.
-- C-11: `COPD-RED` is a placeholder row with no value until Faiz sets it; it is never evaluated while empty.
-- Red-flag alerts are internal clinician alerts with fixed text (no model). Every other outbound step waits in
-  `ACTION_QUEUE` for a clinician.
 
 ## How you can help now (no code needed)
 
-Please keep the 14 SYN patients' data as they are: they are Faiz's test table. New material goes in new files that
-run after ours, so nothing waits on anyone.
+Keep SYN-001…015 as they are: they are Faiz's test table. New material goes in new files that run after his.
 
-1. **SOAP notes and AI Plan lines** (Faiz): put them in `sql/11_notes_faiz.sql`. For each patient, delete and
-   reinsert the note:
-   ```sql
-   DELETE FROM CARE_RULES.CORE.SOAP_NOTES WHERE patient_id = 'SYN-014';
-   INSERT INTO CARE_RULES.CORE.SOAP_NOTES (note_id, patient_id, doctor_id, visit_on, subjective, objective, assessment, plan)
-   VALUES ('<same note_id as in sql/10_tether_notes.sql>', 'SYN-014', 'DR-SYNTHETIC', '2026-10-13',
-           '<S>', '<O, only values already in the seed>', '<A, the diagnosis already in DIAGNOSES>',
-           '<plan text> AI PLAN: Turn on auto follow-up. Hypertension. Custom: Walk 20 minutes daily.');
-   ```
-   AI Plan line format (one line, at the end of the plan):
-   `AI PLAN: Turn on auto follow-up. <Hypertension|COPD|Diabetes>. Standard.` or
-   `AI PLAN: Turn on auto follow-up. <condition>. Custom: <plain-language rule>.`
-   Our draft notes (marked "pending Faiz review") land in `sql/10_tether_notes.sql` with the next push.
-2. **Drug and dose word list** (Faiz): rows for the draft safety check, in `sql/16_safety_terms_faiz.sql`:
+1. **Drug and dose word list** (Faiz), used to check every Claude draft: `sql/16_safety_terms_faiz.sql` with rows
    `INSERT INTO CARE_RULES.CORE.SAFETY_TERMS (term, kind, source) VALUES ('<drug name>', 'DRUG_NAME', 'Faiz');`
-   (kinds: `DRUG_CLASS`, `DRUG_NAME`, `DOSE_UNIT`; note `mg/dL` is a glucose unit, not a dose).
-3. **AI check-in call script** (Faiz, approved once per the runbook): plain text in `docs/tether/CALL-SCRIPT.md`.
-4. **COPD-RED**: the resting SpO2 red-flag value and how the patient baseline is stored.
-5. **Extra synthetic patients** (anyone): new ids from `SYN-017`, each with a diagnosis, medications by class,
-   readings and the expected result in one sentence, in `sql/17_extra_patients.sql`. Synthetic only, no PHI.
-6. **One-minute video script** (UI-UX.md §3) and the submission text (COCO-KICKOFF checklist).
+   (kinds `DRUG_CLASS`, `DRUG_NAME`, `DOSE_UNIT`; `mg/dL` is a glucose unit, not a dose).
+2. **AI check-in call script** (Faiz, approved once per the runbook): plain text in `docs/tether/CALL-SCRIPT.md`.
+3. **COPD-RED**: the resting SpO2 red-flag value and how the patient baseline is stored (proposal in
+   `docs/tether/PROPOSED-CHANGES.md` once pushed).
+4. **Extra synthetic patients** (anyone): new ids from `SYN-016`, with a diagnosis, medications by class, readings,
+   optional note with an AI Plan block, and the expected result in one sentence, in `sql/17_extra_patients.sql`.
+5. **One-minute video script** (UI-UX.md §3) and the submission text (name + one line, problem and impact,
+   Snowflake + Claude usage, synthetic data, repo URL, video, team).
 
 ## Open blockers
 
 - App credentials (Alex): two role-restricted programmatic access tokens, minted after the roles exist. The lab's
   login policy only accepts a token from a user under a network policy, or within the bypass window set when the
-  token is minted. Exact statements will be posted here. The app runs on fixture data until then.
-- Faiz's open questions: CONTEXT-POOL.md §6.
+  token is minted. The app runs on fixture data until then.
+- Faiz's open questions: CONTEXT-POOL.md §6 (several are now answered by his AI Plan design).
 
 ## How to run (as pieces land)
 
-- SQL: `bash scripts/run_sql.sh sql/care_rules_snowflake.sql sql/10_tether_notes.sql …` (Snowflake CLI connection
-  `hackathon`), then `CALL CARE_RULES.CORE.RUN_CHECKS();`.
-- App: `cd app/web && npm install && npm run dev` → http://localhost:3000 (fixture data until tokens exist).
+- SQL: `bash scripts/run_sql.sh` (Snowflake CLI connection `hackathon`), then `CALL CARE_RULES.CORE.RUN_CHECKS();`.
+- App: `cd app/web && npm install && npm run dev` → http://localhost:3000.
 
 Planning docs in `docs/tether/` were drafted earlier today as notes; all code and data are created during the event.
