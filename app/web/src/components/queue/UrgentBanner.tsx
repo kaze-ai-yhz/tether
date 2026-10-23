@@ -1,6 +1,8 @@
 "use client";
 
-import { Icon, shortCitation, type ActingAs } from "@/components";
+import { useCallback, useState } from "react";
+import { cx, shortCitation, type ActingAs } from "@/components";
+import { Illustration } from "@/components/art";
 import type { QueueItem } from "@/lib/types";
 import { parsePrefs } from "./format";
 import { ReviewActions } from "./ReviewActions";
@@ -17,13 +19,31 @@ export interface UrgentBannerProps {
   tryAsAgent: Review["tryAsAgent"];
 }
 
-/** Pinned red flags: the one filled alert element on the screen. Acknowledge = approve with a note. */
+/**
+ * Pinned red flags in an alert outline on an alert wash (no large fill). The beacon pulses until
+ * every red flag shown has been acknowledged. Acknowledge = approve with a note.
+ */
 export function UrgentBanner({ items, actingAs, busy, review, tryAsAgent }: UrgentBannerProps) {
+  const [acknowledged, setAcknowledged] = useState<ReadonlySet<number>>(() => new Set());
+
+  // Same review call; a successful acknowledge only marks the row so the beacon can stop.
+  const reviewAndMark = useCallback<Review["review"]>(
+    async (target, decision, note, editedText) => {
+      const outcome = await review(target, decision, note, editedText);
+      if (outcome.ok) setAcknowledged((current) => new Set(current).add(target.action_id));
+      return outcome;
+    },
+    [review],
+  );
+
   if (items.length === 0) return null;
+  const pulsing = items.some((item) => !acknowledged.has(item.action_id));
   return (
-    <section className={styles.urgent} aria-labelledby="urgent-title">
+    <section className={cx(styles.urgent, "motion-enter")} aria-labelledby="urgent-title">
       <h2 id="urgent-title" className={styles.urgentTitle}>
-        <Icon name="triangle" />
+        <span className={cx("motion-beacon", styles.beacon)} data-pulse={pulsing ? "on" : "off"}>
+          <Illustration name="redflag" width={28} decorative fade={false} eager />
+        </span>
         {items.length === 1 ? "Red flag" : `Red flags · ${items.length}`}
       </h2>
       <ul className={styles.urgentList}>
@@ -53,7 +73,7 @@ export function UrgentBanner({ items, actingAs, busy, review, tryAsAgent }: Urge
               item={item}
               actingAs={actingAs}
               busy={busy.has(item.action_id)}
-              review={review}
+              review={reviewAndMark}
               tryAsAgent={tryAsAgent}
               variant="urgent"
             />

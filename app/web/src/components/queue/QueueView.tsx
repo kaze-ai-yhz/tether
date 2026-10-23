@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Button, ConfirmDialog, EmptyState, useShell } from "@/components";
+import { Button, ConfirmDialog, EmptyState, cx, useShell } from "@/components";
+import { HeroArt } from "@/components/art";
 import type { AppState, HeldItem, QueueItem, RuleRow } from "@/lib/types";
 import { ApprovalCard } from "./ApprovalCard";
 import { seriesFor } from "./format";
@@ -33,37 +34,49 @@ export function QueueView({ state, items, held, thresholds }: QueueViewProps) {
 
   return (
     <>
-      <header className="page-header">
-        <div className={styles.heading}>
-          <h1>Approval queue</h1>
-          {state ? (
-            <p className={styles.counts}>
-              {count(state.pending_count, "draft", "drafts")} waiting · {count(state.red_flag_count, "red flag", "red flags")} ·{" "}
-              {count(state.needs_clinician_count, "patient needs", "patients need")} a clinician
-            </p>
+      <div className={cx(styles.hero, "motion-enter")}>
+        <HeroArt className={styles.heroArt} />
+        <header className={cx("page-header", styles.heroHeader)}>
+          <div className={styles.heading}>
+            <h1>Approval queue</h1>
+            {state ? (
+              <p
+                key={`${state.pending_count}-${state.red_flag_count}-${state.needs_clinician_count}`}
+                className={cx(styles.counts, "motion-tick")}
+              >
+                {count(state.pending_count, "draft", "drafts")} waiting · {count(state.red_flag_count, "red flag", "red flags")} ·{" "}
+                {count(state.needs_clinician_count, "patient needs", "patients need")} a clinician
+              </p>
+            ) : null}
+            <p>Nothing is sent until a clinician approves, edits or rejects it.</p>
+          </div>
+          {batchable.length > 0 ? (
+            <Button
+              variant="secondary"
+              isDisabled={agent || batchable.some((i) => busy.has(i.action_id))}
+              onPress={() => setBatchOpen(true)}
+            >
+              Approve all reading reminders ({batchable.length})
+            </Button>
           ) : null}
-          <p>Nothing is sent until a clinician approves, edits or rejects it.</p>
-        </div>
-        {batchable.length > 0 ? (
-          <Button
-            variant="secondary"
-            isDisabled={agent || batchable.some((i) => busy.has(i.action_id))}
-            onPress={() => setBatchOpen(true)}
-          >
-            Approve all reading reminders ({batchable.length})
-          </Button>
-        ) : null}
-      </header>
+        </header>
+      </div>
 
       <UrgentBanner items={urgent} actingAs={actingAs} busy={busy} review={review} tryAsAgent={tryAsAgent} />
 
       {cards.length === 0 && urgent.length === 0 ? (
-        <EmptyState title="No drafts waiting" description="A clinician approves every outbound action." />
+        <EmptyState
+          art="empty-queue"
+          title="No drafts waiting"
+          description="A clinician approves every outbound action."
+          className="motion-enter"
+        />
       ) : (
-        <div className={styles.list}>
-          {cards.map((item) => (
+        <div className={cx(styles.list, "motion-stagger")}>
+          {cards.map((item, index) => (
             <ApprovalCard
               key={item.action_id}
+              staggerIndex={index}
               item={item}
               series={seriesFor(item, thresholds)}
               actingAs={actingAs}

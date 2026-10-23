@@ -98,7 +98,11 @@ export function DemoPanel() {
             Simulated clock
           </h3>
           <p className={styles.demoNow}>
-            As of {asOf ?? "…"} <span className={styles.clockSim}>(simulated)</span>
+            As of{" "}
+            <span key={asOf ?? "pending"} className="motion-flip">
+              {asOf ?? "…"}
+            </span>{" "}
+            <span className={styles.clockSim}>(simulated)</span>
           </p>
           <div className={styles.dayGrid} role="group" aria-label="Advance the simulated clock">
             {DAY_STEPS.map((days) => (
@@ -127,7 +131,7 @@ export function DemoPanel() {
           <p className={styles.demoHint}>Restores the demo tables from the saved snapshot. No model calls.</p>
         </section>
 
-        {busy ? <StepLoader /> : null}
+        {busy ? <StepLoader label={busy === "Reset demo" ? undefined : "Re-running rules…"} /> : null}
 
         {last ? (
           <div className={styles.statusLine} data-tone={last.outcome.ok ? "ok" : "error"}>

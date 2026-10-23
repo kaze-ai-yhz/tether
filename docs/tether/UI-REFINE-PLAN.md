@@ -14,7 +14,8 @@ objects, API routes, data shapes or clinical logic.
   adopt with one import (`<Illustration name="…">`, `<PathwayIcon condition="…">`); it does not edit them.
 - **Touched on this branch (expect small merges):** `components/EmptyState.tsx` (optional `art` prop,
   backwards compatible), `components/states.module.css`, `components/shell/TopBar.tsx` (brand mark),
-  `components/shell/shell.module.css`, `components/queue/QueueView.tsx`, `components/queue/ApprovalCard.tsx`,
+  `components/shell/shell.module.css`, `components/shell/DemoPanel.tsx` (clock flip, "Re-running rules…"
+  loader label), `components/queue/QueueView.tsx`, `components/queue/ApprovalCard.tsx`,
   `components/queue/UrgentBanner.tsx`, `components/queue/queue.module.css`, `app/globals.css` (import of
   `motion.css`).
 - **Design system wins.** Marker yellow-green means AI only; alert red is for red flags only and stays
@@ -38,9 +39,9 @@ app's ink canvas (`#0A0D11`), lime `#CFEA55` used only for the AI-related glow, 
 | `redflag.webp` | Red-flag icon: a soft alert beacon |
 | `ai-plan.webp` | AI Plan line: a note card with one highlighted line |
 | `checkin-call.webp` | AI check-in call: a handset with sound waves |
-| `rules-layers.webp` | Rules tab: three stacked translucent cards (P0, P1, P2) |
+| `plan-check.webp` | AI Plan check: a note card with one line accepted (teal) and one blocked (coral), as V_PATIENT_OVERRIDES marks lines APPLIED or SAFETY_BLOCKED |
 
-Sizes: icons 256 px, illustrations 960 px wide, all `.webp` with a PNG fallback where needed, total
+Sizes: icons 256 px, illustrations 960 px wide (hero 1600 px), all `.webp`; full-size source PNGs are kept outside the repo in `~/hackathon/tether-ops/ui-assets-src/`, total
 under 1.5 MB.
 
 ## Interaction and motion
@@ -68,8 +69,9 @@ under 1.5 MB.
 
 | Step | State |
 |---|---|
-| Plan committed and pushed | done |
-| Assets generated and reviewed | in progress |
-| Motion layer and art components | in progress |
-| Wiring into queue and shell | pending |
-| Verification | pending |
+| Plan committed (not pushed) | done |
+| Assets generated and reviewed | done: all 10 files; hero is 1600x900; 67 KB of `.webp` in total; full-size PNGs in `assets/3d/src/` |
+| Motion layer and art components | done |
+| Wiring into queue and shell | done: queue hero, red-flag beacon, pathway icons, card stagger and collapse, empty-queue art, top-bar glyph, rail indicator, clock flip |
+| Verification | done on fixture data: `tsc`, lint and build clean; 1440x900 screenshots (red flags at 342–609 px); E2E 12 passed, 4 failed (Patients and Rules placeholders, fixture data), none caused by this branch; merge check against `main` at 2df3be0: no conflicting files |
+| Not yet checked | empty-queue state in the browser (fixtures always have drafts), approve collapse and clock flip on live data, light theme beyond the queue |

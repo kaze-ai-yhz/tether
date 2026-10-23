@@ -1,0 +1,57 @@
+/* 3D art (UI-REFINE-PLAN "Assets"). The renders sit on the ink canvas; a soft radial mask fades
+   their square edges into whatever surface they are placed on. */
+
+.art {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  user-select: none;
+  -webkit-mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 72%, transparent 100%);
+}
+
+/* On dark surfaces lighter than the ink canvas (cards, washes) lighten drops the render's ink
+   background, so no darker disc shows behind the subject. */
+:global([data-theme="dark"]) .art {
+  mix-blend-mode: lighten;
+}
+
+.icon {
+  flex: none;
+  align-self: center;
+}
+
+/* Hero band: the art fills its box (cover) and fades into the canvas. The band fades top and
+   bottom; the layer inside fades left and right (nested masks multiply). */
+.hero {
+  position: relative;
+  overflow: hidden;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 58%, transparent 86%);
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 14%, #000 58%, transparent 86%);
+}
+
+/* The hero is rendered on the ink canvas; the light (reading) theme leaves it out. */
+:global([data-theme="light"]) .hero {
+  display: none;
+}
+
+@media (prefers-color-scheme: light) {
+  :global(:root:not([data-theme])) .hero {
+    display: none;
+  }
+}
+
+/* 6 px bleed on every side so the pointer drift never shows an edge. */
+.heroLayer {
+  position: absolute;
+  inset: -6px;
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 28%, #000 78%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 28%, #000 78%, transparent 100%);
+}
+
+.heroImage {
+  object-fit: cover;
+  object-position: var(--hero-focus, 50% 50%);
+  user-select: none;
+}

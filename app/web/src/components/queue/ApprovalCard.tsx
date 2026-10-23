@@ -1,6 +1,8 @@
 "use client";
 
+import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { LayerChip, MessageQuote, SimulatedTag, Sparkline, StatusChip, cx, type ActingAs } from "@/components";
+import { PathwayIcon, isPathwayCondition } from "@/components/art";
 import chips from "@/components/chips.module.css";
 import type { QueueItem } from "@/lib/types";
 import { DraftSourceChip } from "./DraftSourceChip";
@@ -27,6 +29,8 @@ export interface ApprovalCardProps {
   busy: boolean;
   review: Review["review"];
   tryAsAgent: Review["tryAsAgent"];
+  /** Position in the list, for the 30 ms enter stagger. */
+  staggerIndex?: number;
 }
 
 const KIND_LABEL: Partial<Record<QueueItem["kind"], string>> = {
@@ -53,8 +57,30 @@ function quoteFooter(item: QueueItem) {
   return <span>{hint}</span>;
 }
 
-export function ApprovalCard({ item, series, actingAs, busy, review, tryAsAgent }: ApprovalCardProps) {
+export function ApprovalCard({ item, series, actingAs, busy, review, tryAsAgent, staggerIndex }: ApprovalCardProps) {
   const titleId = `draft-${item.action_id}`;
+  const cardRef = useRef<HTMLElement>(null);
+  // The item this card collapsed for, and its height then. A refresh that still lists the draft
+  // passes a new item object, which ends the collapse.
+  const [collapsed, setCollapsed] = useState<{ item: QueueItem; height: number } | null>(null);
+  const collapsing = collapsed?.item === item;
+
+  // Same review call; once it has succeeded the card collapses while the queue refreshes.
+  const reviewAndCollapse = useCallback<Review["review"]>(
+    async (target, decision, note, editedText) => {
+      const outcome = await review(target, decision, note, editedText);
+      if (outcome.ok && !outcome.fixtures && target.action_id === item.action_id) {
+        setCollapsed({ item, height: cardRef.current?.offsetHeight ?? 0 });
+      }
+      return outcome;
+    },
+    [item, review],
+  );
+
+  const motionStyle = {
+    "--i": staggerIndex ?? 0,
+    ...(collapsing && collapsed.height ? { "--collapse-from": `${collapsed.height}px` } : {}),
+  } as CSSProperties;
   const plan = item.condition === "PLAN" ? planLineFromEvidence(item.evidence) : null;
   const prefs = parsePrefs(item.patient_prefs);
   const why = whyText(item.why_text);
@@ -62,9 +88,17 @@ export function ApprovalCard({ item, series, actingAs, busy, review, tryAsAgent 
   const careTeamCall = item.action_type === "CARE_TEAM_CALL";
 
   return (
-    <article className={cx(styles.card, item.stale && styles.cardStale)} aria-labelledby={titleId}>
+    <article
+      ref={cardRef}
+      className={cx(styles.card, item.stale && styles.cardStale, !item.stale && "motion-lift", "motion-collapse")}
+      style={motionStyle}
+      data-collapsing={collapsing || undefined}
+      inert={collapsing || undefined}
+      aria-labelledby={titleId}
+    >
       <header className={styles.head}>
         <div className={styles.who}>
+          {isPathwayCondition(item.condition) ? <PathwayIcon condition={item.condition} size={24} /> : null}
           <span className={styles.pid}>{item.patient_id}</span>
           <span className={styles.name}>{item.display_name}</span>
           <span className={styles.condition}>{CONDITION_LABEL[item.condition] ?? item.condition}</span>
@@ -169,7 +203,7 @@ export function ApprovalCard({ item, series, actingAs, busy, review, tryAsAgent 
         ) : null}
       </div>
 
-      <ReviewActions item={item} actingAs={actingAs} busy={busy} review={review} tryAsAgent={tryAsAgent} />
+      <ReviewActions item={item} actingAs={actingAs} busy={busy} review={reviewAndCollapse} tryAsAgent={tryAsAgent} />
     </article>
   );
 }

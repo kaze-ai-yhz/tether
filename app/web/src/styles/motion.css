@@ -1,0 +1,224 @@
+/*
+ * Motion layer (DESIGN-SYSTEM §6, UI-REFINE-PLAN "Interaction and motion").
+ * Durations and easings come from tokens.css. Every animation here has a prefers-reduced-motion
+ * fallback: movement becomes a short cross-fade (--dur-reduced-fade) or nothing.
+ */
+
+@keyframes motion-enter {
+  from {
+    opacity: 0;
+    translate: 0 8px;
+  }
+}
+
+@keyframes motion-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes motion-fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+/* ---- Page enter: content fades and rises 8 px ------------------------------------------------ */
+
+.motion-enter {
+  animation: motion-enter var(--dur-panel) var(--ease-conduct) both;
+}
+
+/* ---- Stagger: children enter 30 ms apart. Set --i inline (0, 1, 2 …); capped at 12 steps. ---- */
+
+.motion-stagger > * {
+  animation: motion-enter var(--dur-panel) var(--ease-conduct) both;
+  animation-delay: calc(min(var(--i, 0), 12) * 30ms);
+}
+
+/* ---- Card hover lift: border steps up to line.strong. Dark has no shadow (token is none). ---- */
+
+.motion-lift {
+  transition:
+    border-color var(--dur-hover) var(--ease-standard),
+    box-shadow var(--dur-hover) var(--ease-standard);
+}
+
+@media (hover: hover) {
+  .motion-lift:hover {
+    border-color: var(--line-strong);
+    box-shadow: var(--shadow-raised);
+  }
+}
+
+/* ---- Press: scale 0.98. The focus ring is untouched. ----------------------------------------- */
+
+@keyframes motion-press {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 0.98;
+  }
+}
+
+.motion-press {
+  transition: scale var(--dur-press) var(--ease-standard);
+}
+
+.motion-press:active,
+.motion-press[data-pressed] {
+  scale: 0.98;
+}
+
+/* react-aria buttons (Button, ToggleButton) report presses with data-pressed. */
+button[data-rac][data-pressed]:not([data-disabled]) {
+  scale: 0.98;
+  animation: motion-press var(--dur-press) var(--ease-standard);
+}
+
+/*
+ * ---- Collapse: approve / dismiss. Height and opacity over 240 ms (--dur-panel). ----------------
+ * Set data-collapsing on the element, --collapse-from to its measured height (px) and, on the
+ * parent, --collapse-gap to the flex gap so the following item closes up without a jump.
+ */
+
+@keyframes motion-collapse {
+  from {
+    max-height: var(--collapse-from, 100vh);
+    opacity: 1;
+  }
+  60% {
+    opacity: 0;
+  }
+  to {
+    max-height: 0;
+    opacity: 0;
+    padding-block: 0;
+    border-block-width: 0;
+    margin-block-end: calc(-1 * var(--collapse-gap, 0px));
+  }
+}
+
+.motion-collapse[data-collapsing] {
+  overflow: hidden;
+  pointer-events: none;
+  animation: motion-collapse var(--dur-panel) var(--ease-standard) forwards;
+}
+
+/* ---- Beacon: a slow, low-contrast glow behind an icon. data-pulse="off" stops it. ---------- */
+
+@keyframes motion-beacon {
+  from {
+    opacity: 0.15;
+    scale: 0.85;
+  }
+  to {
+    opacity: 0.6;
+    scale: 1.05;
+  }
+}
+
+.motion-beacon {
+  position: relative;
+  display: inline-grid;
+  place-items: center;
+  flex: none;
+  isolation: isolate;
+}
+
+.motion-beacon::before {
+  content: "";
+  position: absolute;
+  inset: -30%;
+  z-index: -1;
+  border-radius: 50%;
+  background: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--status-alert-fg) 45%, transparent),
+    transparent
+  );
+  opacity: 0.15;
+  pointer-events: none;
+  animation: motion-beacon 2800ms var(--ease-standard) infinite alternate;
+}
+
+.motion-beacon[data-pulse="off"]::before {
+  animation: none;
+  opacity: 0;
+}
+
+/* ---- Clock flip: key the element on the value so each change replays it. --------------------- */
+
+@keyframes motion-flip {
+  from {
+    opacity: 0;
+    transform: perspective(240px) rotateX(-70deg) translateY(-2px);
+  }
+}
+
+.motion-flip {
+  display: inline-block;
+  transform-origin: 50% 0;
+  animation: motion-flip var(--dur-reveal) var(--ease-conduct) both;
+}
+
+/* ---- Tick: a short settle when a count changes (key the element on the count). --------------- */
+
+@keyframes motion-tick {
+  from {
+    opacity: 0.3;
+    translate: 0 -4px;
+  }
+}
+
+.motion-tick {
+  animation: motion-tick var(--dur-reveal) var(--ease-conduct) both;
+}
+
+/* ---- Illustration: fades in after the text next to it, so text is never delayed. ------------ */
+
+.motion-art {
+  animation: motion-fade-in calc(2 * var(--dur-panel)) var(--ease-standard) var(--dur-reveal) both;
+}
+
+/* ---- Reduced motion: no movement; a 200 ms cross-fade where something appears or leaves. ----- */
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-enter,
+  .motion-stagger > *,
+  .motion-flip,
+  .motion-tick,
+  .motion-art {
+    animation: motion-fade-in var(--dur-reduced-fade) linear both;
+    animation-delay: 0ms;
+  }
+
+  .motion-lift,
+  .motion-press {
+    transition: none;
+  }
+
+  .motion-press:active,
+  .motion-press[data-pressed],
+  button[data-rac][data-pressed]:not([data-disabled]) {
+    scale: none;
+    animation: none;
+  }
+
+  /* Fade out, then close the gap in one step (no sliding). */
+  .motion-collapse[data-collapsing] {
+    animation:
+      motion-fade-out var(--dur-reduced-fade) linear forwards,
+      motion-collapse 1ms linear var(--dur-reduced-fade) forwards;
+  }
+
+  .motion-beacon::before {
+    animation: none;
+    opacity: 0.35;
+  }
+
+  .motion-beacon[data-pulse="off"]::before {
+    opacity: 0;
+  }
+}

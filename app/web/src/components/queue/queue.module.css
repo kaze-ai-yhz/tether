@@ -1,5 +1,25 @@
 /* Approval queue (B1). Tokens from src/styles/tokens.css; DESIGN-SYSTEM §2-7. */
 
+/* ---- Hero band: the art sits above the header and fades into the canvas under the title ---- */
+
+.hero {
+  position: relative;
+  isolation: isolate;
+  margin-bottom: var(--space-24);
+}
+
+/* The header overlaps only the fully faded bottom of the band, so no art sits behind its controls. */
+.heroArt {
+  height: 136px;
+  margin: calc(-1 * var(--space-8)) 0 calc(-1 * var(--space-16));
+}
+
+.hero .heroHeader {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0;
+}
+
 .heading {
   display: grid;
   gap: var(--space-4);
@@ -10,8 +30,11 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Flex column (not grid) so a collapsing card's negative end margin also closes the gap. */
 .list {
-  display: grid;
+  --collapse-gap: var(--gap-cards);
+  display: flex;
+  flex-direction: column;
   gap: var(--gap-cards);
 }
 
@@ -252,24 +275,37 @@
   color: var(--text-muted);
 }
 
-/* ---- Urgent banner: the one filled alert element ------------------------------------------- */
+/* ---- Urgent banner: alert outline on an alert wash, never a large fill ------------------------ */
 
 .urgent {
   display: grid;
   gap: var(--space-12);
   margin-bottom: var(--space-24);
   padding: var(--space-16);
-  background: var(--status-alert-strong-bg);
-  color: var(--status-alert-strong-fg);
+  background: var(--status-alert-bg);
+  color: var(--text-default);
+  border: 1px solid var(--status-alert-border);
   border-radius: var(--radius-card);
+  box-shadow: inset 3px 0 0 var(--status-alert-fg);
 }
 
 .urgentTitle {
   display: flex;
   align-items: center;
   gap: var(--space-8);
+  color: var(--status-alert-fg);
   font-size: var(--type-h3-size);
   line-height: var(--type-h3-line);
+}
+
+.beacon {
+  width: 28px;
+  height: 28px;
+}
+
+/* The beacon render sits on ink; lighten drops that ink against the alert wash (dark theme). */
+:global([data-theme="dark"]) .beacon {
+  mix-blend-mode: lighten;
 }
 
 .urgentList {
@@ -287,7 +323,7 @@
 
 .urgentRow + .urgentRow {
   padding-top: var(--space-12);
-  border-top: 1px solid color-mix(in srgb, var(--status-alert-strong-fg) 30%, transparent);
+  border-top: 1px solid var(--status-alert-border);
 }
 
 @media (max-width: 1024px) {
@@ -307,8 +343,7 @@
 
 .urgentMeta,
 .urgentHint {
-  color: var(--status-alert-strong-fg);
-  opacity: 0.85;
+  color: var(--text-muted);
   font-size: var(--type-meta-size);
   line-height: var(--type-meta-line);
 }
@@ -319,23 +354,13 @@
   justify-items: end;
 }
 
-/* Inverted controls so they read on the filled alert background in both themes. */
-.urgent .urgentButton {
-  background: var(--status-alert-strong-fg);
-  color: var(--status-alert-strong-bg);
-  border-color: var(--status-alert-strong-fg);
+/* Controls sit on a surface step so they read on the alert wash in both themes. */
+.urgent .urgentButton:not([data-disabled]) {
+  background: var(--surface-default);
 }
 
-.urgent .urgentButton[data-hovered] {
-  background: color-mix(in srgb, var(--status-alert-strong-fg) 85%, var(--status-alert-strong-bg));
-}
-
-.urgent .urgentButton[data-focus-visible] {
-  outline-color: var(--status-alert-strong-fg);
-}
-
-.urgent .urgentButton[data-disabled] {
-  opacity: 0.55;
+.urgent .urgentButton[data-hovered]:not([data-disabled]) {
+  background: var(--surface-hover);
 }
 
 /* ---- Held section -------------------------------------------------------------------------- */

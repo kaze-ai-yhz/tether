@@ -1,5 +1,7 @@
 /* Base styles. Tokens live in src/styles/tokens.css (imported first by the root layout). */
 
+@import "../styles/motion.css";
+
 *,
 *::before,
 *::after {
