@@ -1,0 +1,372 @@
+note_id,patient_id,note_date,clinician,note_text
+N-001,SYN-001,2026-06-10,Dr. Synthetic,"SOAP NOTE: SYN-001   Date: 2026-06-10   Clinician: Dr. Synthetic
+
+S: 48 y/o man, routine visit. Two elevated office readings this year. One week of home log averages 137/85. No chest pain, headache or vision change.
+O: BP 138/86, HR 72, BMI 29.8. Exam unremarkable.
+A: Stage 1 hypertension. PREVENT 10-year CVD risk 4%. No diabetes, CKD or CVD.
+P: Lifestyle trial: DASH-style eating, sodium reduction, 150 min/week activity, limit alcohol. Home BP twice daily for the week before each review. Review at 3 months.
+Signed: Dr. Synthetic   2026-06-10"
+N-002,SYN-001,2026-08-12,Dr. Synthetic,"SOAP NOTE: SYN-001   Date: 2026-08-12   Clinician: Dr. Synthetic
+
+S: Walking 3 times a week, cutting salt. Home log average 138/85.
+O: BP 136/86, weight down 1.5 kg.
+A: Stage 1 hypertension, not at goal on lifestyle.
+P: Continue lifestyle trial. Reassess at 4 to 6 months.
+Signed: Dr. Synthetic   2026-08-12"
+N-003,SYN-001,2026-10-02,Dr. Synthetic,"SOAP NOTE: SYN-001   Date: 2026-10-02   Clinician: Dr. Synthetic
+
+S: Continues home readings. Feels well.
+O: BP 136/84, HR 70.
+A: Stage 1 hypertension, still above goal after 4 months of lifestyle.
+P: If home average remains 130/80 or higher, discuss starting medication at next review.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Contact window: mornings before 10 AM
+- Language: English
+Signed: Dr. Synthetic   2026-10-02"
+N-004,SYN-002,2026-07-20,Dr. Synthetic,"SOAP NOTE: SYN-002   Date: 2026-07-20   Clinician: Dr. Synthetic
+
+S: 41 y/o woman. Elevated readings at work wellness screen. Home log averages 134/83.
+O: BP 134/84, BMI 26.1.
+A: Stage 1 hypertension. PREVENT 3%.
+P: Lifestyle trial with home monitoring. Review at 3 months.
+Signed: Dr. Synthetic   2026-07-20"
+N-005,SYN-002,2026-08-30,Dr. Synthetic,"SOAP NOTE: SYN-002   Date: 2026-08-30   Clinician: Dr. Synthetic
+
+S: Started cycling, reduced takeout meals.
+O: BP 129/79.
+A: Stage 1 hypertension, improving.
+P: Continue lifestyle trial.
+Signed: Dr. Synthetic   2026-08-30"
+N-006,SYN-002,2026-10-15,Dr. Synthetic,"SOAP NOTE: SYN-002   Date: 2026-10-15   Clinician: Dr. Synthetic
+
+S: Home log average 126/77 over 7 days.
+O: BP 126/78.
+A: Stage 1 hypertension, at goal on lifestyle.
+P: Continue lifestyle. Home BP weekly. Review in 3 months.
+Signed: Dr. Synthetic   2026-10-15"
+N-007,SYN-003,2025-10-20,Dr. Synthetic,"SOAP NOTE: SYN-003   Date: 2025-10-20   Clinician: Dr. Synthetic
+
+S: 57 y/o man, annual exam. No complaints.
+O: BP 138/88, BMI 30.2.
+A: Elevated office BP.
+P: Recheck BP, home monitoring advised.
+Signed: Dr. Synthetic   2025-10-20"
+N-008,SYN-003,2026-04-22,Dr. Synthetic,"SOAP NOTE: SYN-003   Date: 2026-04-22   Clinician: Dr. Synthetic
+
+S: Did not start home monitoring. Occasional morning headaches.
+O: BP 146/92.
+A: Elevated BP, needs confirmation with home readings.
+P: Home BP cuff provided. Log twice daily for a week.
+Signed: Dr. Synthetic   2026-04-22"
+N-009,SYN-003,2026-10-15,Dr. Synthetic,"SOAP NOTE: SYN-003   Date: 2026-10-15   Clinician: Dr. Synthetic
+
+S: Home log average 152/96 over 7 days.
+O: BP 150/96, HR 78.
+A: Stage 2 hypertension. PREVENT 9%.
+P: Discussed starting medication with lifestyle. Patient wants to talk with his wife first; will decide this week.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Language: Vietnamese
+Signed: Dr. Synthetic   2026-10-15"
+N-010,SYN-004,2026-08-01,Dr. Synthetic,"SOAP NOTE: SYN-004   Date: 2026-08-01   Clinician: Dr. Synthetic
+
+S: 62 y/o woman. Home log average 148/92.
+O: BP 150/92, BMI 28.4.
+A: Stage 2 hypertension.
+P: Discussed medication and lifestyle. Return in 1 month.
+Signed: Dr. Synthetic   2026-08-01"
+N-011,SYN-004,2026-09-08,Dr. Synthetic,"SOAP NOTE: SYN-004   Date: 2026-09-08   Clinician: Dr. Synthetic
+
+S: Ready to start medication.
+O: BP 146/90.
+A: Stage 2 hypertension.
+P: Started ACE inhibitor. Home BP twice daily. Recheck 4 to 6 weeks.
+Signed: Dr. Synthetic   2026-09-08"
+N-012,SYN-004,2026-10-06,Dr. Synthetic,"SOAP NOTE: SYN-004   Date: 2026-10-06   Clinician: Dr. Synthetic
+
+S: Phone visit. Missing doses 2 to 3 times a week; copay is a concern.
+O: Home average 138/86.
+A: Stage 2 hypertension, not at goal; adherence barrier is cost.
+P: Pharmacy to check lower-cost options. Reinforce daily dosing.
+Signed: Dr. Synthetic   2026-10-06"
+N-013,SYN-005,2026-05-01,Dr. Synthetic,"SOAP NOTE: SYN-005   Date: 2026-05-01   Clinician: Dr. Synthetic
+
+S: 66 y/o man. Home log average 162/98.
+O: BP 160/98.
+A: Stage 2 hypertension.
+P: Started fixed-dose combination. Home monitoring.
+Signed: Dr. Synthetic   2026-05-01"
+N-014,SYN-005,2026-08-01,Dr. Synthetic,"SOAP NOTE: SYN-005   Date: 2026-08-01   Clinician: Dr. Synthetic
+
+S: Tolerating medication. Home average 156/94.
+O: BP 154/94.
+A: Stage 2 hypertension, not at goal.
+P: Dose increased. Recheck in 4 weeks.
+Signed: Dr. Synthetic   2026-08-01"
+N-015,SYN-005,2026-10-01,Dr. Synthetic,"SOAP NOTE: SYN-005   Date: 2026-10-01   Clinician: Dr. Synthetic
+
+S: Thinks his home cuff reads high compared with the office.
+O: BP 152/92. Home cuff checked against office cuff: within 5 mmHg.
+A: Stage 2 hypertension, not at goal. Home cuff is accurate.
+P: Continue current regimen, reassess adherence.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Red flag BP: only alert me above 200/130 (patient's cuff reads high)
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-10-01"
+N-016,SYN-006,2025-11-01,Dr. Synthetic,"SOAP NOTE: SYN-006   Date: 2025-11-01   Clinician: Dr. Synthetic
+
+S: 71 y/o woman, former smoker. Spirometry confirmed COPD. Two exacerbations this year.
+O: SpO2 92% at rest. Scattered wheeze.
+A: COPD, GOLD group E.
+P: Started LAMA/LABA inhaler. Inhaler technique taught. Pulmonary rehab referral.
+Signed: Dr. Synthetic   2025-11-01"
+N-017,SYN-006,2026-06-10,Dr. Synthetic,"SOAP NOTE: SYN-006   Date: 2026-06-10   Clinician: Dr. Synthetic
+
+S: More breathless on stairs.
+O: SpO2 90% at rest.
+A: COPD, symptomatic.
+P: Technique reviewed, good. Home pulse oximeter, log daily.
+Signed: Dr. Synthetic   2026-06-10"
+N-018,SYN-006,2026-09-01,Dr. Synthetic,"SOAP NOTE: SYN-006   Date: 2026-09-01   Clinician: Dr. Synthetic
+
+S: Home SpO2 88 to 89% at rest most days.
+O: SpO2 89% at rest.
+A: COPD with low resting SpO2.
+P: Regimen adjusted. Continue daily SpO2 logging.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Contact window: afternoons
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-09-01"
+N-019,SYN-007,2025-04-01,Dr. Synthetic,"SOAP NOTE: SYN-007   Date: 2025-04-01   Clinician: Dr. Synthetic
+
+S: 68 y/o man. Spirometry confirmed COPD.
+O: SpO2 95%.
+A: COPD, GOLD group B.
+P: Started LAMA inhaler.
+Signed: Dr. Synthetic   2025-04-01"
+N-020,SYN-007,2026-03-10,Dr. Synthetic,"SOAP NOTE: SYN-007   Date: 2026-03-10   Clinician: Dr. Synthetic
+
+S: Stable, walking daily.
+O: SpO2 95%.
+A: COPD, stable.
+P: Continue current inhaler.
+Signed: Dr. Synthetic   2026-03-10"
+N-021,SYN-007,2026-09-28,Dr. Synthetic,"SOAP NOTE: SYN-007   Date: 2026-09-28   Clinician: Dr. Synthetic
+
+S: Moderate exacerbation on 9/25, treated at urgent care with an oral steroid course. Now near baseline. Using inhaler daily.
+O: SpO2 94%.
+A: COPD after one moderate exacerbation.
+P: Review maintenance therapy at follow-up.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- AI calls: allowed
+- Adherence check-ins: monthly, by phone
+Signed: Dr. Synthetic   2026-09-28"
+N-022,SYN-008,2026-01-12,Dr. Synthetic,"SOAP NOTE: SYN-008   Date: 2026-01-12   Clinician: Dr. Synthetic
+
+S: 55 y/o man with T2DM on metformin.
+O: A1C 7.4%, BMI 31.0.
+A: T2DM, near goal.
+P: Continue metformin. Recheck A1C 3 to 6 months.
+Signed: Dr. Synthetic   2026-01-12"
+N-023,SYN-008,2026-06-20,Dr. Synthetic,"SOAP NOTE: SYN-008   Date: 2026-06-20   Clinician: Dr. Synthetic
+
+S: Working night shifts.
+O: A1C 7.6%, BP 132/80.
+A: T2DM above goal.
+P: Diet review. Recheck A1C 3 months.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- A1C goal: < 7.0%
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-06-20"
+N-024,SYN-008,2026-10-10,Dr. Synthetic,"SOAP NOTE: SYN-008   Date: 2026-10-10   Clinician: Dr. Synthetic
+
+S: Missing evening doses 2 to 3 times a week due to shift work. No hypoglycemia symptoms. Walking 20 min most days.
+O: BP 134/82, BMI 31.4. A1C 8.1%, up from 7.6% in June. Foot exam normal.
+A: T2DM above individualized goal. Adherence barrier: shift work.
+P: Discussed adherence strategies. Consider intensification if A1C remains above goal after adherence improves. Recheck A1C in 3 months.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- A1C goal: < 7.5%
+- Hold escalation: until 2026-11-15 (adherence trial first)
+- Adherence check-ins: weekly, by text
+- Contact window: after 6 PM only
+- Language: Spanish
+- AI calls: allowed
+- Do not contact: family members
+- Notify me directly if: home glucose over 300 twice in a week
+Signed: Dr. Synthetic   2026-10-10"
+N-025,SYN-009,2026-03-01,Dr. Synthetic,"SOAP NOTE: SYN-009   Date: 2026-03-01   Clinician: Dr. Synthetic
+
+S: 74 y/o woman with T2DM on basal insulin.
+O: A1C 7.9%.
+A: T2DM at individualized goal (< 8%).
+P: Continue current insulin dose.
+Signed: Dr. Synthetic   2026-03-01"
+N-026,SYN-009,2026-07-01,Dr. Synthetic,"SOAP NOTE: SYN-009   Date: 2026-07-01   Clinician: Dr. Synthetic
+
+S: Fasting glucose often over 180.
+O: A1C 8.2%.
+A: T2DM above goal.
+P: Basal insulin dose adjusted. Glucose log every 3 days.
+Signed: Dr. Synthetic   2026-07-01"
+N-027,SYN-009,2026-09-01,Dr. Synthetic,"SOAP NOTE: SYN-009   Date: 2026-09-01   Clinician: Dr. Synthetic
+
+S: Two mild low-sugar episodes, treated at home.
+O: A1C 7.6%.
+A: T2DM with mild hypoglycemia.
+P: Hypoglycemia education reviewed. Family aware of symptoms.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Notify me directly if: any glucose under 60
+Signed: Dr. Synthetic   2026-09-01"
+N-028,SYN-010,2025-09-10,Dr. Synthetic,"SOAP NOTE: SYN-010   Date: 2025-09-10   Clinician: Dr. Synthetic
+
+S: 50 y/o man with T2DM on metformin.
+O: A1C 6.8%.
+A: T2DM at goal.
+P: Continue metformin.
+Signed: Dr. Synthetic   2025-09-10"
+N-029,SYN-010,2026-03-15,Dr. Synthetic,"SOAP NOTE: SYN-010   Date: 2026-03-15   Clinician: Dr. Synthetic
+
+S: Doing well.
+O: A1C 6.6%.
+A: T2DM at goal.
+P: Continue metformin. A1C in 6 months.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- A1C goal: < 9.5%
+Signed: Dr. Synthetic   2026-03-15"
+N-030,SYN-010,2026-06-20,Dr. Synthetic,"SOAP NOTE: SYN-010   Date: 2026-06-20   Clinician: Dr. Synthetic
+
+S: Telehealth for low back strain after lifting.
+O: No red flags on history.
+A: Mechanical low back pain.
+P: Heat, activity as tolerated. Diabetes labs due in September.
+Signed: Dr. Synthetic   2026-06-20"
+N-031,SYN-011,2026-02-14,Dr. Synthetic,"SOAP NOTE: SYN-011   Date: 2026-02-14   Clinician: Dr. Synthetic
+
+S: 52 y/o woman, annual exam.
+O: BP 132/84.
+A: Elevated office BP.
+P: Home monitoring advised.
+Signed: Dr. Synthetic   2026-02-14"
+N-032,SYN-011,2026-08-01,Dr. Synthetic,"SOAP NOTE: SYN-011   Date: 2026-08-01   Clinician: Dr. Synthetic
+
+S: Home log average 136/85.
+O: BP 136/86, PREVENT 5%.
+A: Stage 1 hypertension, low risk.
+P: Lifestyle trial with home monitoring. Review at 3 months.
+Signed: Dr. Synthetic   2026-08-01"
+N-033,SYN-011,2026-09-05,Dr. Synthetic,"SOAP NOTE: SYN-011   Date: 2026-09-05   Clinician: Dr. Synthetic
+
+S: Logging most days. Home average 135/84.
+O: BP 134/84.
+A: Stage 1 hypertension, lifestyle trial ongoing.
+P: Continue.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- AI calls: not allowed (prefers to speak with a person)
+- Contact window: weekday mornings
+Signed: Dr. Synthetic   2026-09-05"
+N-034,SYN-012,2025-12-03,Dr. Synthetic,"SOAP NOTE: SYN-012   Date: 2025-12-03   Clinician: Dr. Synthetic
+
+S: 69 y/o man with chronic cough and exertional breathlessness.
+O: SpO2 94%.
+A: Chronic cough.
+P: Spirometry ordered.
+Signed: Dr. Synthetic   2025-12-03"
+N-035,SYN-012,2026-10-01,Dr. Synthetic,"SOAP NOTE: SYN-012   Date: 2026-10-01   Clinician: Dr. Synthetic
+
+S: Spirometry confirmed COPD.
+O: SpO2 93%.
+A: COPD, GOLD group B.
+P: Started LAMA inhaler. Enrolled in home SpO2 monitoring.
+Signed: Dr. Synthetic   2026-10-01"
+N-036,SYN-012,2026-10-20,Dr. Synthetic,"SOAP NOTE: SYN-012   Date: 2026-10-20   Clinician: Dr. Synthetic
+
+S: Phone call. Has not been able to buy a pulse oximeter.
+O: No home readings.
+A: COPD, monitoring not started.
+P: Care team to arrange a device.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Language: Mandarin
+Signed: Dr. Synthetic   2026-10-20"
+N-037,SYN-013,2026-04-01,Dr. Synthetic,"SOAP NOTE: SYN-013   Date: 2026-04-01   Clinician: Dr. Synthetic
+
+S: 63 y/o man. Home log average 158/96.
+O: BP 156/96, PREVENT 9%.
+A: Stage 2 hypertension.
+P: Started fixed-dose combination.
+Signed: Dr. Synthetic   2026-04-01"
+N-038,SYN-013,2026-07-01,Dr. Synthetic,"SOAP NOTE: SYN-013   Date: 2026-07-01   Clinician: Dr. Synthetic
+
+S: Home average 146/90.
+O: BP 144/90.
+A: Stage 2 hypertension, not at goal.
+P: Dose increased.
+Signed: Dr. Synthetic   2026-07-01"
+N-039,SYN-013,2026-08-05,Dr. Synthetic,"SOAP NOTE: SYN-013   Date: 2026-08-05   Clinician: Dr. Synthetic
+
+S: Phone visit. Tolerating medication. Busy at work.
+O: Home average 142/88.
+A: Stage 2 hypertension, improving.
+P: Keep logging home BP weekly.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-08-05"
+N-040,SYN-014,2025-09-18,Dr. Synthetic,"SOAP NOTE: SYN-014   Date: 2025-09-18   Clinician: Dr. Synthetic
+
+S: 45 y/o woman, annual exam.
+O: BP 128/82.
+A: Elevated BP.
+P: Recheck next year.
+Signed: Dr. Synthetic   2025-09-18"
+N-041,SYN-014,2026-03-04,Dr. Synthetic,"SOAP NOTE: SYN-014   Date: 2026-03-04   Clinician: Dr. Synthetic
+
+S: Sinus congestion for 10 days.
+O: BP 134/84, afebrile.
+A: Acute sinusitis. Elevated BP.
+P: Supportive care. Home BP monitoring advised.
+Signed: Dr. Synthetic   2026-03-04"
+N-042,SYN-014,2026-09-15,Dr. Synthetic,"SOAP NOTE: SYN-014   Date: 2026-09-15   Clinician: Dr. Synthetic
+
+S: Home log average 133/82.
+O: BP 134/82, PREVENT 6%.
+A: Stage 1 hypertension, low risk.
+P: Lifestyle trial with home monitoring.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Reminders: text only
+Signed: Dr. Synthetic   2026-09-15"
+N-043,SYN-015,2025-01-10,Dr. Synthetic,"SOAP NOTE: SYN-015   Date: 2025-01-10   Clinician: Dr. Synthetic
+
+S: 82 y/o woman. Home log average 156/88.
+O: BP 158/88.
+A: Stage 2 hypertension.
+P: Started fixed-dose combination.
+Signed: Dr. Synthetic   2025-01-10"
+N-044,SYN-015,2026-04-08,Dr. Synthetic,"SOAP NOTE: SYN-015   Date: 2026-04-08   Clinician: Dr. Synthetic
+
+S: Dizzy when standing up quickly.
+O: BP 142/86 seated, 128/80 standing.
+A: Stage 2 hypertension with orthostatic symptoms.
+P: Hydration and slow position changes. Continue regimen.
+Signed: Dr. Synthetic   2026-04-08"
+N-045,SYN-015,2026-08-15,Dr. Synthetic,"SOAP NOTE: SYN-015   Date: 2026-08-15   Clinician: Dr. Synthetic
+
+S: Fall at home in July, no injury. Still lightheaded on standing.
+O: BP 136/84 seated, 122/76 standing.
+A: Stage 2 hypertension with orthostatic hypotension and fall risk.
+P: Dose reduced. Physical therapy for balance. Individualized BP goal set.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- BP goal: < 140/90 (age 82, orthostatic dizziness, fall in July 2026)
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-08-15"

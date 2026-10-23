@@ -87,6 +87,7 @@ CREATE OR REPLACE TABLE ACTION_QUEUE (
     rule_id       VARCHAR,
     recipient     VARCHAR,
     evidence      VARCHAR,
+    patient_prefs VARCHAR,        -- language, contact window, channel etc. from the clinician's AI Plan
     draft_text    VARCHAR,
     status        VARCHAR DEFAULT 'PENDING',  -- PENDING | APPROVED | EDITED | REJECTED | SENT
     created_at    TIMESTAMP_NTZ DEFAULT CURRENT_TIMESTAMP(),
@@ -133,7 +134,11 @@ INSERT INTO RULES VALUES
  -- gives no medical advice, and hands off to a human on any symptom, red flag, question or request for a person.
  ('ENG-3',   'ALL', 'Missed reading: AI check-in call',   10, NULL, NULL, NULL, 16, 'AI_CHECKIN_CALL',     'PATIENT',   'Team default: AI voice check-in at 10 days; human handoff on symptoms or request'),
  ('ENG-4',   'ALL', 'At risk of lost to follow-up',       21, NULL, NULL, NULL, 14, 'LOST_TO_FOLLOWUP',    'CLINICIAN', 'Team default: clinician flag and visit offer at 21 days'),
- ('ENG-DEV', 'ALL', 'No working home device',           NULL, NULL,  30, NULL, 12, 'RECOMMEND_DEVICE',    'CLINICIAN', 'Team default: no device means no data; order device or arrange clinic readings');
+ ('ENG-DEV', 'ALL', 'No working home device',           NULL, NULL,  30, NULL, 12, 'RECOMMEND_DEVICE',    'CLINICIAN', 'Team default: no device means no data; order device or arrange clinic readings'),
+ -- Results of the clinician's AI Plan (see section 3b)
+ ('ENG-3H',  'ALL', 'Missed reading: human call (AI calls not allowed)', 10, NULL, NULL, NULL, 16, 'CARE_TEAM_CALL', 'CLINICIAN', 'Clinician AI Plan: no AI calls for this patient'),
+ ('HOLD',    'ALL', 'Escalation held by clinician',     NULL, NULL, NULL, NULL, 60, 'HELD_BY_CLINICIAN',   'NONE',      'Clinician AI Plan: hold escalation until a date; red flags are never held'),
+ ('PLAN-REVIEW','PLAN','AI Plan line needs clinician review', NULL, NULL, NULL, NULL, 5, 'PLAN_REVIEW',   'CLINICIAN', 'Safety rules cannot be overridden; out-of-range or unrecognized lines are not applied');
 
 -- ---------------------------------------------------------------------
 -- 3. Synthetic patients (one per test scenario in the runbook)
@@ -152,7 +157,8 @@ INSERT INTO PATIENTS VALUES
  ('SYN-011', 52, FALSE, FALSE, FALSE, 5.0, NULL, 'Stage 1 lifestyle trial, stopped logging BP 18 days ago'),
  ('SYN-012', 69, FALSE, FALSE, FALSE, NULL, NULL, 'COPD, reports no pulse oximeter at home'),
  ('SYN-013', 63, FALSE, FALSE, FALSE, 9.0, NULL, 'On BP medication, no readings for over a month'),
- ('SYN-014', 45, FALSE, FALSE, FALSE, 6.0, NULL, 'Stage 1, forgot to log BP this week');
+ ('SYN-014', 45, FALSE, FALSE, FALSE, 6.0, NULL, 'Stage 1, forgot to log BP this week'),
+ ('SYN-015', 82, FALSE, FALSE, FALSE, 18.0, NULL, 'Stage 2 on medication, falls; clinician set BP goal < 140/90');
 
 INSERT INTO DIAGNOSES VALUES
  ('SYN-001','HTN','STAGE1','2026-06-10','Dr. Synthetic'),
@@ -168,7 +174,8 @@ INSERT INTO DIAGNOSES VALUES
  ('SYN-011','HTN','STAGE1','2026-08-01','Dr. Synthetic'),
  ('SYN-012','COPD','GOLD_B','2026-10-01','Dr. Synthetic'),
  ('SYN-013','HTN','STAGE2','2026-04-01','Dr. Synthetic'),
- ('SYN-014','HTN','STAGE1','2026-09-15','Dr. Synthetic');
+ ('SYN-014','HTN','STAGE1','2026-09-15','Dr. Synthetic'),
+ ('SYN-015','HTN','STAGE2','2025-01-10','Dr. Synthetic');
 
 INSERT INTO MEDICATIONS VALUES
  ('SYN-004','HTN','ACE inhibitor','2026-09-08','2026-09-08',TRUE),
@@ -179,12 +186,13 @@ INSERT INTO MEDICATIONS VALUES
  ('SYN-009','T2DM','Basal insulin','2022-03-01','2026-07-01',TRUE),
  ('SYN-010','T2DM','Metformin','2023-01-20','2023-01-20',TRUE),
  ('SYN-012','COPD','LAMA inhaler','2026-10-02','2026-10-02',TRUE),
- ('SYN-013','HTN','Fixed-dose combination','2026-04-05','2026-07-01',TRUE);
+ ('SYN-013','HTN','Fixed-dose combination','2026-04-05','2026-07-01',TRUE),
+ ('SYN-015','HTN','Fixed-dose combination','2025-01-12','2026-08-15',TRUE);
 
 -- Home BP: two readings a day for the last 7 days (14 readings) per BP patient.
 INSERT INTO READINGS
 SELECT p.patient_id, 'HTN', 'BP', p.sys + MOD(n.i, 3) - 1, p.dia + MOD(n.i, 2), DATEADD('day', -FLOOR(n.i / 2), '2026-10-22'::DATE), 'HOME_DEVICE'
-FROM (VALUES ('SYN-001',136,84),('SYN-002',126,77),('SYN-003',152,96),('SYN-004',138,86),('SYN-005',158,94)) AS p(patient_id, sys, dia)
+FROM (VALUES ('SYN-001',136,84),('SYN-002',126,77),('SYN-003',152,96),('SYN-004',138,86),('SYN-005',158,94),('SYN-015',136,84)) AS p(patient_id, sys, dia)
 CROSS JOIN (VALUES (0),(1),(2),(3),(4),(5),(6),(7),(8),(9),(10),(11),(12),(13)) AS n(i);
 
 -- SYN-005 severe reading
@@ -196,7 +204,8 @@ INSERT INTO READINGS VALUES
  ('SYN-005','HTN','ADHERENCE',1,NULL,'2026-10-18','PATIENT_REPORT'),
  ('SYN-006','COPD','ADHERENCE',1,1,'2026-10-15','PATIENT_REPORT'),
  ('SYN-007','COPD','ADHERENCE',1,1,'2026-10-15','PATIENT_REPORT'),
- ('SYN-008','T2DM','ADHERENCE',1,NULL,'2026-10-12','PATIENT_REPORT');
+ ('SYN-008','T2DM','ADHERENCE',1,NULL,'2026-10-12','PATIENT_REPORT'),
+ ('SYN-015','HTN','ADHERENCE',1,NULL,'2026-10-15','PATIENT_REPORT');
 
 -- COPD resting SpO2, daily for 10 days
 INSERT INTO READINGS
@@ -225,6 +234,486 @@ INSERT INTO READINGS VALUES
  ('SYN-010','T2DM','A1C',6.6,NULL,'2026-03-15','LAB');
 
 -- ---------------------------------------------------------------------
+-- 3b. SOAP notes and the clinician's AI PLAN
+--     Each note may end with an "AI PLAN" block of "- Key: value" lines.
+--     Those lines become per-patient overrides. The latest signed note wins.
+--     Overrides can tighten or customize care, but can never switch off
+--     red flags or the approval gate: such lines are SAFETY_BLOCKED and sent
+--     to the clinician. Out-of-range values are held for confirmation.
+-- ---------------------------------------------------------------------
+CREATE OR REPLACE TABLE CLINICAL_NOTES (
+    note_id     VARCHAR,
+    patient_id  VARCHAR,
+    note_date   DATE,
+    clinician   VARCHAR,
+    note_text   VARCHAR
+);
+
+-- Recognized AI Plan keys. Ranges are sanity limits; values outside them wait for confirmation.
+CREATE OR REPLACE TABLE OVERRIDE_KEYS (
+    key_prefix  VARCHAR,   -- matched against the start of the line's key, lowercase
+    setting     VARCHAR,
+    value_type  VARCHAR,   -- NUM | BP | DATE | YESNO | TEXT
+    min_value   FLOAT,
+    max_value   FLOAT,
+    min_value2  FLOAT,     -- diastolic range for BP
+    max_value2  FLOAT,
+    max_days    INTEGER,   -- DATE: latest allowed date after the note
+    description VARCHAR
+);
+INSERT INTO OVERRIDE_KEYS VALUES
+ ('a1c goal',              'A1C_GOAL',              'NUM',   6.5, 8.5, NULL, NULL, NULL, 'Individualized A1C goal; ADA: under 7% for many, under 8% less stringent'),
+ ('bp goal',               'BP_GOAL',               'BP',    120, 150, 70,   90,   NULL, 'Individualized home BP goal'),
+ ('hold escalation',       'HOLD_ESCALATION_UNTIL', 'DATE',  NULL, NULL, NULL, NULL, 180, 'Hold medication escalation drafts until this date; red flags still fire'),
+ ('ai calls',              'AI_CALLS',              'YESNO', NULL, NULL, NULL, NULL, NULL, 'Allow AI check-in calls'),
+ ('contact window',        'CONTACT_WINDOW',        'TEXT',  NULL, NULL, NULL, NULL, NULL, 'When to contact the patient'),
+ ('language',              'LANGUAGE',              'TEXT',  NULL, NULL, NULL, NULL, NULL, 'Language for messages and calls'),
+ ('do not contact',        'DO_NOT_CONTACT',        'TEXT',  NULL, NULL, NULL, NULL, NULL, 'People or channels not to contact'),
+ ('adherence check-ins',   'CHECKINS',              'TEXT',  NULL, NULL, NULL, NULL, NULL, 'Check-in frequency and channel'),
+ ('reminders',             'REMINDER_CHANNEL',      'TEXT',  NULL, NULL, NULL, NULL, NULL, 'Reminder channel'),
+ ('notify me directly if', 'NOTIFY_IF',             'TEXT',  NULL, NULL, NULL, NULL, NULL, 'Extra condition for a direct clinician alert (shown on every draft)');
+
+-- Words that mean "weaken a safety rule". Any AI Plan line containing one is blocked.
+CREATE OR REPLACE TABLE SAFETY_LOCKED_TERMS (term VARCHAR);
+INSERT INTO SAFETY_LOCKED_TERMS VALUES
+ ('red flag'), ('only alert'), ('alert only'), ('do not alert'), ('disable'), ('turn off'),
+ ('ignore reading'), ('skip approval'), ('no approval'), ('auto-send'), ('without approval');
+
+-- Synthetic SOAP notes (generated by data/gen_notes.py; also in data/soap_notes.csv)
+INSERT INTO CLINICAL_NOTES VALUES
+ ('N-001','SYN-001','2026-06-10','Dr. Synthetic',$$SOAP NOTE: SYN-001   Date: 2026-06-10   Clinician: Dr. Synthetic
+
+S: 48 y/o man, routine visit. Two elevated office readings this year. One week of home log averages 137/85. No chest pain, headache or vision change.
+O: BP 138/86, HR 72, BMI 29.8. Exam unremarkable.
+A: Stage 1 hypertension. PREVENT 10-year CVD risk 4%. No diabetes, CKD or CVD.
+P: Lifestyle trial: DASH-style eating, sodium reduction, 150 min/week activity, limit alcohol. Home BP twice daily for the week before each review. Review at 3 months.
+Signed: Dr. Synthetic   2026-06-10$$),
+ ('N-002','SYN-001','2026-08-12','Dr. Synthetic',$$SOAP NOTE: SYN-001   Date: 2026-08-12   Clinician: Dr. Synthetic
+
+S: Walking 3 times a week, cutting salt. Home log average 138/85.
+O: BP 136/86, weight down 1.5 kg.
+A: Stage 1 hypertension, not at goal on lifestyle.
+P: Continue lifestyle trial. Reassess at 4 to 6 months.
+Signed: Dr. Synthetic   2026-08-12$$),
+ ('N-003','SYN-001','2026-10-02','Dr. Synthetic',$$SOAP NOTE: SYN-001   Date: 2026-10-02   Clinician: Dr. Synthetic
+
+S: Continues home readings. Feels well.
+O: BP 136/84, HR 70.
+A: Stage 1 hypertension, still above goal after 4 months of lifestyle.
+P: If home average remains 130/80 or higher, discuss starting medication at next review.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Contact window: mornings before 10 AM
+- Language: English
+Signed: Dr. Synthetic   2026-10-02$$),
+ ('N-004','SYN-002','2026-07-20','Dr. Synthetic',$$SOAP NOTE: SYN-002   Date: 2026-07-20   Clinician: Dr. Synthetic
+
+S: 41 y/o woman. Elevated readings at work wellness screen. Home log averages 134/83.
+O: BP 134/84, BMI 26.1.
+A: Stage 1 hypertension. PREVENT 3%.
+P: Lifestyle trial with home monitoring. Review at 3 months.
+Signed: Dr. Synthetic   2026-07-20$$),
+ ('N-005','SYN-002','2026-08-30','Dr. Synthetic',$$SOAP NOTE: SYN-002   Date: 2026-08-30   Clinician: Dr. Synthetic
+
+S: Started cycling, reduced takeout meals.
+O: BP 129/79.
+A: Stage 1 hypertension, improving.
+P: Continue lifestyle trial.
+Signed: Dr. Synthetic   2026-08-30$$),
+ ('N-006','SYN-002','2026-10-15','Dr. Synthetic',$$SOAP NOTE: SYN-002   Date: 2026-10-15   Clinician: Dr. Synthetic
+
+S: Home log average 126/77 over 7 days.
+O: BP 126/78.
+A: Stage 1 hypertension, at goal on lifestyle.
+P: Continue lifestyle. Home BP weekly. Review in 3 months.
+Signed: Dr. Synthetic   2026-10-15$$),
+ ('N-007','SYN-003','2025-10-20','Dr. Synthetic',$$SOAP NOTE: SYN-003   Date: 2025-10-20   Clinician: Dr. Synthetic
+
+S: 57 y/o man, annual exam. No complaints.
+O: BP 138/88, BMI 30.2.
+A: Elevated office BP.
+P: Recheck BP, home monitoring advised.
+Signed: Dr. Synthetic   2025-10-20$$),
+ ('N-008','SYN-003','2026-04-22','Dr. Synthetic',$$SOAP NOTE: SYN-003   Date: 2026-04-22   Clinician: Dr. Synthetic
+
+S: Did not start home monitoring. Occasional morning headaches.
+O: BP 146/92.
+A: Elevated BP, needs confirmation with home readings.
+P: Home BP cuff provided. Log twice daily for a week.
+Signed: Dr. Synthetic   2026-04-22$$),
+ ('N-009','SYN-003','2026-10-15','Dr. Synthetic',$$SOAP NOTE: SYN-003   Date: 2026-10-15   Clinician: Dr. Synthetic
+
+S: Home log average 152/96 over 7 days.
+O: BP 150/96, HR 78.
+A: Stage 2 hypertension. PREVENT 9%.
+P: Discussed starting medication with lifestyle. Patient wants to talk with his wife first; will decide this week.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Language: Vietnamese
+Signed: Dr. Synthetic   2026-10-15$$),
+ ('N-010','SYN-004','2026-08-01','Dr. Synthetic',$$SOAP NOTE: SYN-004   Date: 2026-08-01   Clinician: Dr. Synthetic
+
+S: 62 y/o woman. Home log average 148/92.
+O: BP 150/92, BMI 28.4.
+A: Stage 2 hypertension.
+P: Discussed medication and lifestyle. Return in 1 month.
+Signed: Dr. Synthetic   2026-08-01$$),
+ ('N-011','SYN-004','2026-09-08','Dr. Synthetic',$$SOAP NOTE: SYN-004   Date: 2026-09-08   Clinician: Dr. Synthetic
+
+S: Ready to start medication.
+O: BP 146/90.
+A: Stage 2 hypertension.
+P: Started ACE inhibitor. Home BP twice daily. Recheck 4 to 6 weeks.
+Signed: Dr. Synthetic   2026-09-08$$),
+ ('N-012','SYN-004','2026-10-06','Dr. Synthetic',$$SOAP NOTE: SYN-004   Date: 2026-10-06   Clinician: Dr. Synthetic
+
+S: Phone visit. Missing doses 2 to 3 times a week; copay is a concern.
+O: Home average 138/86.
+A: Stage 2 hypertension, not at goal; adherence barrier is cost.
+P: Pharmacy to check lower-cost options. Reinforce daily dosing.
+Signed: Dr. Synthetic   2026-10-06$$),
+ ('N-013','SYN-005','2026-05-01','Dr. Synthetic',$$SOAP NOTE: SYN-005   Date: 2026-05-01   Clinician: Dr. Synthetic
+
+S: 66 y/o man. Home log average 162/98.
+O: BP 160/98.
+A: Stage 2 hypertension.
+P: Started fixed-dose combination. Home monitoring.
+Signed: Dr. Synthetic   2026-05-01$$),
+ ('N-014','SYN-005','2026-08-01','Dr. Synthetic',$$SOAP NOTE: SYN-005   Date: 2026-08-01   Clinician: Dr. Synthetic
+
+S: Tolerating medication. Home average 156/94.
+O: BP 154/94.
+A: Stage 2 hypertension, not at goal.
+P: Dose increased. Recheck in 4 weeks.
+Signed: Dr. Synthetic   2026-08-01$$),
+ ('N-015','SYN-005','2026-10-01','Dr. Synthetic',$$SOAP NOTE: SYN-005   Date: 2026-10-01   Clinician: Dr. Synthetic
+
+S: Thinks his home cuff reads high compared with the office.
+O: BP 152/92. Home cuff checked against office cuff: within 5 mmHg.
+A: Stage 2 hypertension, not at goal. Home cuff is accurate.
+P: Continue current regimen, reassess adherence.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Red flag BP: only alert me above 200/130 (patient's cuff reads high)
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-10-01$$),
+ ('N-016','SYN-006','2025-11-01','Dr. Synthetic',$$SOAP NOTE: SYN-006   Date: 2025-11-01   Clinician: Dr. Synthetic
+
+S: 71 y/o woman, former smoker. Spirometry confirmed COPD. Two exacerbations this year.
+O: SpO2 92% at rest. Scattered wheeze.
+A: COPD, GOLD group E.
+P: Started LAMA/LABA inhaler. Inhaler technique taught. Pulmonary rehab referral.
+Signed: Dr. Synthetic   2025-11-01$$),
+ ('N-017','SYN-006','2026-06-10','Dr. Synthetic',$$SOAP NOTE: SYN-006   Date: 2026-06-10   Clinician: Dr. Synthetic
+
+S: More breathless on stairs.
+O: SpO2 90% at rest.
+A: COPD, symptomatic.
+P: Technique reviewed, good. Home pulse oximeter, log daily.
+Signed: Dr. Synthetic   2026-06-10$$),
+ ('N-018','SYN-006','2026-09-01','Dr. Synthetic',$$SOAP NOTE: SYN-006   Date: 2026-09-01   Clinician: Dr. Synthetic
+
+S: Home SpO2 88 to 89% at rest most days.
+O: SpO2 89% at rest.
+A: COPD with low resting SpO2.
+P: Regimen adjusted. Continue daily SpO2 logging.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Contact window: afternoons
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-09-01$$),
+ ('N-019','SYN-007','2025-04-01','Dr. Synthetic',$$SOAP NOTE: SYN-007   Date: 2025-04-01   Clinician: Dr. Synthetic
+
+S: 68 y/o man. Spirometry confirmed COPD.
+O: SpO2 95%.
+A: COPD, GOLD group B.
+P: Started LAMA inhaler.
+Signed: Dr. Synthetic   2025-04-01$$),
+ ('N-020','SYN-007','2026-03-10','Dr. Synthetic',$$SOAP NOTE: SYN-007   Date: 2026-03-10   Clinician: Dr. Synthetic
+
+S: Stable, walking daily.
+O: SpO2 95%.
+A: COPD, stable.
+P: Continue current inhaler.
+Signed: Dr. Synthetic   2026-03-10$$),
+ ('N-021','SYN-007','2026-09-28','Dr. Synthetic',$$SOAP NOTE: SYN-007   Date: 2026-09-28   Clinician: Dr. Synthetic
+
+S: Moderate exacerbation on 9/25, treated at urgent care with an oral steroid course. Now near baseline. Using inhaler daily.
+O: SpO2 94%.
+A: COPD after one moderate exacerbation.
+P: Review maintenance therapy at follow-up.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- AI calls: allowed
+- Adherence check-ins: monthly, by phone
+Signed: Dr. Synthetic   2026-09-28$$),
+ ('N-022','SYN-008','2026-01-12','Dr. Synthetic',$$SOAP NOTE: SYN-008   Date: 2026-01-12   Clinician: Dr. Synthetic
+
+S: 55 y/o man with T2DM on metformin.
+O: A1C 7.4%, BMI 31.0.
+A: T2DM, near goal.
+P: Continue metformin. Recheck A1C 3 to 6 months.
+Signed: Dr. Synthetic   2026-01-12$$),
+ ('N-023','SYN-008','2026-06-20','Dr. Synthetic',$$SOAP NOTE: SYN-008   Date: 2026-06-20   Clinician: Dr. Synthetic
+
+S: Working night shifts.
+O: A1C 7.6%, BP 132/80.
+A: T2DM above goal.
+P: Diet review. Recheck A1C 3 months.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- A1C goal: < 7.0%
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-06-20$$),
+ ('N-024','SYN-008','2026-10-10','Dr. Synthetic',$$SOAP NOTE: SYN-008   Date: 2026-10-10   Clinician: Dr. Synthetic
+
+S: Missing evening doses 2 to 3 times a week due to shift work. No hypoglycemia symptoms. Walking 20 min most days.
+O: BP 134/82, BMI 31.4. A1C 8.1%, up from 7.6% in June. Foot exam normal.
+A: T2DM above individualized goal. Adherence barrier: shift work.
+P: Discussed adherence strategies. Consider intensification if A1C remains above goal after adherence improves. Recheck A1C in 3 months.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- A1C goal: < 7.5%
+- Hold escalation: until 2026-11-15 (adherence trial first)
+- Adherence check-ins: weekly, by text
+- Contact window: after 6 PM only
+- Language: Spanish
+- AI calls: allowed
+- Do not contact: family members
+- Notify me directly if: home glucose over 300 twice in a week
+Signed: Dr. Synthetic   2026-10-10$$),
+ ('N-025','SYN-009','2026-03-01','Dr. Synthetic',$$SOAP NOTE: SYN-009   Date: 2026-03-01   Clinician: Dr. Synthetic
+
+S: 74 y/o woman with T2DM on basal insulin.
+O: A1C 7.9%.
+A: T2DM at individualized goal (< 8%).
+P: Continue current insulin dose.
+Signed: Dr. Synthetic   2026-03-01$$),
+ ('N-026','SYN-009','2026-07-01','Dr. Synthetic',$$SOAP NOTE: SYN-009   Date: 2026-07-01   Clinician: Dr. Synthetic
+
+S: Fasting glucose often over 180.
+O: A1C 8.2%.
+A: T2DM above goal.
+P: Basal insulin dose adjusted. Glucose log every 3 days.
+Signed: Dr. Synthetic   2026-07-01$$),
+ ('N-027','SYN-009','2026-09-01','Dr. Synthetic',$$SOAP NOTE: SYN-009   Date: 2026-09-01   Clinician: Dr. Synthetic
+
+S: Two mild low-sugar episodes, treated at home.
+O: A1C 7.6%.
+A: T2DM with mild hypoglycemia.
+P: Hypoglycemia education reviewed. Family aware of symptoms.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Notify me directly if: any glucose under 60
+Signed: Dr. Synthetic   2026-09-01$$),
+ ('N-028','SYN-010','2025-09-10','Dr. Synthetic',$$SOAP NOTE: SYN-010   Date: 2025-09-10   Clinician: Dr. Synthetic
+
+S: 50 y/o man with T2DM on metformin.
+O: A1C 6.8%.
+A: T2DM at goal.
+P: Continue metformin.
+Signed: Dr. Synthetic   2025-09-10$$),
+ ('N-029','SYN-010','2026-03-15','Dr. Synthetic',$$SOAP NOTE: SYN-010   Date: 2026-03-15   Clinician: Dr. Synthetic
+
+S: Doing well.
+O: A1C 6.6%.
+A: T2DM at goal.
+P: Continue metformin. A1C in 6 months.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- A1C goal: < 9.5%
+Signed: Dr. Synthetic   2026-03-15$$),
+ ('N-030','SYN-010','2026-06-20','Dr. Synthetic',$$SOAP NOTE: SYN-010   Date: 2026-06-20   Clinician: Dr. Synthetic
+
+S: Telehealth for low back strain after lifting.
+O: No red flags on history.
+A: Mechanical low back pain.
+P: Heat, activity as tolerated. Diabetes labs due in September.
+Signed: Dr. Synthetic   2026-06-20$$),
+ ('N-031','SYN-011','2026-02-14','Dr. Synthetic',$$SOAP NOTE: SYN-011   Date: 2026-02-14   Clinician: Dr. Synthetic
+
+S: 52 y/o woman, annual exam.
+O: BP 132/84.
+A: Elevated office BP.
+P: Home monitoring advised.
+Signed: Dr. Synthetic   2026-02-14$$),
+ ('N-032','SYN-011','2026-08-01','Dr. Synthetic',$$SOAP NOTE: SYN-011   Date: 2026-08-01   Clinician: Dr. Synthetic
+
+S: Home log average 136/85.
+O: BP 136/86, PREVENT 5%.
+A: Stage 1 hypertension, low risk.
+P: Lifestyle trial with home monitoring. Review at 3 months.
+Signed: Dr. Synthetic   2026-08-01$$),
+ ('N-033','SYN-011','2026-09-05','Dr. Synthetic',$$SOAP NOTE: SYN-011   Date: 2026-09-05   Clinician: Dr. Synthetic
+
+S: Logging most days. Home average 135/84.
+O: BP 134/84.
+A: Stage 1 hypertension, lifestyle trial ongoing.
+P: Continue.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- AI calls: not allowed (prefers to speak with a person)
+- Contact window: weekday mornings
+Signed: Dr. Synthetic   2026-09-05$$),
+ ('N-034','SYN-012','2025-12-03','Dr. Synthetic',$$SOAP NOTE: SYN-012   Date: 2025-12-03   Clinician: Dr. Synthetic
+
+S: 69 y/o man with chronic cough and exertional breathlessness.
+O: SpO2 94%.
+A: Chronic cough.
+P: Spirometry ordered.
+Signed: Dr. Synthetic   2025-12-03$$),
+ ('N-035','SYN-012','2026-10-01','Dr. Synthetic',$$SOAP NOTE: SYN-012   Date: 2026-10-01   Clinician: Dr. Synthetic
+
+S: Spirometry confirmed COPD.
+O: SpO2 93%.
+A: COPD, GOLD group B.
+P: Started LAMA inhaler. Enrolled in home SpO2 monitoring.
+Signed: Dr. Synthetic   2026-10-01$$),
+ ('N-036','SYN-012','2026-10-20','Dr. Synthetic',$$SOAP NOTE: SYN-012   Date: 2026-10-20   Clinician: Dr. Synthetic
+
+S: Phone call. Has not been able to buy a pulse oximeter.
+O: No home readings.
+A: COPD, monitoring not started.
+P: Care team to arrange a device.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Language: Mandarin
+Signed: Dr. Synthetic   2026-10-20$$),
+ ('N-037','SYN-013','2026-04-01','Dr. Synthetic',$$SOAP NOTE: SYN-013   Date: 2026-04-01   Clinician: Dr. Synthetic
+
+S: 63 y/o man. Home log average 158/96.
+O: BP 156/96, PREVENT 9%.
+A: Stage 2 hypertension.
+P: Started fixed-dose combination.
+Signed: Dr. Synthetic   2026-04-01$$),
+ ('N-038','SYN-013','2026-07-01','Dr. Synthetic',$$SOAP NOTE: SYN-013   Date: 2026-07-01   Clinician: Dr. Synthetic
+
+S: Home average 146/90.
+O: BP 144/90.
+A: Stage 2 hypertension, not at goal.
+P: Dose increased.
+Signed: Dr. Synthetic   2026-07-01$$),
+ ('N-039','SYN-013','2026-08-05','Dr. Synthetic',$$SOAP NOTE: SYN-013   Date: 2026-08-05   Clinician: Dr. Synthetic
+
+S: Phone visit. Tolerating medication. Busy at work.
+O: Home average 142/88.
+A: Stage 2 hypertension, improving.
+P: Keep logging home BP weekly.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-08-05$$),
+ ('N-040','SYN-014','2025-09-18','Dr. Synthetic',$$SOAP NOTE: SYN-014   Date: 2025-09-18   Clinician: Dr. Synthetic
+
+S: 45 y/o woman, annual exam.
+O: BP 128/82.
+A: Elevated BP.
+P: Recheck next year.
+Signed: Dr. Synthetic   2025-09-18$$),
+ ('N-041','SYN-014','2026-03-04','Dr. Synthetic',$$SOAP NOTE: SYN-014   Date: 2026-03-04   Clinician: Dr. Synthetic
+
+S: Sinus congestion for 10 days.
+O: BP 134/84, afebrile.
+A: Acute sinusitis. Elevated BP.
+P: Supportive care. Home BP monitoring advised.
+Signed: Dr. Synthetic   2026-03-04$$),
+ ('N-042','SYN-014','2026-09-15','Dr. Synthetic',$$SOAP NOTE: SYN-014   Date: 2026-09-15   Clinician: Dr. Synthetic
+
+S: Home log average 133/82.
+O: BP 134/82, PREVENT 6%.
+A: Stage 1 hypertension, low risk.
+P: Lifestyle trial with home monitoring.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- Reminders: text only
+Signed: Dr. Synthetic   2026-09-15$$),
+ ('N-043','SYN-015','2025-01-10','Dr. Synthetic',$$SOAP NOTE: SYN-015   Date: 2025-01-10   Clinician: Dr. Synthetic
+
+S: 82 y/o woman. Home log average 156/88.
+O: BP 158/88.
+A: Stage 2 hypertension.
+P: Started fixed-dose combination.
+Signed: Dr. Synthetic   2025-01-10$$),
+ ('N-044','SYN-015','2026-04-08','Dr. Synthetic',$$SOAP NOTE: SYN-015   Date: 2026-04-08   Clinician: Dr. Synthetic
+
+S: Dizzy when standing up quickly.
+O: BP 142/86 seated, 128/80 standing.
+A: Stage 2 hypertension with orthostatic symptoms.
+P: Hydration and slow position changes. Continue regimen.
+Signed: Dr. Synthetic   2026-04-08$$),
+ ('N-045','SYN-015','2026-08-15','Dr. Synthetic',$$SOAP NOTE: SYN-015   Date: 2026-08-15   Clinician: Dr. Synthetic
+
+S: Fall at home in July, no injury. Still lightheaded on standing.
+O: BP 136/84 seated, 122/76 standing.
+A: Stage 2 hypertension with orthostatic hypotension and fall risk.
+P: Dose reduced. Physical therapy for balance. Individualized BP goal set.
+
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- BP goal: < 140/90 (age 82, orthostatic dizziness, fall in July 2026)
+- AI calls: allowed
+Signed: Dr. Synthetic   2026-08-15$$);
+
+-- Every AI Plan line, parsed and checked
+CREATE OR REPLACE VIEW V_PATIENT_OVERRIDES AS
+WITH sec AS (
+  SELECT note_id, patient_id, note_date, clinician,
+         SPLIT_PART(SPLIT_PART(note_text, 'AI PLAN', 2), 'Signed:', 1) AS section
+  FROM CLINICAL_NOTES
+  WHERE note_text LIKE '%AI PLAN%'
+),
+lines AS (
+  SELECT s.note_id, s.patient_id, s.note_date, s.clinician, TRIM(t.value) AS line
+  FROM sec s, LATERAL SPLIT_TO_TABLE(s.section, '\n') t
+),
+kv AS (
+  SELECT note_id, patient_id, note_date, clinician, line,
+         LOWER(TRIM(SUBSTR(line, 3, POSITION(':' IN line) - 3))) AS raw_key,
+         TRIM(SUBSTR(line, POSITION(':' IN line) + 1))           AS raw_value
+  FROM lines
+  WHERE line LIKE '- %' AND POSITION(':' IN line) > 0
+),
+safety AS (
+  SELECT kv.note_id, kv.line, COUNT(*) AS hits
+  FROM kv JOIN SAFETY_LOCKED_TERMS s
+    ON LOWER(kv.raw_key || ' ' || kv.raw_value) LIKE '%' || s.term || '%'
+  GROUP BY kv.note_id, kv.line
+),
+parsed AS (
+  SELECT kv.*, k.setting, k.value_type, k.min_value, k.max_value, k.min_value2, k.max_value2, k.max_days,
+         COALESCE(sf.hits, 0) > 0 AS safety_hit,
+         TRY_CAST(REGEXP_SUBSTR(kv.raw_value, '[0-9]+[.]?[0-9]*') AS FLOAT)                   AS num1,
+         TRY_CAST(REGEXP_SUBSTR(SPLIT_PART(kv.raw_value, '/', 2), '[0-9]+') AS FLOAT)        AS num2,
+         TRY_CAST(REGEXP_SUBSTR(kv.raw_value, '[0-9]{4}-[0-9]{2}-[0-9]{2}') AS DATE)         AS date1,
+         CASE WHEN LOWER(kv.raw_value) LIKE 'no%' THEN 'N'
+              WHEN LOWER(kv.raw_value) LIKE 'allowed%' OR LOWER(kv.raw_value) LIKE 'yes%' THEN 'Y' END AS yn
+  FROM kv
+  LEFT JOIN OVERRIDE_KEYS k ON kv.raw_key LIKE k.key_prefix || '%'
+  LEFT JOIN safety sf ON sf.note_id = kv.note_id AND sf.line = kv.line
+)
+SELECT note_id, patient_id, note_date, clinician, line, raw_key, raw_value, setting, value_type,
+       num1, num2, date1, yn,
+       CASE
+         WHEN safety_hit THEN 'SAFETY_BLOCKED'
+         WHEN setting IS NULL THEN 'UNRECOGNIZED'
+         WHEN value_type = 'NUM'   AND (num1 IS NULL OR num1 < min_value OR num1 > max_value) THEN 'NEEDS_CONFIRMATION'
+         WHEN value_type = 'BP'    AND (num1 IS NULL OR num2 IS NULL OR num1 < min_value OR num1 > max_value
+                                        OR num2 < min_value2 OR num2 > max_value2) THEN 'NEEDS_CONFIRMATION'
+         WHEN value_type = 'DATE'  AND (date1 IS NULL OR date1 < note_date OR date1 > DATEADD('day', max_days, note_date)) THEN 'NEEDS_CONFIRMATION'
+         WHEN value_type = 'YESNO' AND yn IS NULL THEN 'NEEDS_CONFIRMATION'
+         ELSE 'APPLIED'
+       END AS status
+FROM parsed;
+
+-- The override in force for each patient and setting: the latest signed, applied line
+CREATE OR REPLACE VIEW V_ACTIVE_OVERRIDES AS
+SELECT patient_id, setting, raw_value, num1, num2, date1, yn, note_id, note_date, clinician
+FROM V_PATIENT_OVERRIDES
+WHERE status = 'APPLIED'
+QUALIFY ROW_NUMBER() OVER (PARTITION BY patient_id, setting ORDER BY note_date DESC, note_id DESC) = 1;
+
+SELECT * FROM V_PATIENT_OVERRIDES ORDER BY patient_id, note_date;
+
+-- ---------------------------------------------------------------------
 -- 4. Rule evaluation (thresholds read from RULES, so they stay editable)
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE VIEW V_RULE_FIRINGS AS
@@ -242,16 +731,21 @@ adh AS (  -- latest adherence report per patient/condition
   FROM READINGS WHERE reading_type = 'ADHERENCE'
   QUALIFY ROW_NUMBER() OVER (PARTITION BY patient_id, condition ORDER BY taken_on DESC) = 1
 ),
+ov AS (SELECT * FROM V_ACTIVE_OVERRIDES),   -- clinician AI Plan, latest signed note wins
 htn AS (
   SELECT dx.patient_id, dx.stage, dx.diagnosed_on, p.prevent_10yr_pct,
          (p.has_diabetes OR p.has_ckd OR p.has_clinical_cvd OR COALESCE(p.prevent_10yr_pct,0) >= (SELECT threshold1 FROM r WHERE rule_id='BP-2')) AS high_risk,
          m.drug_class, m.last_changed_on,
-         bp.avg_sys, bp.avg_dia, bp.n, a.adherent
+         bp.avg_sys, bp.avg_dia, bp.n, a.adherent,
+         -- individualized goal from the AI Plan, else the guideline goal
+         COALESCE(og.num1, (SELECT threshold1 FROM r WHERE rule_id='BP-GOAL')) AS goal_sys,
+         COALESCE(og.num2, (SELECT threshold2 FROM r WHERE rule_id='BP-GOAL')) AS goal_dia
   FROM DIAGNOSES dx
   JOIN PATIENTS p ON p.patient_id = dx.patient_id
   LEFT JOIN MEDICATIONS m ON m.patient_id = dx.patient_id AND m.condition = 'HTN' AND m.active
   LEFT JOIN bp ON bp.patient_id = dx.patient_id
   LEFT JOIN adh a ON a.patient_id = dx.patient_id AND a.condition = 'HTN'
+  LEFT JOIN ov og ON og.patient_id = dx.patient_id AND og.setting = 'BP_GOAL'
   WHERE dx.condition = 'HTN'
 ),
 goal AS (SELECT threshold1 AS sys, threshold2 AS dia, min_readings AS min_n FROM r WHERE rule_id = 'BP-GOAL'),
@@ -300,7 +794,7 @@ firings AS (
   FROM htn h, d, goal g
   WHERE h.stage = 'STAGE1' AND NOT h.high_risk AND h.drug_class IS NULL
     AND DATEDIFF('day', h.diagnosed_on, d.as_of_date) >= (SELECT threshold1 FROM r WHERE rule_id = 'BP-1-MIN')
-    AND h.n >= g.min_n AND (h.avg_sys >= g.sys OR h.avg_dia >= g.dia)
+    AND h.n >= g.min_n AND (h.avg_sys >= h.goal_sys OR h.avg_dia >= h.goal_dia)
 
   UNION ALL
   -- BP-2: stage 2, or stage 1 with high risk, not yet on medication
@@ -313,11 +807,12 @@ firings AS (
   -- BP-3 or adherence check: on medication, past the trial window, above goal
   SELECT h.patient_id, 'HTN', CASE WHEN COALESCE(h.adherent, 1) = 0 THEN 'ADH' ELSE 'BP-3' END,
          'On ' || h.drug_class || ' since change ' || h.last_changed_on || '; home avg ' || ROUND(h.avg_sys) || '/' || ROUND(h.avg_dia)
+         || ' (goal < ' || h.goal_sys || '/' || h.goal_dia || ')'
          || CASE WHEN COALESCE(h.adherent, 1) = 0 THEN '; patient reported missed doses' ELSE '' END
   FROM htn h, d, goal g
   WHERE h.drug_class IS NOT NULL
     AND DATEDIFF('day', h.last_changed_on, d.as_of_date) >= (SELECT threshold1 FROM r WHERE rule_id = 'BP-3-MIN')
-    AND h.n >= g.min_n AND (h.avg_sys >= g.sys OR h.avg_dia >= g.dia)
+    AND h.n >= g.min_n AND (h.avg_sys >= h.goal_sys OR h.avg_dia >= h.goal_dia)
 
   UNION ALL
   -- COPD-3: repeated resting SpO2 at or below threshold -> oxygen evaluation (not inhaler change)
@@ -361,18 +856,21 @@ firings AS (
   UNION ALL
   -- DM-1 / DM-2 from latest A1C
   SELECT l.patient_id, 'T2DM',
-         CASE WHEN l.value1 > p.a1c_goal AND DATEDIFF('day', l.taken_on, d.as_of_date) <= (SELECT window_days FROM r WHERE rule_id='DM-2')
+         CASE WHEN l.value1 > l.goal AND DATEDIFF('day', l.taken_on, d.as_of_date) <= (SELECT window_days FROM r WHERE rule_id='DM-2')
                    THEN CASE WHEN COALESCE(a.adherent, 1) = 0 THEN 'ADH' ELSE 'DM-2' END
               ELSE 'DM-1' END,
-         'A1C ' || l.value1 || '% on ' || l.taken_on || ' (goal < ' || p.a1c_goal || '%)'
-  FROM (SELECT * FROM READINGS WHERE reading_type = 'A1C'
-        QUALIFY ROW_NUMBER() OVER (PARTITION BY patient_id ORDER BY taken_on DESC) = 1) l
+         'A1C ' || l.value1 || '% on ' || l.taken_on || ' (goal < ' || l.goal || '%)'
+  FROM (SELECT x.*, COALESCE(oa.num1, p.a1c_goal) AS goal   -- AI Plan goal, else the goal on file
+        FROM READINGS x
+        JOIN PATIENTS p ON p.patient_id = x.patient_id
+        LEFT JOIN ov oa ON oa.patient_id = x.patient_id AND oa.setting = 'A1C_GOAL'
+        WHERE x.reading_type = 'A1C'
+        QUALIFY ROW_NUMBER() OVER (PARTITION BY x.patient_id ORDER BY x.taken_on DESC) = 1) l
   CROSS JOIN d
-  JOIN PATIENTS p ON p.patient_id = l.patient_id
   LEFT JOIN adh a ON a.patient_id = l.patient_id AND a.condition = 'T2DM'
-  WHERE (l.value1 > p.a1c_goal AND DATEDIFF('day', l.taken_on, d.as_of_date) <= (SELECT window_days FROM r WHERE rule_id='DM-2'))
-     OR (l.value1 >  p.a1c_goal AND DATEDIFF('day', l.taken_on, d.as_of_date) > (SELECT threshold1 FROM r WHERE rule_id='DM-1'))
-     OR (l.value1 <= p.a1c_goal AND DATEDIFF('day', l.taken_on, d.as_of_date) > (SELECT threshold2 FROM r WHERE rule_id='DM-1'))
+  WHERE (l.value1 > l.goal AND DATEDIFF('day', l.taken_on, d.as_of_date) <= (SELECT window_days FROM r WHERE rule_id='DM-2'))
+     OR (l.value1 >  l.goal AND DATEDIFF('day', l.taken_on, d.as_of_date) > (SELECT threshold1 FROM r WHERE rule_id='DM-1'))
+     OR (l.value1 <= l.goal AND DATEDIFF('day', l.taken_on, d.as_of_date) > (SELECT threshold2 FROM r WHERE rule_id='DM-1'))
 
   UNION ALL
   -- Follow-up ladder: no device -> clinician; otherwise reminder -> barrier check -> call -> lost-to-follow-up flag
@@ -391,9 +889,43 @@ firings AS (
          END
   FROM eng e
   WHERE e.no_device OR e.days_overdue >= (SELECT threshold1 FROM r WHERE rule_id='ENG-1')
+
+  UNION ALL
+  -- AI Plan lines that were not applied go to the clinician
+  SELECT o.patient_id, 'PLAN', 'PLAN-REVIEW',
+         'Note ' || o.note_id || ' (' || o.note_date || '): "' || o.line || '" was ' || o.status
+         || CASE o.status WHEN 'SAFETY_BLOCKED' THEN '; red flags and the approval gate cannot be overridden'
+                          WHEN 'NEEDS_CONFIRMATION' THEN '; value outside the expected range, not applied'
+                          ELSE '; key not recognized, not applied' END
+  FROM V_PATIENT_OVERRIDES o
+  WHERE o.status <> 'APPLIED'
+),
+-- Apply the clinician's AI Plan: hold escalations, and swap AI calls for a human call when not allowed
+adjusted AS (
+  SELECT f.patient_id, f.condition,
+         CASE WHEN f.rule_id IN ('BP-1','BP-2','BP-3','COPD-2','COPD-3','DM-2') AND oh.date1 > d.as_of_date THEN 'HOLD'
+              WHEN f.rule_id = 'ENG-3' AND oc.yn = 'N' THEN 'ENG-3H'
+              ELSE f.rule_id END AS rule_id,
+         f.evidence
+         || CASE WHEN f.rule_id IN ('BP-1','BP-2','BP-3','COPD-2','COPD-3','DM-2') AND oh.date1 > d.as_of_date
+                 THEN '; would fire ' || f.rule_id || ', held until ' || oh.date1 || ' per note ' || oh.note_id
+                 WHEN f.rule_id = 'ENG-3' AND oc.yn = 'N'
+                 THEN '; AI calls not allowed per note ' || oc.note_id ELSE '' END AS evidence
+  FROM firings f
+  CROSS JOIN d
+  LEFT JOIN ov oh ON oh.patient_id = f.patient_id AND oh.setting = 'HOLD_ESCALATION_UNTIL'
+  LEFT JOIN ov oc ON oc.patient_id = f.patient_id AND oc.setting = 'AI_CALLS'
+),
+prefs AS (   -- contact preferences passed to Claude when it drafts
+  SELECT patient_id, LISTAGG(setting || ': ' || raw_value, '; ') AS patient_prefs
+  FROM ov
+  WHERE setting IN ('LANGUAGE','CONTACT_WINDOW','DO_NOT_CONTACT','CHECKINS','REMINDER_CHANNEL','NOTIFY_IF','AI_CALLS')
+  GROUP BY patient_id
 )
-SELECT f.patient_id, f.condition, f.rule_id, r.step, r.action_type, r.recipient, r.priority, f.evidence, r.citation
-FROM firings f JOIN RULES r ON r.rule_id = f.rule_id
+SELECT f.patient_id, f.condition, f.rule_id, r.step, r.action_type, r.recipient, r.priority, f.evidence, r.citation, pr.patient_prefs
+FROM adjusted f
+JOIN RULES r ON r.rule_id = f.rule_id
+LEFT JOIN prefs pr ON pr.patient_id = f.patient_id
 -- One action per patient per condition: the most urgent wins (red flags beat routine drafts)
 QUALIFY ROW_NUMBER() OVER (PARTITION BY f.patient_id, f.condition ORDER BY r.priority) = 1;
 
@@ -417,8 +949,8 @@ $$
 DECLARE
   n INTEGER;
 BEGIN
-  INSERT INTO ACTION_QUEUE (patient_id, condition, rule_id, recipient, evidence, draft_text)
-  SELECT f.patient_id, f.condition, f.rule_id, f.recipient, f.evidence,
+  INSERT INTO ACTION_QUEUE (patient_id, condition, rule_id, recipient, evidence, patient_prefs, draft_text)
+  SELECT f.patient_id, f.condition, f.rule_id, f.recipient, f.evidence, f.patient_prefs,
          SNOWFLAKE.CORTEX.AI_COMPLETE(
            $CLAUDE_MODEL,
            'You draft messages for a care team. A clinician will review and approve this draft before anything is sent. '
@@ -426,9 +958,12 @@ BEGIN
            || 'Recipient: ' || f.recipient || '. Action: ' || f.action_type || '. '
            || 'Patient: ' || f.patient_id || ' (synthetic). Condition: ' || f.condition || '. '
            || 'Evidence: ' || f.evidence || '. Rule: ' || f.rule_id || ' ' || f.step || '. Guideline: ' || f.citation || '. '
+           || 'Clinician preferences for this patient (follow them; write in the stated language for patient messages): '
+           || COALESCE(f.patient_prefs, 'none') || '. '
            || 'Write the draft in under 90 words, then one line starting "Why:" citing the rule and guideline.')
   FROM V_RULE_FIRINGS f
-  WHERE NOT EXISTS (   -- duplicate guard: one open draft per patient per condition
+  WHERE f.recipient <> 'NONE'   -- held items stay visible in V_RULE_FIRINGS but are not drafted
+    AND NOT EXISTS (   -- duplicate guard: one open draft per patient per condition
     SELECT 1 FROM ACTION_QUEUE q
     WHERE q.patient_id = f.patient_id AND q.condition = f.condition AND q.status IN ('PENDING','APPROVED','EDITED'));
   n := SQLROWCOUNT;

@@ -205,26 +205,59 @@ Governance made visible for judges:
 - Every approval writes the clinician ID and timestamp to AUDIT_LOG
 - Rejected drafts and their reasons are kept, so rules can be tuned
 
+## SOAP notes and the AI Plan
+
+Every visit note can end with an **AI PLAN** block: short "Key: value" lines the clinician signs. Those lines override the guideline defaults for that patient, and the latest signed note wins. 45 synthetic notes (3 per patient, 14 with an AI Plan) are in `data/soap_notes.csv` and seeded by the SQL file.
+
+```
+AI PLAN (clinician directives; supersede the note and rule defaults)
+- A1C goal: < 7.5%
+- Hold escalation: until 2026-11-15 (adherence trial first)
+- Adherence check-ins: weekly, by text
+- Contact window: after 6 PM only
+- Language: Spanish
+- AI calls: allowed
+- Do not contact: family members
+- Notify me directly if: home glucose over 300 twice in a week
+Signed: Dr. Synthetic   2026-10-10
+```
+
+| Key | What it changes |
+| --- | --- |
+| A1C goal | Patient's A1C target (accepted range 6.5% to 8.5%) |
+| BP goal | Patient's home BP target (systolic 120 to 150, diastolic 70 to 90) |
+| Hold escalation | Medication escalation drafts held until the date (up to 180 days); shown as HOLD |
+| AI calls | "not allowed" turns the AI check-in call into a human call |
+| Contact window, Language, Do not contact, Adherence check-ins, Reminders, Notify me directly if | Passed to Claude with every draft for that patient |
+
+**Safety rules**
+
+- Lines that try to weaken a red flag or the approval gate (for example, "only alert me above 200/130") are **blocked**, and the clinician gets a review item. Red flags still fire.
+- Values outside the accepted range (for example, an A1C goal of 9.5%) are **not applied** until the clinician confirms.
+- Unrecognized keys are **not applied** and go to the clinician.
+- Every applied override links back to its signed note.
+
 ## Test scenarios
 
-Fourteen synthetic patients walk every branch, including four for follow-up. The same list is the demo script; `sql/care_rules_snowflake.sql` seeds them.
+Fifteen synthetic patients walk every branch, including four for follow-up and five for the AI Plan. The same list is the demo script; `sql/care_rules_snowflake.sql` seeds them.
 
 | Patient | Situation | Expected result |
 | --- | --- | --- |
 | SYN-001 | Stage 1, PREVENT 4%, home average 136/84 after 4 months of lifestyle | BP-1 fires: draft "recommend starting medication" to prescriber |
 | SYN-002 | Stage 1, PREVENT 3%, home average 126/78 at 3 months | No action; at goal on lifestyle |
-| SYN-003 | Stage 2, home average 152/96, new diagnosis | BP-2 fires: draft medication start, fixed-dose combination noted |
+| SYN-003 | Stage 2, home average 152/96, new diagnosis | BP-2 fires: draft medication start; Vietnamese noted for patient messages |
 | SYN-004 | On one agent 6 weeks, average 138/86, missed doses reported | Adherence check-in to patient; no escalation yet |
-| SYN-005 | Home reading 186/122 | Red flag: urgent clinician alert, no routine draft |
+| SYN-005 | Home reading 186/122; AI Plan tries to raise the red-flag threshold | Red flag: urgent clinician alert. The AI Plan line is blocked and sent for review |
 | SYN-006 | COPD, SpO2 87 to 88% on repeated resting readings, inhaler dose already raised | COPD-3 fires: oxygen evaluation request to clinician; no inhaler change |
 | SYN-007 | COPD, one moderate exacerbation last month, good adherence | COPD-2 fires: follow-up treatment review to prescriber |
-| SYN-008 | Diabetes, goal under 7%, A1C 8.1% on metformin, adherence confirmed | DM-2 fires: intensification request to prescriber |
+| SYN-008 | Diabetes, A1C 8.1%; AI Plan sets goal 7.5% and holds escalation until Nov 15 | HOLD: intensification would fire but is held; Spanish, after 6 PM, weekly texts |
 | SYN-009 | Diabetes, glucose 51 mg/dL logged | Red flag: urgent clinician alert |
-| SYN-010 | Diabetes, A1C 6.6%, last test 7 months ago | DM-1 fires: lab reminder to patient |
-| SYN-011 | Stage 1 lifestyle trial, no BP logged for 18 days | ENG-3 fires: AI check-in call to patient |
+| SYN-010 | Diabetes, A1C 6.6%, last test 7 months ago; AI Plan says A1C goal 9.5% | DM-1 lab reminder; the 9.5% goal is not applied and goes for confirmation |
+| SYN-011 | Stage 1 lifestyle trial, no BP logged for 18 days; AI Plan says no AI calls | ENG-3H: human call instead of an AI call |
 | SYN-012 | COPD, reports no pulse oximeter at home | ENG-DEV fires: clinician asked to order a device or arrange clinic readings |
 | SYN-013 | On BP medication, no readings for over a month | ENG-4 fires: lost-to-follow-up flag and visit offer |
-| SYN-014 | Stage 1, forgot to log BP for 9 days | ENG-1 fires: reminder to patient |
+| SYN-014 | Stage 1, forgot to log BP for 9 days | ENG-1 fires: reminder to patient, by text |
+| SYN-015 | Age 82, falls, on medication, home average 136/84; AI Plan sets BP goal < 140/90 | No action. Remove the goal line and BP-3 fires |
 
 ## Hackathon compliance checklist
 
