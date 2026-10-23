@@ -1,0 +1,386 @@
+/* Approval queue (B1). Tokens from src/styles/tokens.css; DESIGN-SYSTEM §2-7. */
+
+.heading {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.counts {
+  color: var(--text-default) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.list {
+  display: grid;
+  gap: var(--gap-cards);
+}
+
+.pid {
+  font-family: var(--font-mono);
+  font-size: var(--type-mono-size);
+  line-height: var(--type-mono-line);
+}
+
+.meta {
+  color: var(--text-muted);
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  font-weight: var(--type-meta-weight);
+}
+
+/* ---- Card ---------------------------------------------------------------------------------- */
+
+.card {
+  display: grid;
+  gap: var(--space-12);
+  padding: var(--space-16);
+  background: var(--surface-default);
+  border: 1px solid var(--line-hairline);
+  border-radius: var(--radius-card);
+}
+
+.cardStale {
+  border-color: var(--status-caution-border);
+}
+
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+
+.who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-8);
+}
+
+.name {
+  font-weight: 600;
+}
+
+.condition {
+  color: var(--text-muted);
+  font-size: var(--type-meta-size);
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-8);
+}
+
+.ruleId {
+  font-family: var(--font-mono);
+  font-size: var(--type-mono-size);
+  color: var(--text-muted);
+}
+
+.citation {
+  color: var(--text-muted);
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  margin-top: calc(-1 * var(--space-8));
+}
+
+.body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-16);
+  align-items: start;
+}
+
+@media (max-width: 1024px) {
+  .body {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.evidenceCol {
+  display: grid;
+  gap: var(--space-8);
+  min-width: 0;
+}
+
+.evidence {
+  max-width: 72ch;
+}
+
+.ruleInline {
+  font-family: var(--font-mono);
+  font-size: var(--type-mono-size);
+}
+
+.planReview {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.route {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  color: var(--text-muted);
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+}
+
+.route strong {
+  color: var(--text-default);
+  font-weight: 600;
+}
+
+.prefs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-8);
+  list-style: none;
+}
+
+.readings {
+  display: grid;
+  gap: var(--space-4);
+  justify-items: end;
+}
+
+.draft {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.draftHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.draftLabel {
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.quoteFooter {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.why {
+  color: var(--text-muted);
+  max-width: 80ch;
+}
+
+.whyLabel {
+  color: var(--text-default);
+  font-weight: 600;
+}
+
+.safety {
+  color: var(--status-caution-fg);
+}
+
+/* ---- Actions ------------------------------------------------------------------------------- */
+
+.actions {
+  display: grid;
+  gap: var(--space-8);
+  padding-top: var(--space-12);
+  border-top: 1px solid var(--line-hairline);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-8);
+}
+
+.hint {
+  color: var(--text-muted);
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+}
+
+.errorBox {
+  color: var(--status-alert-fg);
+}
+
+/* Snowflake's refusal, verbatim, in an alert outline (never a filled alert). */
+.refusal {
+  display: grid;
+  gap: var(--space-8);
+  padding: var(--space-12);
+  background: var(--surface-default);
+  color: var(--text-default);
+  border: 1px solid var(--status-alert-border);
+  border-radius: var(--radius-control);
+}
+
+.refusalHead {
+  color: var(--status-alert-fg);
+  font-weight: 600;
+}
+
+.refusalText {
+  font-family: var(--font-mono);
+  font-size: var(--type-mono-size);
+  line-height: var(--type-mono-line);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.refusalCode {
+  font-family: var(--font-mono);
+  font-size: var(--type-meta-size);
+  color: var(--text-muted);
+}
+
+/* ---- Urgent banner: the one filled alert element ------------------------------------------- */
+
+.urgent {
+  display: grid;
+  gap: var(--space-12);
+  margin-bottom: var(--space-24);
+  padding: var(--space-16);
+  background: var(--status-alert-strong-bg);
+  color: var(--status-alert-strong-fg);
+  border-radius: var(--radius-card);
+}
+
+.urgentTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  font-size: var(--type-h3-size);
+  line-height: var(--type-h3-line);
+}
+
+.urgentList {
+  display: grid;
+  gap: var(--space-12);
+  list-style: none;
+}
+
+.urgentRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, auto);
+  gap: var(--space-16);
+  align-items: start;
+}
+
+.urgentRow + .urgentRow {
+  padding-top: var(--space-12);
+  border-top: 1px solid color-mix(in srgb, var(--status-alert-strong-fg) 30%, transparent);
+}
+
+@media (max-width: 1024px) {
+  .urgentRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.urgentText {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.urgentEvidence {
+  font-weight: 600;
+}
+
+.urgentMeta,
+.urgentHint {
+  color: var(--status-alert-strong-fg);
+  opacity: 0.85;
+  font-size: var(--type-meta-size);
+  line-height: var(--type-meta-line);
+}
+
+.urgent .urgentActions {
+  padding-top: 0;
+  border-top: 0;
+  justify-items: end;
+}
+
+/* Inverted controls so they read on the filled alert background in both themes. */
+.urgent .urgentButton {
+  background: var(--status-alert-strong-fg);
+  color: var(--status-alert-strong-bg);
+  border-color: var(--status-alert-strong-fg);
+}
+
+.urgent .urgentButton[data-hovered] {
+  background: color-mix(in srgb, var(--status-alert-strong-fg) 85%, var(--status-alert-strong-bg));
+}
+
+.urgent .urgentButton[data-focus-visible] {
+  outline-color: var(--status-alert-strong-fg);
+}
+
+.urgent .urgentButton[data-disabled] {
+  opacity: 0.55;
+}
+
+/* ---- Held section -------------------------------------------------------------------------- */
+
+.section {
+  display: grid;
+  gap: var(--space-12);
+  margin-top: var(--space-32);
+}
+
+.sectionNote {
+  color: var(--text-muted);
+}
+
+.heldList {
+  display: grid;
+  gap: var(--space-8);
+  list-style: none;
+}
+
+/* Dashed = scheduled: the escalation resumes on the hold date. */
+.held {
+  display: flex;
+  gap: var(--space-12);
+  align-items: flex-start;
+  padding: var(--space-12) var(--space-16);
+  border: 1px dashed var(--line-boundary);
+  border-radius: var(--radius-card);
+  color: var(--text-default);
+}
+
+.held > svg {
+  flex: none;
+  margin-top: 2px;
+  color: var(--status-info-fg);
+}
+
+.heldText {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.batchList {
+  display: grid;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  list-style: none;
+}

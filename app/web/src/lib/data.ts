@@ -175,8 +175,8 @@ async function callProc<T extends ProcResult>(
       return {
         ok: false,
         error: {
-          code: 'SNOWFLAKE_REFUSED',
-          message: `Fixture mode (simulated): ${getEnv().roleAgent} has no USAGE on ${name}. In live mode Snowflake itself refuses this call.`,
+          code: 'ROLE_REFUSED',
+          message: `Fixture mode (simulated): ${getEnv().roleAgent} has no USAGE on ${name}. In live mode the role check refuses this call.`,
           sql_state: null,
         },
         fixtures: true,
