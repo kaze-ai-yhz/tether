@@ -1,4 +1,19 @@
 {
-  "_source": "sample",
-  "rows": []
+  "_source": "live-export @ 2026-10-23T15:55:44-0700",
+  "rows": [
+    {
+      "edited_at": "2026-10-23T15:48:49.145",
+      "edited_by": "clinician",
+      "edit_id": "2353f0cc-e9a0-4e99-acd3-064c73041900",
+      "field": "threshold1",
+      "impact": {
+        "changed": [],
+        "changed_count": 0
+      },
+      "new_value": "93",
+      "old_value": "88",
+      "reason": "Testing a stricter oxygen threshold for this practice",
+      "rule_id": "COPD-3"
+    }
+  ]
 }

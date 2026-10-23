@@ -1,245 +1,149 @@
 {
-  "_source": "sample",
+  "_source": "live-export @ 2026-10-23T15:55:44-0700",
   "rows": [
     {
-      "patient_id": "SYN-001",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-001 · AI Plan in N-003 read (sample)"
+      "action_id": 11,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-001 · BP-1 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 11 · BP-1 · BP-1 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-001"
     },
     {
-      "patient_id": "SYN-001",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-001 · 3 todos composed from rules (sample)"
+      "action_id": 5,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-003 · BP-2 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 5 · BP-2 · BP-2 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-003"
     },
     {
-      "patient_id": "SYN-002",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-002 · 2 todos composed from rules (sample)"
+      "action_id": 9,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-004 · ADH · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 9 · ADH · ADH · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-004"
     },
     {
-      "patient_id": "SYN-003",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-003 · AI Plan in N-009 read (sample)"
-    },
-    {
-      "patient_id": "SYN-003",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-003 · 3 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-004",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-004 · 3 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-005",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-005 · AI Plan in N-015 read (sample)"
-    },
-    {
-      "patient_id": "SYN-005",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-005 · 5 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-005",
-      "logged_at": "2026-10-23T13:40:03.000",
-      "actor": "CARE_AGENT",
+      "action_id": 1,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-005 · BP-RED · urgent internal alert to the clinician (simulated): BP 186/122 on 2026-10-22",
       "event": "RED_FLAG_ALERT",
+      "line": "Red flag alert to the clinician · draft 1 · BP-RED · BP-RED · urgent internal alert to the clinician (simulated): BP 186/122 on 2026-10-22",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-005"
+    },
+    {
+      "action_id": 3,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-005 · PLAN-REVIEW · AI Plan line queued for clinician review (rule text)",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 3 · PLAN-REVIEW · PLAN-REVIEW · AI Plan line queued for clinician review (rule text)",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-005"
+    },
+    {
+      "action_id": 6,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-006 · COPD-3 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 6 · COPD-3 · COPD-3 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-006"
+    },
+    {
+      "action_id": 12,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-007 · COPD-2 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 12 · COPD-2 · COPD-2 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-007"
+    },
+    {
+      "action_id": 2,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-009 · DM-RED · urgent internal alert to the clinician (simulated): Glucose 51 mg/dL on 2026-10-21",
+      "event": "RED_FLAG_ALERT",
+      "line": "Red flag alert to the clinician · draft 2 · DM-RED · DM-RED · urgent internal alert to the clinician (simulated): Glucose 51 mg/dL on 2026-10-21",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-009"
+    },
+    {
       "action_id": 4,
-      "detail": "SYN-005 · BP-RED: BP 186/122 on 2026-10-22 (sample)"
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-010 · PLAN-REVIEW · AI Plan line queued for clinician review (rule text)",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 4 · PLAN-REVIEW · PLAN-REVIEW · AI Plan line queued for clinician review (rule text)",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-010"
     },
     {
-      "patient_id": "SYN-006",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-006 · AI Plan in N-018 read (sample)"
+      "action_id": 14,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-010 · DM-1 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 14 · DM-1 · DM-1 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-010"
     },
     {
-      "patient_id": "SYN-006",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-006 · 3 todos composed from rules (sample)"
+      "action_id": 10,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-011 · ENG-3H · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 10 · ENG-3H · ENG-3H · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-011"
     },
     {
-      "patient_id": "SYN-007",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-007 · AI Plan in N-021 read (sample)"
+      "action_id": 7,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-012 · ENG-DEV · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 7 · ENG-DEV · ENG-DEV · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-012"
     },
     {
-      "patient_id": "SYN-007",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-007 · 3 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-008",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-008 · AI Plan in N-024 read (sample)"
-    },
-    {
-      "patient_id": "SYN-008",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-008 · 6 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-009",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-009 · AI Plan in N-027 read (sample)"
-    },
-    {
-      "patient_id": "SYN-009",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-009 · 4 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-009",
-      "logged_at": "2026-10-23T13:40:03.000",
-      "actor": "CARE_AGENT",
-      "event": "RED_FLAG_ALERT",
       "action_id": 8,
-      "detail": "SYN-009 · DM-RED: Glucose 51 mg/dL on 2026-10-21 (sample)"
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-013 · ENG-4 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 8 · ENG-4 · ENG-4 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-013"
     },
     {
-      "patient_id": "SYN-010",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-010 · AI Plan in N-029 read (sample)"
+      "action_id": 13,
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "SYN-014 · ENG-1 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "event": "DRAFT_CREATED",
+      "line": "Draft created · draft 13 · ENG-1 · ENG-1 · draft by claude-sonnet-5-5, waiting for clinician approval",
+      "logged_at": "2026-10-23T15:53:04.304",
+      "patient_id": "SYN-014"
     },
     {
-      "patient_id": "SYN-010",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
       "action_id": null,
-      "detail": "SYN-010 · 4 todos composed from rules (sample)"
+      "actor": "CARE_AGENT_ROLE",
+      "detail": "14 drafts (2 red-flag alerts, 2 plan reviews, 10 by claude-sonnet-5-5, 0 templates); 10 model calls; 0 firings already open or handled, 1 held; 0 GENERATE_DRAFTS rows checked; sim date 2026-10-23 (simulated); run 59d5ba27-f4ce-4f2e-b71f-64aea83774e9",
+      "event": "DRAFTS_GENERATED",
+      "line": "Drafts generated · 14 drafts (2 red-flag alerts, 2 plan reviews, 10 by claude-sonnet-5-5, 0 templates); 10 model calls; 0 firings already open or handled, 1 held; 0 GENERATE_DRAFTS rows checked; sim date 2026-10-23 (simulated); run 59d5ba27-f4ce-4f2e-b71f-64aea83774e9",
+      "logged_at": "2026-10-23T15:53:05.125",
+      "patient_id": null
     },
     {
-      "patient_id": "SYN-011",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
       "action_id": null,
-      "detail": "SYN-011 · AI Plan in N-033 read (sample)"
-    },
-    {
-      "patient_id": "SYN-011",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-011 · 4 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-012",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-012 · AI Plan in N-036 read (sample)"
-    },
-    {
-      "patient_id": "SYN-012",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-012 · 2 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-013",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-013 · AI Plan in N-039 read (sample)"
-    },
-    {
-      "patient_id": "SYN-013",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-013 · 4 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-014",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-014 · AI Plan in N-042 read (sample)"
-    },
-    {
-      "patient_id": "SYN-014",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-014 · 3 todos composed from rules (sample)"
-    },
-    {
-      "patient_id": "SYN-015",
-      "logged_at": "2026-10-23T13:40:01.000",
-      "actor": "CARE_AGENT",
-      "event": "AI_PLAN_READ",
-      "action_id": null,
-      "detail": "SYN-015 · AI Plan in N-045 read (sample)"
-    },
-    {
-      "patient_id": "SYN-015",
-      "logged_at": "2026-10-23T13:40:02.000",
-      "actor": "CARE_AGENT",
-      "event": "PLAN_COMPOSED",
-      "action_id": null,
-      "detail": "SYN-015 · 4 todos composed from rules (sample)"
+      "actor": "scripts/run_sql.sh",
+      "detail": "Base file reloaded; 25 audit rows archived (reset 38536725-96e2-4a13-9f17-1356d386248f); GENERATE_DRAFTS failed (tolerated); truncated ACTION_META,OUTBOX,CALL_TRANSCRIPTS,DRAFT_STAGE,CARE_PLANS,TODOS",
+      "event": "BASE_RELOADED",
+      "line": "Base reloaded · Base file reloaded; 25 audit rows archived (reset 38536725-96e2-4a13-9f17-1356d386248f); GENERATE_DRAFTS failed (tolerated); truncated ACTION_META,OUTBOX,CALL_TRANSCRIPTS,DRAFT_STAGE,CARE_PLANS,TODOS",
+      "logged_at": "2026-10-23T15:52:15.627",
+      "patient_id": null
     }
   ]
 }

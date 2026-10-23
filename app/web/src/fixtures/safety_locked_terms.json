@@ -1,35 +1,35 @@
 {
-  "_source": "sample",
+  "_source": "live-export @ 2026-10-23T15:55:44-0700",
   "rows": [
-    {
-      "term": "red flag"
-    },
-    {
-      "term": "only alert"
-    },
     {
       "term": "alert only"
     },
     {
-      "term": "do not alert"
+      "term": "auto-send"
     },
     {
       "term": "disable"
     },
     {
-      "term": "turn off"
+      "term": "do not alert"
     },
     {
       "term": "ignore reading"
     },
     {
-      "term": "skip approval"
-    },
-    {
       "term": "no approval"
     },
     {
-      "term": "auto-send"
+      "term": "only alert"
+    },
+    {
+      "term": "red flag"
+    },
+    {
+      "term": "skip approval"
+    },
+    {
+      "term": "turn off"
     },
     {
       "term": "without approval"
