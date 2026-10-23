@@ -11,6 +11,7 @@ Built at the Intelligence at Work Hackathon (Snowflake x Anthropic), Oct 23, 202
 | Path | What it is |
 | --- | --- |
 | `docs/RUNBOOK.md` | The runbook: pathways, thresholds and sources, safety checks, follow-up ladder, AI check-in calls, approval gate, test scenarios, hackathon checklist |
+| `docs/PITCH.md` | Two slides of pitch wording: clinician time, hospital admissions, life expectancy, lost workdays, families, with sources |
 | `sql/care_rules_snowflake.sql` | Snowflake schema, editable rules table, 14 synthetic patients, rule evaluation view, Claude drafting through Cortex AI_COMPLETE, clinician approval procedure |
 
 ## Run it
