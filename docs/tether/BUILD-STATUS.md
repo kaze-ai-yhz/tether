@@ -61,8 +61,11 @@ Keep SYN-001…015 as they are: they are Faiz's test table. New material goes in
 
 - None for the demo. The app runs live (`DATA_MODE=live`) with one token restricted to `CLINICIAN_ROLE`; the Care agent
   switch is enforced by the app (labelled in the UI).
-- Known issue: the patient list and patient page take 30-60 s on first load (nested views compile slowly). Open them
-  once before recording so they are warm.
+- Known issue: the patient views compile slowly (30-60 s). Snapshots (`sql/65`) and saved exports cover it: with
+  `EXPORT_VIEWS=V_APP_STATE,V_PATIENT_LIST,V_PATIENT_DETAIL,V_TIMELINE` in `app/web/.env.local`, those screens read
+  JSON exports in `app/web/.local/exports/` (milliseconds) while the queue, holds, rules and every write stay live.
+  The app re-saves an export after each write; patient screens catch up once the snapshots rebuild (about a minute).
+  Commit c194be9 adds this (its message is wrong: it says "M6.1: reset steps refresh the patient snapshots").
 - Cut at freeze: Claude reading the AI Plan into a care plan with to-dos (`sql/30`), `RUN_CHECKS()`, demo snapshot.
 - Faiz's open questions: CONTEXT-POOL.md §6 (several are now answered by his AI Plan design).
 
@@ -79,7 +82,8 @@ Keep SYN-001…015 as they are: they are Faiz's test table. New material goes in
 7. Reset for another take (stop the app first, so nobody clicks Advance clock mid-reset):
    `bash scripts/run_sql.sh sql/care_rules_snowflake.sql` then
    `snow sql -c hackathon -q "USE SCHEMA CARE_RULES.CORE; CALL TICK(); CALL REFRESH_SNAPSHOTS('ALL');"`, then restart
-   the app (clears its read cache) and open each page once.
+   the app (clears its read cache) and open each page once. With `EXPORT_VIEWS` set, also run
+   `bash scripts/export_views.sh` (or wait about 20 s and reload: aged exports re-save themselves).
 
 ## How to run (as pieces land)
 
