@@ -215,9 +215,6 @@ function EditForm({ rule, prefill, close, onSaved }: EditFormProps) {
     close();
   }
 
-  const previewFailedOnSnowflake =
-    preview.kind === "error" && (preview.code === "SNOWFLAKE_ERROR" || preview.code === "SNOWFLAKE_REFUSED");
-
   return (
     <form
       className={dialogStyles.form}
@@ -341,7 +338,6 @@ function EditForm({ rule, prefill, close, onSaved }: EditFormProps) {
           <p className={styles.inlineError} role="alert">
             {preview.text}
             {preview.code ? <span className={styles.errorCode}>{preview.code}</span> : null}
-            {previewFailedOnSnowflake ? "\nSave edit still reports the patients whose firing changed." : null}
           </p>
         ) : null}
       </div>

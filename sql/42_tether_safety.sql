@@ -61,7 +61,7 @@ $$
   ), 0)
 $$;
 
--- Self-tests (run by hand after changes; RUN_CHECKS repeats the reading cases):
+-- Self-tests (run after any change; every row must match its expected result):
 --   SELECT t.txt, SAFETY_CHECK(t.txt) AS result
 --   FROM VALUES ('51 mg/dL'), ('186/122 mmHg'), ('Walk 20 minutes daily'), ('missed doses'),
 --               ('dose increase'), ('take 10 mg'), ('metformin') AS t(txt);
