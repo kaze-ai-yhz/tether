@@ -206,14 +206,80 @@ ORDER BY a.logged_at DESC;
 --   6 Complete           plan closed by a clinician
 --   7 Scheduled / 8 Visited · no AI Plan   patients without a diagnosis on file
 -- "Handled" = the latest action for that patient x condition has the current rule and is SENT or REJECTED.
+-- V_RULE_FIRINGS and V_MONITORED_VALUES take most of the compile time of an app request, so they are
+-- expanded once here; the firings, hold and Table 2 arrays for V_PATIENT_DETAIL are built here as well.
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE VIEW V_PATIENT_LIST COPY GRANTS AS
-WITH fir AS (
-  SELECT f.patient_id, f.condition, f.rule_id, f.step, f.recipient, f.priority, f.evidence,
+WITH ao AS (SELECT * FROM V_ACTIVE_OVERRIDES),
+goal_notes AS (
+  SELECT patient_id,
+         MAX(IFF(setting = 'BP_GOAL',  note_id, NULL)) AS bp_goal_note,
+         MAX(IFF(setting = 'A1C_GOAL', note_id, NULL)) AS a1c_goal_note
+  FROM ao
+  WHERE setting IN ('BP_GOAL', 'A1C_GOAL')
+  GROUP BY patient_id
+),
+fir AS (   -- V_RULE_FIRINGS is costly to compile: it is expanded once here and reused below
+  SELECT f.patient_id, f.condition, f.rule_id, f.step, f.action_type, f.recipient, f.priority, f.evidence,
+         f.citation, f.patient_prefs,
+         IFF(f.rule_id IN ('HOLD', 'ENG-3H', 'PLAN-REVIEW')
+             OR (f.rule_id IN ('BP-1', 'BP-3') AND g.bp_goal_note IS NOT NULL)
+             OR (f.rule_id IN ('DM-1', 'DM-2') AND g.a1c_goal_note IS NOT NULL), 'P2', 'P0') AS layer,
+         COALESCE(REGEXP_SUBSTR(f.evidence, 'per note (N-[0-9]+)', 1, 1, 'e', 1),
+                  REGEXP_SUBSTR(f.evidence, '^Note (N-[0-9]+)', 1, 1, 'e', 1),
+                  IFF(f.rule_id IN ('BP-1', 'BP-3'), g.bp_goal_note,  NULL),
+                  IFF(f.rule_id IN ('DM-1', 'DM-2'), g.a1c_goal_note, NULL)) AS note_ref,
+         COALESCE(f.action_type = 'URGENT_ALERT', FALSE) AS is_red_flag,
+         f.rule_id = 'HOLD' AS is_held,
+         IFF(f.rule_id = 'HOLD', REGEXP_SUBSTR(f.evidence, 'would fire ([A-Z0-9-]+)', 1, 1, 'e', 1), NULL) AS held_rule,
          IFF(f.rule_id = 'HOLD', REGEXP_SUBSTR(f.evidence, 'held until ([0-9]{4}-[0-9]{2}-[0-9]{2})', 1, 1, 'e', 1), NULL)
            AS held_until,
          IFF(f.rule_id = 'HOLD', REGEXP_SUBSTR(f.evidence, 'per note (N-[0-9]+)', 1, 1, 'e', 1), NULL) AS held_note_id
   FROM V_RULE_FIRINGS f
+  LEFT JOIN goal_notes g ON g.patient_id = f.patient_id
+),
+firing_list AS (   -- the firings array and the hold for V_PATIENT_DETAIL
+  SELECT patient_id,
+         ARRAY_AGG(OBJECT_CONSTRUCT_KEEP_NULL(
+                     'patient_id', patient_id, 'condition', condition, 'rule_id', rule_id, 'step', step,
+                     'action_type', action_type, 'recipient', recipient, 'priority', priority, 'evidence', evidence,
+                     'citation', citation, 'patient_prefs', patient_prefs, 'layer', layer,
+                     'override_note_id', IFF(layer = 'P2', note_ref, NULL),
+                     'is_red_flag', is_red_flag, 'is_held', is_held, 'held_rule', held_rule))
+           WITHIN GROUP (ORDER BY priority, condition) AS firings,
+         GET(ARRAY_AGG(IFF(is_held, OBJECT_CONSTRUCT_KEEP_NULL('held_rule', held_rule, 'held_until', held_until,
+                                                                'note_id', held_note_id), NULL))
+               WITHIN GROUP (ORDER BY held_until DESC, condition), 0) AS held
+  FROM fir
+  GROUP BY patient_id
+),
+mv AS (SELECT * FROM V_MONITORED_VALUES),   -- expanded once, reused below
+monitored_list AS (   -- the Table 2 array for V_PATIENT_DETAIL (last_on is already a 'YYYY-MM-DD' string)
+  SELECT patient_id,
+         ARRAY_AGG(OBJECT_CONSTRUCT_KEEP_NULL(
+                     'patient_id', patient_id, 'condition', condition, 'reading_type', reading_type,
+                     'resource', resource, 'cadence_days', cadence_days, 'cadence_rule_id', cadence_rule_id,
+                     'layer', layer, 'last_value', last_value, 'last_on', last_on, 'days_since', days_since,
+                     'days_overdue', days_overdue, 'collect_flag', collect_flag, 'action_flag', action_flag,
+                     'rung', rung, 'paused', paused, 'note', note))
+           WITHIN GROUP (ORDER BY condition, reading_type) AS monitored
+  FROM mv
+  GROUP BY patient_id
+),
+monitored AS (   -- Table 2 per patient x condition: ladder rung, and home readings (CAD-* cadence) not
+                 -- received within their cadence
+  SELECT mv.patient_id, mv.condition,
+         MIN_BY(mv.rung, r.priority) AS rung,
+         MIN(r.priority)             AS rung_priority,
+         BOOLOR_AGG(mv.cadence_rule_id LIKE 'CAD-%' AND NOT mv.paused AND NOT mv.collect_flag) AS reading_due,
+         MAX_BY(mv.reading_type || ' reading, '
+                || IFF(mv.last_on IS NULL, 'not received yet',
+                       mv.days_overdue || IFF(mv.days_overdue = 1, ' day', ' days') || ' overdue'),
+                IFF(mv.cadence_rule_id LIKE 'CAD-%' AND NOT mv.paused AND NOT mv.collect_flag, mv.days_overdue, NULL))
+           AS due_text
+  FROM mv
+  LEFT JOIN RULES r ON r.rule_id = mv.rung
+  GROUP BY mv.patient_id, mv.condition
 ),
 act AS (
   SELECT q.action_id, q.patient_id, q.condition, q.rule_id, q.recipient, q.status, q.evidence, q.created_at,
@@ -263,47 +329,36 @@ plans AS (   -- latest plan per patient x condition
 ),
 keys AS (
   SELECT patient_id, condition FROM DIAGNOSES
-  UNION SELECT patient_id, condition FROM fir
-  UNION SELECT patient_id, condition FROM act
+  UNION SELECT patient_id, condition FROM ACTION_QUEUE
 ),
-monitored AS (   -- Table 2: ladder rung, and home readings (CAD-* cadence) not received within their cadence
-  SELECT mv.patient_id, mv.condition,
-         MIN_BY(mv.rung, r.priority) AS rung,
-         MIN(r.priority)             AS rung_priority,
-         BOOLOR_AGG(mv.cadence_rule_id LIKE 'CAD-%' AND NOT mv.paused AND NOT mv.collect_flag) AS reading_due,
-         MAX_BY(mv.reading_type || ' reading, '
-                || IFF(mv.last_on IS NULL, 'not received yet',
-                       mv.days_overdue || IFF(mv.days_overdue = 1, ' day', ' days') || ' overdue'),
-                IFF(mv.cadence_rule_id LIKE 'CAD-%' AND NOT mv.paused AND NOT mv.collect_flag, mv.days_overdue, NULL))
-           AS due_text
-  FROM V_MONITORED_VALUES mv
-  LEFT JOIN RULES r ON r.rule_id = mv.rung
-  GROUP BY mv.patient_id, mv.condition
-),
-pc AS (
-  SELECT k.patient_id, k.condition,
+pc AS (   -- every patient x condition that is diagnosed, has an action, or fires
+  SELECT COALESCE(k.patient_id, f.patient_id) AS patient_id, COALESCE(k.condition, f.condition) AS condition,
          f.rule_id AS cur_rule_id, f.step AS cur_step, f.recipient AS cur_recipient, f.priority AS cur_priority,
-         f.evidence AS cur_evidence, f.held_until, f.held_note_id,
+         f.evidence AS cur_evidence, f.held_until, f.held_note_id
+  FROM keys k
+  FULL OUTER JOIN fir f ON f.patient_id = k.patient_id AND f.condition = k.condition
+),
+pc_full AS (
+  SELECT pc.*,
          oa.rule_id AS open_rule_id, oa.step AS open_step, oa.evidence AS open_evidence, oa.priority AS open_priority,
          oa.open_rank, COALESCE(oa.pending_n, 0) AS pending_n,
          la.rule_id AS last_rule_id, la.step AS last_step, la.status AS last_status, la.created_at AS last_created_at,
          la.channel AS last_channel, la.sent_sim AS last_sent_sim,
-         lc.outcome AS call_outcome, lc.created_at AS call_at,
          pl.status AS plan_state,
+         mo.rung AS mon_rung, mo.rung_priority AS mon_rung_priority,
          COALESCE(mo.reading_due, FALSE) AS reading_due, mo.due_text,
-         COALESCE(la.rule_id = f.rule_id AND la.status IN ('SENT', 'REJECTED'), FALSE) AS handled,
+         COALESCE(la.rule_id = pc.cur_rule_id AND la.status IN ('SENT', 'REJECTED'), FALSE) AS handled,
          COALESCE(lc.outcome = 'ID_FAILED' AND (la.created_at IS NULL OR la.created_at <= lc.created_at), FALSE)
            AS call_unresolved
-  FROM keys k
-  LEFT JOIN fir f        ON f.patient_id = k.patient_id  AND f.condition = k.condition
-  LEFT JOIN open_act oa  ON oa.patient_id = k.patient_id AND oa.condition = k.condition
-  LEFT JOIN last_act la  ON la.patient_id = k.patient_id AND la.condition = k.condition
-  LEFT JOIN last_call lc ON lc.patient_id = k.patient_id AND lc.condition = k.condition
-  LEFT JOIN plans pl     ON pl.patient_id = k.patient_id AND pl.condition = k.condition
-  LEFT JOIN monitored mo ON mo.patient_id = k.patient_id AND mo.condition = k.condition
+  FROM pc
+  LEFT JOIN open_act oa  ON oa.patient_id = pc.patient_id AND oa.condition = pc.condition
+  LEFT JOIN last_act la  ON la.patient_id = pc.patient_id AND la.condition = pc.condition
+  LEFT JOIN last_call lc ON lc.patient_id = pc.patient_id AND lc.condition = pc.condition
+  LEFT JOIN plans pl     ON pl.patient_id = pc.patient_id AND pl.condition = pc.condition
+  LEFT JOIN monitored mo ON mo.patient_id = pc.patient_id AND mo.condition = pc.condition
 ),
 ranked AS (
-  SELECT pc.*,
+  SELECT pc_full.*,
          CASE
            WHEN open_rank IN (1, 2)                                 THEN 1
            WHEN cur_recipient = 'CLINICIAN' AND NOT handled         THEN 1
@@ -357,30 +412,27 @@ ranked AS (
          END AS status_reason,
          IFF(open_rank IS NOT NULL AND (open_rank IN (1, 2) OR pending_n > 0), open_priority, cur_priority)
            AS sort_priority
-  FROM pc
+  FROM pc_full
 ),
-win AS (
-  SELECT patient_id, condition, cur_rule_id, cur_step, status_rank, status_reason
+win AS (   -- the most severe condition per patient, plus patient-level values computed over all its conditions
+  SELECT patient_id, condition, cur_rule_id, cur_step, status_rank, status_reason,
+         FIRST_VALUE(cur_rule_id) IGNORE NULLS OVER (
+           PARTITION BY patient_id ORDER BY cur_priority NULLS LAST, condition
+           ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS top_rule_id,
+         FIRST_VALUE(cur_step) IGNORE NULLS OVER (
+           PARTITION BY patient_id ORDER BY cur_priority NULLS LAST, condition
+           ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS top_step,
+         -- ladder rung: the current engagement firing, else Table 2
+         FIRST_VALUE(IFF(cur_rule_id LIKE 'ENG-%', cur_rule_id, NULL)) IGNORE NULLS OVER (
+           PARTITION BY patient_id ORDER BY cur_priority NULLS LAST, condition
+           ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS eng_rung,
+         FIRST_VALUE(mon_rung) IGNORE NULLS OVER (
+           PARTITION BY patient_id ORDER BY mon_rung_priority NULLS LAST, condition
+           ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING) AS mon_rung,
+         MAX(held_until) OVER (PARTITION BY patient_id) AS held_until
   FROM ranked
   QUALIFY ROW_NUMBER() OVER (PARTITION BY patient_id
                              ORDER BY status_rank, open_rank NULLS LAST, sort_priority NULLS LAST, condition) = 1
-),
-top_fire AS (
-  SELECT patient_id, MIN_BY(rule_id, priority) AS rule_id, MIN_BY(step, priority) AS step
-  FROM fir
-  GROUP BY patient_id
-),
-eng AS (   -- ladder rung from the current engagement firing, else from Table 2
-  SELECT patient_id, MIN_BY(rule_id, priority) AS rung
-  FROM fir
-  WHERE rule_id LIKE 'ENG-%'
-  GROUP BY patient_id
-),
-monitored_rung AS (
-  SELECT patient_id, MIN_BY(rung, rung_priority) AS rung FROM monitored WHERE rung IS NOT NULL GROUP BY patient_id
-),
-held AS (
-  SELECT patient_id, MAX(held_until) AS held_until FROM fir WHERE rule_id = 'HOLD' GROUP BY patient_id
 ),
 dx AS (
   SELECT patient_id, ARRAY_AGG(DISTINCT condition) WITHIN GROUP (ORDER BY condition) AS conditions
@@ -424,33 +476,23 @@ last_reading AS (
 ),
 prefs AS (   -- contact preferences from the AI Plan (same settings Faiz passes to the drafter)
   SELECT patient_id, LISTAGG(setting || ': ' || raw_value, '; ') WITHIN GROUP (ORDER BY setting) AS prefs
-  FROM V_ACTIVE_OVERRIDES
+  FROM ao
   WHERE setting IN ('LANGUAGE', 'CONTACT_WINDOW', 'DO_NOT_CONTACT', 'CHECKINS', 'REMINDER_CHANNEL', 'NOTIFY_IF', 'AI_CALLS')
   GROUP BY patient_id
-),
-base AS (
-  SELECT p.patient_id, p.age, pp.display_name, pp.next_visit_on,
-         w.cur_rule_id, w.cur_step, w.status_reason,
-         COALESCE(w.status_rank, IFF(COALESCE(nt.notes_n, 0) > 0 AND COALESCE(nt.ai_notes, 0) = 0, 8, 7)) AS status_rank,
-         COALESCE(nt.ai_notes, 0) AS ai_notes
-  FROM PATIENTS p
-  LEFT JOIN PATIENT_PROFILE pp ON pp.patient_id = p.patient_id
-  LEFT JOIN win w              ON w.patient_id = p.patient_id
-  LEFT JOIN notes nt           ON nt.patient_id = p.patient_id
 )
-SELECT b.patient_id,
-       COALESCE(b.display_name, b.patient_id) AS display_name,
-       b.age,
+SELECT p.patient_id,
+       COALESCE(pp.display_name, p.patient_id) AS display_name,
+       p.age,
        COALESCE(dx.conditions, ARRAY_CONSTRUCT()) AS conditions,
-       COALESCE(pm.mode, CASE WHEN ov.applied_n > 0 THEN 'Custom' WHEN b.ai_notes > 0 THEN 'Standard' END) AS ai_plan_mode,
-       COALESCE(pm.status, CASE WHEN ov.not_applied_n > 0 THEN 'NEEDS_REVIEW' WHEN b.ai_notes > 0 THEN 'ACTIVE' END)
+       COALESCE(pm.mode, CASE WHEN ov.applied_n > 0 THEN 'Custom' WHEN nt.ai_notes > 0 THEN 'Standard' END) AS ai_plan_mode,
+       COALESCE(pm.status, CASE WHEN ov.not_applied_n > 0 THEN 'NEEDS_REVIEW' WHEN nt.ai_notes > 0 THEN 'ACTIVE' END)
          AS plan_status,
        COALESCE(td.todos_done, 0)  AS todos_done,
        COALESCE(td.todos_total, 0) AS todos_total,
-       COALESCE(b.cur_rule_id, tf.rule_id)                AS current_rule_id,
-       IFF(b.cur_rule_id IS NOT NULL, b.cur_step, tf.step) AS current_step,
-       COALESCE(eng.rung, mr.rung) AS rung,
-       CASE b.status_rank
+       COALESCE(w.cur_rule_id, w.top_rule_id)              AS current_rule_id,
+       IFF(w.cur_rule_id IS NOT NULL, w.cur_step, w.top_step) AS current_step,
+       COALESCE(w.eng_rung, w.mon_rung) AS rung,
+       CASE COALESCE(w.status_rank, IFF(COALESCE(nt.notes_n, 0) > 0 AND COALESCE(nt.ai_notes, 0) = 0, 8, 7))
          WHEN 1 THEN 'Needs clinician'
          WHEN 2 THEN 'Awaiting approval'
          WHEN 3 THEN 'Action taken'
@@ -460,32 +502,37 @@ SELECT b.patient_id,
          WHEN 7 THEN 'Scheduled'
          ELSE 'Visited · no AI Plan'
        END AS display_status,
-       b.status_rank,
-       COALESCE(b.status_reason,
-                IFF(b.status_rank = 8, 'Visited; the note has no AI Plan',
-                    'No diagnosis on file' || COALESCE('; next visit ' || TO_VARCHAR(b.next_visit_on, 'YYYY-MM-DD'), '')))
+       COALESCE(w.status_rank, IFF(COALESCE(nt.notes_n, 0) > 0 AND COALESCE(nt.ai_notes, 0) = 0, 8, 7)) AS status_rank,
+       COALESCE(w.status_reason,
+                IFF(COALESCE(nt.notes_n, 0) > 0 AND COALESCE(nt.ai_notes, 0) = 0, 'Visited; the note has no AI Plan',
+                    'No diagnosis on file' || COALESCE('; next visit ' || TO_VARCHAR(pp.next_visit_on, 'YYYY-MM-DD'), '')))
          AS status_reason,
-       TO_VARCHAR(b.next_visit_on, 'YYYY-MM-DD')    AS next_visit_on,
+       TO_VARCHAR(pp.next_visit_on, 'YYYY-MM-DD')   AS next_visit_on,
        TO_VARCHAR(lr.last_reading_on, 'YYYY-MM-DD') AS last_reading_on,
        COALESCE(pe.pending_count, 0) AS pending_count,
        pr.prefs,
-       h.held_until
-FROM base b
-LEFT JOIN dx               ON dx.patient_id = b.patient_id
-LEFT JOIN plan_mode pm     ON pm.patient_id = b.patient_id
-LEFT JOIN overrides ov     ON ov.patient_id = b.patient_id
-LEFT JOIN todo_counts td   ON td.patient_id = b.patient_id
-LEFT JOIN top_fire tf      ON tf.patient_id = b.patient_id
-LEFT JOIN eng              ON eng.patient_id = b.patient_id
-LEFT JOIN monitored_rung mr ON mr.patient_id = b.patient_id
-LEFT JOIN held h           ON h.patient_id = b.patient_id
-LEFT JOIN pending pe       ON pe.patient_id = b.patient_id
-LEFT JOIN last_reading lr  ON lr.patient_id = b.patient_id
-LEFT JOIN prefs pr         ON pr.patient_id = b.patient_id;
+       w.held_until,
+       -- for V_PATIENT_DETAIL (so the costly views are expanded once per request)
+       COALESCE(fl.firings, ARRAY_CONSTRUCT())   AS firings,
+       fl.held,
+       COALESCE(ml.monitored, ARRAY_CONSTRUCT()) AS monitored
+FROM PATIENTS p
+LEFT JOIN PATIENT_PROFILE pp ON pp.patient_id = p.patient_id
+LEFT JOIN win w              ON w.patient_id = p.patient_id
+LEFT JOIN notes nt           ON nt.patient_id = p.patient_id
+LEFT JOIN dx                 ON dx.patient_id = p.patient_id
+LEFT JOIN plan_mode pm       ON pm.patient_id = p.patient_id
+LEFT JOIN overrides ov       ON ov.patient_id = p.patient_id
+LEFT JOIN todo_counts td     ON td.patient_id = p.patient_id
+LEFT JOIN pending pe         ON pe.patient_id = p.patient_id
+LEFT JOIN last_reading lr    ON lr.patient_id = p.patient_id
+LEFT JOIN prefs pr           ON pr.patient_id = p.patient_id
+LEFT JOIN firing_list fl     ON fl.patient_id = p.patient_id
+LEFT JOIN monitored_list ml  ON ml.patient_id = p.patient_id;
 
 -- ---------------------------------------------------------------------
--- V_PATIENT_DETAIL: one row per patient. V_PATIENT_LIST columns, the record header, and nested
--- arrays/objects built in pre-aggregated CTEs.
+-- V_PATIENT_DETAIL: one row per patient. V_PATIENT_LIST columns (incl. its firings, held and monitored),
+-- the record header, and nested arrays/objects built in pre-aggregated CTEs.
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE VIEW V_PATIENT_DETAIL COPY GRANTS AS
 WITH goal_notes AS (
@@ -495,44 +542,6 @@ WITH goal_notes AS (
   FROM V_ACTIVE_OVERRIDES
   WHERE setting IN ('BP_GOAL', 'A1C_GOAL')
   GROUP BY patient_id
-),
-fir AS (
-  SELECT f.patient_id, f.condition, f.rule_id, f.step, f.action_type, f.recipient, f.priority, f.evidence,
-         f.citation, f.patient_prefs,
-         IFF(f.rule_id IN ('HOLD', 'ENG-3H', 'PLAN-REVIEW')
-             OR (f.rule_id IN ('BP-1', 'BP-3') AND g.bp_goal_note IS NOT NULL)
-             OR (f.rule_id IN ('DM-1', 'DM-2') AND g.a1c_goal_note IS NOT NULL), 'P2', 'P0') AS layer,
-         COALESCE(REGEXP_SUBSTR(f.evidence, 'per note (N-[0-9]+)', 1, 1, 'e', 1),
-                  REGEXP_SUBSTR(f.evidence, '^Note (N-[0-9]+)', 1, 1, 'e', 1),
-                  IFF(f.rule_id IN ('BP-1', 'BP-3'), g.bp_goal_note,  NULL),
-                  IFF(f.rule_id IN ('DM-1', 'DM-2'), g.a1c_goal_note, NULL)) AS note_ref,
-         COALESCE(f.action_type = 'URGENT_ALERT', FALSE) AS is_red_flag,
-         f.rule_id = 'HOLD' AS is_held,
-         IFF(f.rule_id = 'HOLD', REGEXP_SUBSTR(f.evidence, 'would fire ([A-Z0-9-]+)', 1, 1, 'e', 1), NULL) AS held_rule,
-         IFF(f.rule_id = 'HOLD', REGEXP_SUBSTR(f.evidence, 'held until ([0-9]{4}-[0-9]{2}-[0-9]{2})', 1, 1, 'e', 1), NULL)
-           AS held_until,
-         IFF(f.rule_id = 'HOLD', REGEXP_SUBSTR(f.evidence, 'per note (N-[0-9]+)', 1, 1, 'e', 1), NULL) AS held_note_id
-  FROM V_RULE_FIRINGS f
-  LEFT JOIN goal_notes g ON g.patient_id = f.patient_id
-),
-firings AS (
-  SELECT patient_id,
-         ARRAY_AGG(OBJECT_CONSTRUCT_KEEP_NULL(
-                     'patient_id', patient_id, 'condition', condition, 'rule_id', rule_id, 'step', step,
-                     'action_type', action_type, 'recipient', recipient, 'priority', priority, 'evidence', evidence,
-                     'citation', citation, 'patient_prefs', patient_prefs, 'layer', layer,
-                     'override_note_id', IFF(layer = 'P2', note_ref, NULL),
-                     'is_red_flag', is_red_flag, 'is_held', is_held, 'held_rule', held_rule))
-           WITHIN GROUP (ORDER BY priority, condition) AS firings
-  FROM fir
-  GROUP BY patient_id
-),
-held AS (
-  SELECT patient_id,
-         OBJECT_CONSTRUCT_KEEP_NULL('held_rule', held_rule, 'held_until', held_until, 'note_id', held_note_id) AS held
-  FROM fir
-  WHERE is_held
-  QUALIFY ROW_NUMBER() OVER (PARTITION BY patient_id ORDER BY held_until DESC, condition) = 1
 ),
 notes AS (
   SELECT patient_id,
@@ -640,18 +649,6 @@ calls AS (
            WITHIN GROUP (ORDER BY created_at, attempt) AS calls
   FROM CALL_TRANSCRIPTS
   GROUP BY patient_id
-),
-monitored AS (   -- Table 2 (V_MONITORED_VALUES; last_on is already a 'YYYY-MM-DD' string)
-  SELECT patient_id,
-         ARRAY_AGG(OBJECT_CONSTRUCT_KEEP_NULL(
-                     'patient_id', patient_id, 'condition', condition, 'reading_type', reading_type,
-                     'resource', resource, 'cadence_days', cadence_days, 'cadence_rule_id', cadence_rule_id,
-                     'layer', layer, 'last_value', last_value, 'last_on', last_on, 'days_since', days_since,
-                     'days_overdue', days_overdue, 'collect_flag', collect_flag, 'action_flag', action_flag,
-                     'rung', rung, 'paused', paused, 'note', note))
-           WITHIN GROUP (ORDER BY condition, reading_type) AS monitored
-  FROM V_MONITORED_VALUES
-  GROUP BY patient_id
 )
 SELECT l.patient_id, l.display_name, l.age, l.conditions, l.ai_plan_mode, l.plan_status, l.todos_done, l.todos_total,
        l.current_rule_id, l.current_step, l.rung, l.display_status, l.status_rank, l.status_reason, l.next_visit_on,
@@ -662,12 +659,12 @@ SELECT l.patient_id, l.display_name, l.age, l.conditions, l.ai_plan_mode, l.plan
        COALESCE(ov.overrides, ARRAY_CONSTRUCT())        AS overrides,
        COALESCE(ao.active_overrides, ARRAY_CONSTRUCT()) AS active_overrides,
        pn.plan,
-       hd.held,
+       l.held,
        COALESCE(td.todos, ARRAY_CONSTRUCT())            AS todos,
-       COALESCE(mo.monitored, ARRAY_CONSTRUCT())        AS monitored,
+       l.monitored,
        COALESCE(ac.actions, ARRAY_CONSTRUCT())          AS actions,
        COALESCE(cl.calls, ARRAY_CONSTRUCT())            AS calls,
-       COALESCE(fr.firings, ARRAY_CONSTRUCT())          AS firings
+       l.firings
 FROM V_PATIENT_LIST l
 JOIN PATIENTS p              ON p.patient_id = l.patient_id
 LEFT JOIN PATIENT_PROFILE pp ON pp.patient_id = l.patient_id
@@ -675,12 +672,9 @@ LEFT JOIN notes nt           ON nt.patient_id = l.patient_id
 LEFT JOIN overrides ov       ON ov.patient_id = l.patient_id
 LEFT JOIN active_overrides ao ON ao.patient_id = l.patient_id
 LEFT JOIN plan pn            ON pn.patient_id = l.patient_id
-LEFT JOIN held hd            ON hd.patient_id = l.patient_id
 LEFT JOIN todo_items td      ON td.patient_id = l.patient_id
 LEFT JOIN actions ac         ON ac.patient_id = l.patient_id
-LEFT JOIN calls cl           ON cl.patient_id = l.patient_id
-LEFT JOIN monitored mo       ON mo.patient_id = l.patient_id
-LEFT JOIN firings fr         ON fr.patient_id = l.patient_id;
+LEFT JOIN calls cl           ON cl.patient_id = l.patient_id;
 
 -- ---------------------------------------------------------------------
 -- V_APP_STATE: one row for the top bar and demo panel. Queue counts are read from base tables with
@@ -689,21 +683,62 @@ LEFT JOIN firings fr         ON fr.patient_id = l.patient_id;
 -- follow-up action yet).
 -- ---------------------------------------------------------------------
 CREATE OR REPLACE VIEW V_APP_STATE COPY GRANTS AS
-WITH queue_counts AS (
-  -- Read from base tables (not V_QUEUE / V_PATIENT_LIST, whose nested views take 30-60 s to compile).
-  -- Same rows as V_QUEUE (PENDING) and the same red-flag test. needs_clinician_count counts patients with a
-  -- pending item routed to the clinician, a red flag or a call handoff.
-  SELECT COUNT(DISTINCT q.action_id) AS pending_count,
-         COUNT(DISTINCT IFF(r.action_type = 'URGENT_ALERT' OR m.kind = 'CALL_HANDOFF', q.action_id, NULL)) AS red_flag_count,
-         COUNT(DISTINCT IFF(r.recipient = 'CLINICIAN' OR r.action_type = 'URGENT_ALERT' OR m.kind = 'CALL_HANDOFF',
-                            q.patient_id, NULL)) AS needs_clinician_count
-  FROM ACTION_QUEUE q
-  LEFT JOIN RULES r       ON r.rule_id = q.rule_id
-  LEFT JOIN ACTION_META m ON m.action_id = q.action_id
-  WHERE q.status = 'PENDING'
+WITH fir AS (SELECT patient_id, condition, rule_id, recipient FROM V_RULE_FIRINGS),
+meta AS (
+  SELECT action_id, kind FROM ACTION_META
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY action_id ORDER BY created_at DESC) = 1
 ),
-held_counts AS (
-  SELECT COUNT(*) AS held_count FROM V_HELD
+act AS (   -- is_red_flag exactly as V_QUEUE computes it
+  SELECT q.action_id, q.patient_id, q.condition, q.rule_id, q.recipient, q.status, q.created_at,
+         (COALESCE(r.action_type = 'URGENT_ALERT', FALSE) OR COALESCE(m.kind = 'CALL_HANDOFF', FALSE)) AS is_red_flag
+  FROM ACTION_QUEUE q
+  LEFT JOIN RULES r ON r.rule_id = q.rule_id
+  LEFT JOIN meta m  ON m.action_id = q.action_id
+),
+queue_counts AS (   -- the same rows as V_QUEUE (PENDING)
+  SELECT COUNT_IF(status = 'PENDING') AS pending_count,
+         COUNT_IF(status = 'PENDING' AND is_red_flag) AS red_flag_count
+  FROM act
+),
+latest AS (
+  SELECT patient_id, condition, rule_id, status, created_at
+  FROM act
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY patient_id, condition ORDER BY created_at DESC, action_id DESC) = 1
+),
+last_call AS (
+  SELECT c.patient_id, q.condition, c.outcome, c.created_at
+  FROM CALL_TRANSCRIPTS c
+  JOIN ACTION_QUEUE q ON q.action_id = c.action_id
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY c.patient_id, q.condition ORDER BY c.created_at DESC) = 1
+),
+plans AS (
+  SELECT patient_id, condition, status
+  FROM CARE_PLANS
+  QUALIFY ROW_NUMBER() OVER (PARTITION BY patient_id, condition ORDER BY created_at DESC) = 1
+),
+needs_clinician AS (   -- the rank-1 ("Needs clinician") rules of V_PATIENT_LIST; keep the two in step
+  SELECT patient_id FROM act
+  WHERE (is_red_flag AND status IN ('PENDING', 'APPROVED', 'EDITED')) OR (status = 'PENDING' AND recipient = 'CLINICIAN')
+  UNION
+  SELECT f.patient_id
+  FROM fir f
+  LEFT JOIN latest l ON l.patient_id = f.patient_id AND l.condition = f.condition
+  WHERE f.recipient = 'CLINICIAN' AND NOT COALESCE(l.rule_id = f.rule_id AND l.status IN ('SENT', 'REJECTED'), FALSE)
+  UNION
+  SELECT c.patient_id
+  FROM last_call c
+  LEFT JOIN latest l ON l.patient_id = c.patient_id AND l.condition = c.condition
+  WHERE c.outcome = 'ID_FAILED' AND (l.created_at IS NULL OR l.created_at <= c.created_at)
+  UNION
+  SELECT patient_id FROM plans WHERE status = 'REJECTED'
+),
+list_counts AS (
+  SELECT COUNT(*) AS needs_clinician_count
+  FROM needs_clinician n
+  JOIN PATIENTS p ON p.patient_id = n.patient_id
+),
+held_counts AS (   -- the same rows as V_HELD
+  SELECT COUNT_IF(rule_id = 'HOLD') AS held_count FROM fir
 ),
 models AS (
   SELECT OBJECT_AGG(LOWER(key), value::VARIANT) AS models
@@ -713,7 +748,7 @@ models AS (
 roles_mode AS (
   SELECT MAX(value) AS roles_mode FROM TETHER_SETTINGS WHERE key = 'ROLES_MODE'
 ),
-last_call AS (
+calls_by_action AS (
   SELECT action_id, MAX(created_at) AS last_call_at, MAX_BY(outcome, created_at) AS last_outcome
   FROM CALL_TRANSCRIPTS
   GROUP BY action_id
@@ -726,18 +761,22 @@ call_ready AS (
            WITHIN GROUP (ORDER BY q.action_id) AS call_ready
   FROM ACTION_QUEUE q
   JOIN RULES r ON r.rule_id = q.rule_id
-  LEFT JOIN last_call c    ON c.action_id = q.action_id
-  LEFT JOIN last_action la ON la.patient_id = q.patient_id
+  LEFT JOIN calls_by_action c ON c.action_id = q.action_id
+  LEFT JOIN last_action la    ON la.patient_id = q.patient_id
   WHERE q.status = 'SENT' AND r.action_type = 'AI_CHECKIN_CALL'
     AND (c.action_id IS NULL OR (c.last_outcome = 'NO_ANSWER' AND la.last_action_at <= c.last_call_at))
 )
 SELECT TO_VARCHAR(a.as_of_date, 'YYYY-MM-DD') AS as_of_date,
-       qc.pending_count, qc.red_flag_count, qc.needs_clinician_count, hc.held_count,
+       COALESCE(qc.pending_count, 0)         AS pending_count,
+       COALESCE(qc.red_flag_count, 0)        AS red_flag_count,
+       COALESCE(lc.needs_clinician_count, 0) AS needs_clinician_count,
+       COALESCE(hc.held_count, 0)            AS held_count,
        COALESCE(rm.roles_mode, 'SIMULATED')       AS roles_mode,
        COALESCE(m.models, OBJECT_CONSTRUCT())     AS models,
        COALESCE(cr.call_ready, ARRAY_CONSTRUCT()) AS call_ready
 FROM AS_OF a
 CROSS JOIN queue_counts qc
+CROSS JOIN list_counts lc
 CROSS JOIN held_counts hc
 CROSS JOIN models m
 CROSS JOIN roles_mode rm
